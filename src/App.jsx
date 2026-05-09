@@ -268,7 +268,7 @@ const STYLES = `
     line-height: 1.5;
   }
   .headline-detail .muted { color: rgba(255,255,255,0.5); }
-  .headline-detail .bright { font-family: 'Geist Mono', monospace; color: #00ff66; font-weight: 500; }
+  .headline-detail .bright { font-family: 'Geist Mono', monospace; color: #fff; font-weight: 500; }
   .headline-grid {
     display: grid; grid-template-columns: repeat(3, 1fr);
     gap: 0.5rem; margin-top: 1.25rem; padding-top: 1.25rem;
@@ -690,7 +690,23 @@ function useLenders() {
 // MAIN APP
 // ============================================================
 
-export default function App() {
+// Top-level router: decides which page to render based on URL hash.
+// Using hash routing (#about) keeps things simple — no server config needed,
+// works on any static host.
+export default function Router() {
+  const [route, setRoute] = useState(typeof window !== "undefined" ? window.location.hash : "");
+
+  useEffect(() => {
+    const onHashChange = () => setRoute(window.location.hash);
+    window.addEventListener("hashchange", onHashChange);
+    return () => window.removeEventListener("hashchange", onHashChange);
+  }, []);
+
+  if (route === "#about") return <AboutPage />;
+  return <Calculator />;
+}
+
+function Calculator() {
   const live = useLivePrices();
   const { lenders: LENDERS, lastUpdated: lendersLastUpdated } = useLenders();
   const BTC_SPOT_USD = live.btcUsd;
@@ -898,6 +914,7 @@ export default function App() {
             <div className="input-row">
               <div className="input-header">
                 <label className="input-label">Loan amount</label>
+                <span className="input-meta">how much cash you want</span>
               </div>
               <NumInput
                 value={loanInputValue}
@@ -1151,6 +1168,9 @@ export default function App() {
           <div className="footer-tiny" style={{ marginTop: "0.5rem" }}>
             Not financial advice. Liquidation calc assumes 80% trigger LTV (varies by lender).
           </div>
+          <div style={{ marginTop: "0.75rem" }}>
+            <a href="#about" style={{ color: "rgba(255,255,255,0.5)", textDecoration: "underline", textUnderlineOffset: "2px" }}>About this site</a>
+          </div>
         </div>
       </div>
 
@@ -1360,6 +1380,197 @@ function EditProfileModal({ profile, btcSpotUsd, onSave, onReset, onClose }) {
         <div className="modal-actions">
           <button onClick={onReset} className="btn btn-secondary">Reset to defaults</button>
           <button onClick={() => onSave({ cases })} className="btn btn-primary">Save</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ============================================================
+// ABOUT PAGE
+// ============================================================
+
+function AboutPage() {
+  return (
+    <div className="bcalc">
+      <style>{STYLES}</style>
+      <style>{`
+        .about-content {
+          max-width: 32rem;
+          margin: 0 auto;
+          padding: 2rem 1.25rem 6rem;
+        }
+        .about-back {
+          display: inline-flex;
+          align-items: center;
+          gap: 0.5rem;
+          color: rgba(255,255,255,0.6);
+          text-decoration: none;
+          font-size: 0.8125rem;
+          margin-bottom: 2rem;
+          transition: color 150ms;
+        }
+        .about-back:hover { color: #f7931a; }
+        .about-h1 {
+          font-family: 'Fraunces', Georgia, serif;
+          font-size: 2rem;
+          font-weight: 600;
+          letter-spacing: -0.015em;
+          line-height: 1.1;
+          margin: 0 0 1rem;
+          color: #fff;
+        }
+        .about-subtitle {
+          font-family: 'Fraunces', Georgia, serif;
+          font-size: 1.125rem;
+          font-weight: 400;
+          font-style: italic;
+          color: rgba(255,255,255,0.65);
+          line-height: 1.5;
+          margin-bottom: 2.5rem;
+        }
+        .about-h2 {
+          font-family: 'Fraunces', Georgia, serif;
+          font-size: 1.375rem;
+          font-weight: 600;
+          letter-spacing: -0.01em;
+          color: #fff;
+          margin: 2.5rem 0 1rem;
+          line-height: 1.2;
+        }
+        .about-h2 .accent { color: #f7931a; }
+        .about-p {
+          font-size: 0.9375rem;
+          color: rgba(255,255,255,0.78);
+          line-height: 1.65;
+          margin: 0 0 1.125rem;
+        }
+        .about-p strong { color: #fff; font-weight: 600; }
+        .about-p .mono {
+          font-family: 'Geist Mono', ui-monospace, monospace;
+          font-size: 0.875em;
+          color: #f7931a;
+        }
+        .about-list {
+          margin: 0 0 1.125rem;
+          padding-left: 1.25rem;
+        }
+        .about-list li {
+          font-size: 0.9375rem;
+          color: rgba(255,255,255,0.78);
+          line-height: 1.65;
+          margin-bottom: 0.5rem;
+        }
+        .about-list li::marker { color: #f7931a; }
+        .about-pull {
+          border-left: 2px solid #f7931a;
+          padding: 0.5rem 0 0.5rem 1.25rem;
+          margin: 1.5rem 0;
+          font-family: 'Fraunces', Georgia, serif;
+          font-size: 1.0625rem;
+          font-style: italic;
+          color: rgba(255,255,255,0.85);
+          line-height: 1.5;
+        }
+        .about-divider {
+          border: none;
+          border-top: 1px solid rgba(255,255,255,0.08);
+          margin: 3rem 0;
+        }
+        .about-meta {
+          font-size: 0.75rem;
+          color: rgba(255,255,255,0.45);
+          line-height: 1.6;
+        }
+        .about-meta a {
+          color: rgba(255,255,255,0.6);
+          text-decoration: underline;
+          text-underline-offset: 2px;
+        }
+        .about-meta a:hover { color: #f7931a; }
+      `}</style>
+
+      <div className="about-content">
+        <a href="#" className="about-back">← Back to calculator</a>
+
+        <h1 className="about-h1">About Stack & Borrow</h1>
+        <div className="about-subtitle">
+          A calculator built for one question every long-term bitcoiner eventually faces:
+          should I sell some sats, or borrow against them?
+        </div>
+
+        <h2 className="about-h2">Why this exists</h2>
+        <p className="about-p">
+          Most "bitcoin loan calculators" online are one of two things: broken (wrong math, no tax handling, no live prices), or thinly disguised affiliate funnels (rankings tilted toward whoever pays the highest commission). Neither is useful when you're making a real financial decision involving years of stacking.
+        </p>
+        <p className="about-p">
+          Stack & Borrow tries to be the calculator I wished existed when I started looking into this. <strong>Sats are the unit.</strong> The headline number is how many sats you avoid having to sell. Tax is part of the math by default, because in most jurisdictions selling triggers a real cost that borrowing doesn't. Multiple price scenarios — from genuine bull-case views to the comedic permabear — let you stress-test instead of relying on a single forecast.
+        </p>
+
+        <h2 className="about-h2">How <span className="accent">rankings</span> work</h2>
+        <p className="about-p">
+          Lenders are ranked by <strong>total cost to you</strong> for the loan parameters you set. Effective APR includes the lender's interest rate plus any origination fee, multiplied by your loan term. Lowest cost wins. That's it.
+        </p>
+        <p className="about-pull">
+          Affiliate commissions never enter the ranking algorithm. If a lender that pays me nothing offers you the best deal, they win the #1 slot. Period.
+        </p>
+
+        <h2 className="about-h2">How the site is <span className="accent">funded</span></h2>
+        <p className="about-p">
+          Some lender links in the directory are affiliate partnerships. When you click "Visit [Lender]" and end up taking a loan, the lender pays a referral fee. This funds the domain, hosting, and time spent maintaining the data.
+        </p>
+        <p className="about-p">
+          Currently I'm an affiliate of <strong>Firefish</strong>, with applications pending at <strong>Ledn</strong>, <strong>Arch</strong>, and <strong>Strike</strong>. The other lenders on the site receive no commission from me; they're listed because they belong on a credible directory of BTC-backed lenders.
+        </p>
+        <p className="about-p">
+          If you'd rather not use an affiliate link, you can always navigate to the lender's site directly. The ranking and the math don't change either way.
+        </p>
+
+        <h2 className="about-h2">What the site does <span className="accent">not</span> do</h2>
+        <ul className="about-list">
+          <li><strong>No tracking.</strong> No Google Analytics, no Meta pixel, no third-party advertising scripts. Privacy-respecting analytics may be added (Plausible or self-hosted Umami) — clearly disclosed if so.</li>
+          <li><strong>No signup required.</strong> The calculator works without an account, ever.</li>
+          <li><strong>No data collection.</strong> Your inputs are stored only in your browser's local storage so they persist between visits. They never leave your device.</li>
+          <li><strong>No financial advice.</strong> This is a calculator, not a recommendation. Borrowing against bitcoin involves liquidation risk, custody risk, counterparty risk, and tax complexity that varies by jurisdiction. Talk to a qualified advisor before making decisions involving meaningful money.</li>
+        </ul>
+
+        <h2 className="about-h2">Who should <span className="accent">not</span> use this</h2>
+        <p className="about-p">
+          Borrowing against bitcoin is a tool. Like all tools, it's wrong for many situations. Don't borrow against sats if:
+        </p>
+        <ul className="about-list">
+          <li>The loan amount is meaningful relative to your stack and you'd be devastated by liquidation in a 50% drawdown (which has happened 6+ times in BTC's history)</li>
+          <li>You don't fully understand what rehypothecation is and which lenders practice it</li>
+          <li>You're borrowing to speculate on more bitcoin (this is leverage, not strategy)</li>
+          <li>Your job, savings, or emotional well-being depends on the BTC price not falling for the next 12 months</li>
+        </ul>
+
+        <h2 className="about-h2">Lender data <span className="accent">freshness</span></h2>
+        <p className="about-p">
+          Rates and terms change. The footer of the calculator shows when lender data was last verified. The goal is quarterly updates at minimum — when a major change happens (a lender shuts down, a new partner launches, regulatory changes), updates happen sooner.
+        </p>
+        <p className="about-p">
+          If you spot something out of date or wrong, please reach out — fixing it benefits everyone.
+        </p>
+
+        <h2 className="about-h2">Open source & <span className="accent">honest about limits</span></h2>
+        <p className="about-p">
+          The site's source code is public on GitHub. The math is verifiable. The calculations are not magic — they're simple interest calculations and CAGR projections you could do in a spreadsheet. The value is in having them organized, with live BTC prices and lender data, in one place that doesn't waste your time.
+        </p>
+        <p className="about-p">
+          That said: projections are projections. Bitcoin's future price is unknowable. Saylor, Wood, and Schiff are included as conversation pieces, not as oracles. Use the bear/base/bull cases to see how sensitive your decision is to assumptions — that's the real value of running scenarios.
+        </p>
+
+        <hr className="about-divider" />
+
+        <p className="about-meta">
+          Built with care, deployed on Cloudflare Pages, mirrored on Tor (when StartOS mirror goes live).<br />
+          Live BTC price via <a href="https://mempool.space" target="_blank" rel="noopener noreferrer">mempool.space</a> — itself a free public good worth supporting.<br /><br />
+          Questions, feedback, corrections: get in touch via the channels listed in the footer.
+        </p>
+
+        <div style={{ marginTop: "2rem" }}>
+          <a href="#" className="about-back">← Back to calculator</a>
         </div>
       </div>
     </div>
