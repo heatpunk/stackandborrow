@@ -26,6 +26,36 @@ const CURRENCY_META = {
   SEK: { symbol: "kr", label: "SEK", region: "eu", taxRate: 30 },
 };
 
+// Detect currency from browser locale on first visit (no saved preference yet).
+// Returns one of our supported currencies or "USD" as the global default.
+function detectCurrencyFromLocale() {
+  if (typeof navigator === "undefined") return "USD";
+  // navigator.language returns "en-US", "sv-SE", "de-DE" etc.
+  const locale = navigator.language || navigator.userLanguage || "en-US";
+  const country = locale.split("-")[1]?.toUpperCase() || "";
+
+  const countryToCurrency = {
+    SE: "SEK",
+    US: "USD",
+    GB: "GBP", UK: "GBP",
+    CA: "CAD",
+    AU: "AUD",
+    NZ: "AUD",
+    JP: "JPY",
+    CH: "CHF",
+    LI: "CHF",
+    // EU countries → EUR
+    DE: "EUR", FR: "EUR", IT: "EUR", ES: "EUR", NL: "EUR", BE: "EUR",
+    AT: "EUR", PT: "EUR", IE: "EUR", FI: "EUR", GR: "EUR", LU: "EUR",
+    SK: "EUR", SI: "EUR", EE: "EUR", LV: "EUR", LT: "EUR", MT: "EUR",
+    CY: "EUR", HR: "EUR",
+    // Non-euro EU countries — use EUR as best fit
+    DK: "EUR", PL: "EUR", CZ: "EUR", HU: "EUR", RO: "EUR", BG: "EUR",
+    NO: "EUR",
+  };
+  return countryToCurrency[country] || "USD";
+}
+
 // Each profile has bear/base/bull CAGRs — all editable
 const DEFAULT_PROFILES = {
   saylor: {
@@ -34,7 +64,7 @@ const DEFAULT_PROFILES = {
     blurb: "Sees BTC as the apex monetary good. Long-term ~$13M target by 2045.",
     cases: { bear: 15, base: 29, bull: 50 },
     color: "#f7931a",
-    emoji: "🟧",
+    initials: "MS",
   },
   wood: {
     name: "Cathie Wood",
@@ -42,7 +72,7 @@ const DEFAULT_PROFILES = {
     blurb: "ARK's published bull case ~$2.4M by 2030, base ~$1.5M, bear ~$700K.",
     cases: { bear: 25, base: 40, bull: 65 },
     color: "#22d3ee",
-    emoji: "🚀",
+    initials: "CW",
   },
   schiff: {
     name: "Peter Schiff",
@@ -50,7 +80,7 @@ const DEFAULT_PROFILES = {
     blurb: "Has called BTC zero for over a decade. His 'bull case' is barely surviving.",
     cases: { bear: -20, base: -8, bull: 0 },
     color: "#94a3b8",
-    emoji: "🥶",
+    initials: "PS",
   },
 };
 
@@ -268,7 +298,14 @@ const STYLES = `
     line-height: 1.5;
   }
   .headline-detail .muted { color: rgba(255,255,255,0.5); }
-  .headline-detail .bright { font-family: 'Geist Mono', monospace; color: #fff; font-weight: 500; }
+  .headline-detail .bright {
+    font-family: 'Geist Mono', monospace;
+    color: #f7931a;
+    font-weight: 600;
+    font-size: 1.0625em;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.01em;
+  }
   .headline-grid {
     display: grid; grid-template-columns: repeat(3, 1fr);
     gap: 0.5rem; margin-top: 1.25rem; padding-top: 1.25rem;
@@ -301,24 +338,38 @@ const STYLES = `
   /* PROFILES */
   .profiles-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; margin-bottom: 0.75rem; }
   .profile-btn {
-    padding: 0.75rem;
+    padding: 0.875rem 0.5rem;
     border-radius: 0.75rem;
     border: 1px solid rgba(255,255,255,0.1);
     background: #0a0a0b;
-    text-align: left;
+    text-align: center;
     cursor: pointer;
     transition: all 150ms;
     font-family: inherit; color: inherit;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.375rem;
   }
   .profile-btn:hover { border-color: rgba(255,255,255,0.25); }
   .profile-btn.active {
     border-color: rgba(247, 147, 26, 0.5);
     background: rgba(247, 147, 26, 0.1);
   }
-  .profile-emoji { font-size: 1.25rem; margin-bottom: 0.25rem; }
-  .profile-name { font-size: 0.6875rem; font-weight: 500; line-height: 1.2; }
-  .profile-persona { font-size: 0.625rem; color: rgba(255,255,255,0.5); margin-top: 0.125rem; }
-  .profile-cagr { font-family: 'Geist Mono', monospace; font-size: 0.75rem; margin-top: 0.5rem; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .profile-avatar {
+    width: 2.25rem; height: 2.25rem;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Geist Mono', monospace;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    border: 1.5px solid;
+    background: rgba(0,0,0,0.3);
+  }
+  .profile-name { font-size: 0.6875rem; font-weight: 500; line-height: 1.2; text-align: center; }
+  .profile-persona { font-size: 0.625rem; color: rgba(255,255,255,0.5); text-align: center; line-height: 1.2; }
+  .profile-cagr { font-family: 'Geist Mono', monospace; font-size: 0.75rem; margin-top: 0.125rem; font-weight: 600; font-variant-numeric: tabular-nums; text-align: center; }
   .profile-blurb { font-size: 0.75rem; color: rgba(255,255,255,0.6); font-style: italic; line-height: 1.5; }
   .profile-edit-link {
     display: inline-block; margin-top: 0.75rem;
@@ -465,7 +516,17 @@ const STYLES = `
     max-height: 90vh; overflow-y: auto;
   }
   .modal-head { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem; }
-  .modal-emoji { font-size: 1.875rem; }
+  .modal-avatar {
+    width: 2.75rem; height: 2.75rem;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Geist Mono', monospace;
+    font-size: 0.9375rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    border: 1.5px solid;
+    background: rgba(0,0,0,0.3);
+  }
   .modal-title { font-family: 'Fraunces', serif; font-size: 1.25rem; font-weight: 600; }
   .modal-persona { font-size: 0.75rem; color: rgba(255,255,255,0.6); }
   .modal-blurb { font-size: 0.75rem; color: rgba(255,255,255,0.7); margin-bottom: 1rem; font-style: italic; line-height: 1.5; }
@@ -714,7 +775,7 @@ function Calculator() {
   // ===== INPUT STATE =====
   // Loan-first flow: user enters DESIRED LOAN AMOUNT in their currency.
   // Default 50,000 SEK ≈ $4,700 — a meaningful amount for actual borrowing.
-  const [currency, setCurrency] = usePersistentState("currency", "SEK");
+  const [currency, setCurrency] = usePersistentState("currency", detectCurrencyFromLocale());
   const [desiredLoanInCurrency, setDesiredLoanInCurrency] = usePersistentState("desiredLoan", 50000);
   const [ltvPct, setLtvPct] = usePersistentState("ltvPct", 40);
   const [aprPct, setAprPct] = usePersistentState("aprPct", 10);
@@ -1017,7 +1078,7 @@ function Calculator() {
           <div className="profiles-grid">
             {Object.entries(profiles).map(([key, p]) => (
               <button key={key} onClick={() => setActiveProfile(key)} className={`profile-btn ${activeProfile === key ? "active" : ""}`}>
-                <div className="profile-emoji">{p.emoji}</div>
+                <div className="profile-avatar" style={{ borderColor: p.color, color: p.color }}>{p.initials}</div>
                 <div className="profile-name">{p.name}</div>
                 <div className="profile-persona">{p.persona}</div>
                 <div className="profile-cagr" style={{ color: p.color }}>
@@ -1343,7 +1404,7 @@ function EditProfileModal({ profile, btcSpotUsd, onSave, onReset, onClose }) {
     <div className="modal-backdrop" onClick={onClose}>
       <div className="modal" onClick={(e) => e.stopPropagation()}>
         <div className="modal-head">
-          <div className="modal-emoji">{profile.emoji}</div>
+          <div className="modal-avatar" style={{ borderColor: profile.color, color: profile.color }}>{profile.initials}</div>
           <div>
             <div className="modal-title">{profile.name}</div>
             <div className="modal-persona">{profile.persona}</div>
