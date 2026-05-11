@@ -924,26 +924,35 @@ function Calculator() {
     // Resolve the actual APR for the user's loan size from the lender's tier table.
     // Tiers are sorted by maxLoanUsd ascending; the first tier whose threshold the loan
     // doesn't exceed wins. The last tier has maxLoanUsd: null meaning "no upper bound".
+    // Each tier can optionally specify its own originationFeePct that overrides the lender's
+    // default (used for lenders like Arch with tier-based origination fees).
     const resolveApr = (l, loanSize) => {
-      if (!l.rateTiers || l.rateTiers.length === 0) return null;
+      if (!l.rateTiers || l.rateTiers.length === 0) return { rate: null, originationFee: l.originationFeePct };
       for (const tier of l.rateTiers) {
         if (tier.maxLoanUsd === null || loanSize < tier.maxLoanUsd) {
-          return tier.aprPct;
+          return {
+            rate: tier.aprPct,
+            originationFee: tier.originationFeePct !== undefined ? tier.originationFeePct : l.originationFeePct,
+          };
         }
       }
-      return l.rateTiers[l.rateTiers.length - 1].aprPct;
+      const lastTier = l.rateTiers[l.rateTiers.length - 1];
+      return {
+        rate: lastTier.aprPct,
+        originationFee: lastTier.originationFeePct !== undefined ? lastTier.originationFeePct : l.originationFeePct,
+      };
     };
 
     return [...eligibleLenders]
       .filter((l) => loanUsd >= l.minLoanUsd && ltvPct <= l.maxLtv)
       .map((l) => {
-        const tieredRate = resolveApr(l, loanUsd);
+        const { rate: tieredRate, originationFee: tieredFee } = resolveApr(l, loanUsd);
         // Regional rate adjustment: e.g. Strike charges +1% outside the US
         const regional = l.regionalRateAdjustment
           ? (l.regionalRateAdjustment[userRegion] ?? l.regionalRateAdjustment.default ?? 0)
           : 0;
         const feeApplies = !l.feeWaivedFor.includes(userRegion);
-        const effectiveApr = tieredRate + regional + (feeApplies ? l.originationFeePct : 0);
+        const effectiveApr = tieredRate + regional + (feeApplies ? tieredFee : 0);
         const totalCost = computeInterest(loanUsd, effectiveApr, termMonths);
         return { ...l, effectiveApr, baseApr: tieredRate, regionalAdjustment: regional, totalCost };
       })

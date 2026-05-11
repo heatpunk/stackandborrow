@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-05-11",
+  "lastUpdated": "2026-05-12",
   "lenders": [
     {
       "id": "ledn",
@@ -56,23 +56,25 @@
       "id": "arch",
       "name": "Arch Lending",
       "country": ["us"],
-      "excluded": ["AL","CA","DE","HI","MN","MS","MT","NV","ND","RI","SC","SD","TX","VT","VA","WA"],
-      "minLoanUsd": 1000,
+      "excluded": ["CA","DE","HI","MS","MT","NV","ND","RI","SC","TX","VT"],
+      "minLoanUsd": 5000,
       "maxLtv": 60,
       "rateTiers": [
-        { "maxLoanUsd": 100000, "aprPct": 11.0 },
-        { "maxLoanUsd": 500000, "aprPct": 10.0 },
-        { "maxLoanUsd": null, "aprPct": 8.49 }
+        { "maxLoanUsd": 250000, "aprPct": 9.0, "originationFeePct": 1.49 },
+        { "maxLoanUsd": 750000, "aprPct": 8.5, "originationFeePct": 1.49 },
+        { "maxLoanUsd": 2000000, "aprPct": 8.0, "originationFeePct": 0.99 },
+        { "maxLoanUsd": 5000000, "aprPct": 7.75, "originationFeePct": 0.49 },
+        { "maxLoanUsd": null, "aprPct": 7.25, "originationFeePct": 0.0 }
       ],
       "originationFeePct": 1.49,
       "feeWaivedFor": [],
-      "custody": "Anchorage Digital (federally chartered). Multi-collateral support: BTC, ETH, SOL.",
+      "custody": "Anchorage Digital (federally chartered). Multi-collateral support: BTC, ETH, SOL, XRP.",
       "custodyType": "custodial",
       "rehypothecation": "no",
-      "term": "Up to 24 months",
+      "term": "Up to 12 months, rollover available",
       "rollover": "Yes, refinance available",
-      "repayment": "Two options: (1) Interest-only monthly with balloon at maturity, or (2) Principal + interest monthly (amortizing). Payments in USD or USDC. No early repayment penalty. 2% partial liquidation fee if collateral has to be sold.",
-      "notes": "Tiered rates strongly favor larger loans. Custody at Anchorage (federally chartered) — strong trust signal. Two repayment models give flexibility most lenders don't.",
+      "repayment": "Two options: (1) Monthly Payment (interest paid monthly, principal balloon at maturity) at the published rate, or (2) Deferred Interest (no monthly payments, all interest accrues to maturity) at ~0.5% higher APR. Payments in USD or USDC. No early repayment penalty. 2.5% liquidation fee if collateral has to be sold.",
+      "notes": "NMLS #2637200, licensed in 39 US states (excluded: CA, DE, HI, MS, MT, NV, ND, RI, SC, TX, VT). Tiered origination fee drops to 0% at $5M+. Multi-collateral support is unique among regulated US lenders.",
       "badge": "Best for big loans",
       "referralUrl": "https://archlending.com"
     },
@@ -207,28 +209,6 @@
       "notes": "Requires $1,000/year Xapo Bank membership (includes other banking services). Variable rate is unusual in BTC lending — pricing depends on Fed rates. Strong custody model with no rehypothecation. Maximum 1 active loan at a time. $1M max per loan, $5M with custom approval.",
       "badge": "Bank-grade custody",
       "referralUrl": "https://www.xapobank.com"
-    },
-    {
-      "id": "lava",
-      "name": "Lava",
-      "country": ["us", "global"],
-      "excluded": [],
-      "minLoanUsd": 100,
-      "maxLtv": 50,
-      "rateTiers": [
-        { "maxLoanUsd": null, "aprPct": 7.0 }
-      ],
-      "originationFeePct": 0,
-      "feeWaivedFor": [],
-      "custody": "Custodial since November 2025. Lava previously used Discreet Log Contracts (DLCs) for self-custody, but migrated to a custodial model to secure lower rates. No rehypothecation — collateral is held in segregated infrastructure with on-chain proof-of-reserves.",
-      "custodyType": "custodial",
-      "rehypothecation": "no",
-      "term": "Open-ended line of credit (BLOC) — no fixed maturity",
-      "rollover": "N/A — borrow and repay anytime, rate refreshes yearly",
-      "repayment": "No monthly payments required. Pay back any amount at any time, in any currency. Interest accrues only on borrowed amount, not on credit line capacity. Add or remove collateral anytime. Liquidation protection feature can draw from your in-app BTC balance to avoid forced sale.",
-      "notes": "5% fixed interest + 2% capital charge = 7% effective. Lowest fixed rates in the market. IMPORTANT: Lava migrated from self-custody (DLCs) to custodial in November 2025 — this was controversial among early users. Still no rehypothecation, but you now trust Lava with custody. Visa card available with up to 5% BTC cashback on spending.",
-      "badge": "Lowest rate",
-      "referralUrl": "https://www.lava.xyz"
     }
   ]
 }
