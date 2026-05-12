@@ -1105,6 +1105,54 @@ function Calculator() {
   const collateralBtcNeeded = collateralUsdNeeded / BTC_SPOT_USD;
   const collateralSatsNeeded = Math.round(collateralBtcNeeded * SATS_PER_BTC);
 
+  // ===== LENDER RANKING (must be before aprPct usage in interestUsd) =====
+  const userRegion = CURRENCY_META[currency].region;
+  const eligibleLenders = LENDERS.filter((l) => {
+    if (l.country.includes("global")) return true;
+    if (userRegion === "us" && l.country.includes("us")) return true;
+    if (userRegion === "ca" && l.country.includes("ca")) return true;
+    if (userRegion === "eu" && l.country.includes("eu")) return true;
+    if (userRegion === "ch" && (l.country.includes("ch") || l.country.includes("eu"))) return true;
+    return false;
+  });
+
+  const rankedLenders = useMemo(() => {
+    const resolveApr = (l, loanSize) => {
+      if (!l.rateTiers || l.rateTiers.length === 0) return { rate: null, originationFee: l.originationFeePct };
+      for (const tier of l.rateTiers) {
+        if (tier.maxLoanUsd === null || loanSize < tier.maxLoanUsd) {
+          return {
+            rate: tier.aprPct,
+            originationFee: tier.originationFeePct !== undefined ? tier.originationFeePct : l.originationFeePct,
+          };
+        }
+      }
+      const lastTier = l.rateTiers[l.rateTiers.length - 1];
+      return {
+        rate: lastTier.aprPct,
+        originationFee: lastTier.originationFeePct !== undefined ? lastTier.originationFeePct : l.originationFeePct,
+      };
+    };
+
+    return [...eligibleLenders]
+      .filter((l) => loanUsd >= l.minLoanUsd && ltvPct <= l.maxLtv)
+      .map((l) => {
+        const { rate: tieredRate, originationFee: tieredFee } = resolveApr(l, loanUsd);
+        const regional = l.regionalRateAdjustment
+          ? (l.regionalRateAdjustment[userRegion] ?? l.regionalRateAdjustment.default ?? 0)
+          : 0;
+        const feeApplies = !l.feeWaivedFor.includes(userRegion);
+        const effectiveApr = tieredRate + regional + (feeApplies ? tieredFee : 0);
+        const totalCost = computeInterest(loanUsd, effectiveApr, termMonths);
+        return { ...l, effectiveApr, baseApr: tieredRate, regionalAdjustment: regional, totalCost };
+      })
+      .sort((a, b) => a.totalCost - b.totalCost)
+      .slice(0, 4);
+  }, [eligibleLenders, loanUsd, ltvPct, termMonths, userRegion]);
+
+  // APR is inherited silently from the best-ranked lender.
+  const aprPct = rankedLenders[0]?.effectiveApr ?? 10;
+
   const interestUsd = computeInterest(loanUsd, aprPct, termMonths);
   const totalOwedUsd = loanUsd + interestUsd;
   const liquidationUsd = collateralBtcNeeded > 0 ? computeLiquidationPrice(loanUsd, collateralBtcNeeded) : 0;
@@ -1191,60 +1239,6 @@ function Calculator() {
   }, [profiles, termMonths, collateralBtcNeeded, loanUsd, aprPct, activeProfile, activeCase, activeCagr, BTC_SPOT_USD, collateralBtcRemainingAfterSell, halMode, halCagr]);
 
   // ===== LENDERS =====
-  const userRegion = CURRENCY_META[currency].region;
-  const eligibleLenders = LENDERS.filter((l) => {
-    if (l.country.includes("global")) return true;
-    if (userRegion === "us" && l.country.includes("us")) return true;
-    if (userRegion === "ca" && l.country.includes("ca")) return true;
-    if (userRegion === "eu" && l.country.includes("eu")) return true;
-    if (userRegion === "ch" && (l.country.includes("ch") || l.country.includes("eu"))) return true;
-    return false;
-  });
-
-  const rankedLenders = useMemo(() => {
-    // Resolve the actual APR for the user's loan size from the lender's tier table.
-    // Tiers are sorted by maxLoanUsd ascending; the first tier whose threshold the loan
-    // doesn't exceed wins. The last tier has maxLoanUsd: null meaning "no upper bound".
-    // Each tier can optionally specify its own originationFeePct that overrides the lender's
-    // default (used for lenders like Arch with tier-based origination fees).
-    const resolveApr = (l, loanSize) => {
-      if (!l.rateTiers || l.rateTiers.length === 0) return { rate: null, originationFee: l.originationFeePct };
-      for (const tier of l.rateTiers) {
-        if (tier.maxLoanUsd === null || loanSize < tier.maxLoanUsd) {
-          return {
-            rate: tier.aprPct,
-            originationFee: tier.originationFeePct !== undefined ? tier.originationFeePct : l.originationFeePct,
-          };
-        }
-      }
-      const lastTier = l.rateTiers[l.rateTiers.length - 1];
-      return {
-        rate: lastTier.aprPct,
-        originationFee: lastTier.originationFeePct !== undefined ? lastTier.originationFeePct : l.originationFeePct,
-      };
-    };
-
-    return [...eligibleLenders]
-      .filter((l) => loanUsd >= l.minLoanUsd && ltvPct <= l.maxLtv)
-      .map((l) => {
-        const { rate: tieredRate, originationFee: tieredFee } = resolveApr(l, loanUsd);
-        // Regional rate adjustment: e.g. Strike charges +1% outside the US
-        const regional = l.regionalRateAdjustment
-          ? (l.regionalRateAdjustment[userRegion] ?? l.regionalRateAdjustment.default ?? 0)
-          : 0;
-        const feeApplies = !l.feeWaivedFor.includes(userRegion);
-        const effectiveApr = tieredRate + regional + (feeApplies ? tieredFee : 0);
-        const totalCost = computeInterest(loanUsd, effectiveApr, termMonths);
-        return { ...l, effectiveApr, baseApr: tieredRate, regionalAdjustment: regional, totalCost };
-      })
-      .sort((a, b) => a.totalCost - b.totalCost)
-      .slice(0, 4);
-  }, [eligibleLenders, loanUsd, ltvPct, termMonths, userRegion]);
-
-  // APR is now inherited silently from the best-ranked lender.
-  // Users discover this by switching lenders to compare — increases engagement time.
-  const aprPct = rankedLenders[0]?.effectiveApr ?? 10;
-
   // For the input field: when SAT is selected currency, it doesn't make sense for "loan amount"
   // (you don't borrow sats — you borrow fiat). So we display USD as the loan unit if user picks SAT.
   const loanInputCurrency = currency === "SAT" ? "USD" : currency;
