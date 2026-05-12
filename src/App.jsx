@@ -995,6 +995,51 @@ function BrandFooter({ extraMeta = null }) {
   );
 }
 
+// Catches React errors instead of showing a blank screen
+class ErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+  static getDerivedStateFromError(error) {
+    return { hasError: true, error };
+  }
+  componentDidCatch(error, info) {
+    console.error("React error:", error, info);
+  }
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div style={{
+          padding: "2rem",
+          fontFamily: "monospace",
+          color: "#fca5a5",
+          background: "#0a0a0b",
+          minHeight: "100vh",
+        }}>
+          <h2 style={{ color: "#fff" }}>Something went wrong loading the page.</h2>
+          <pre style={{
+            background: "#141417",
+            padding: "1rem",
+            borderRadius: "0.5rem",
+            overflow: "auto",
+            fontSize: "0.75rem",
+            marginTop: "1rem",
+          }}>
+            {this.state.error?.toString() || "Unknown error"}
+            {"\n\n"}
+            {this.state.error?.stack || ""}
+          </pre>
+          <p style={{ marginTop: "1rem" }}>
+            Try <a href="#" style={{ color: "#f7931a" }}>going to the calculator</a>, or open browser console for more.
+          </p>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
 export default function Router() {
   const [route, setRoute] = useState(typeof window !== "undefined" ? window.location.hash : "");
 
@@ -1004,9 +1049,9 @@ export default function Router() {
     return () => window.removeEventListener("hashchange", onHashChange);
   }, []);
 
-  if (route === "#about") return <AboutPage />;
-  if (route === "#strategy") return <StrategyPage />;
-  return <Calculator />;
+  if (route === "#about") return <ErrorBoundary><AboutPage /></ErrorBoundary>;
+  if (route === "#strategy") return <ErrorBoundary><StrategyPage /></ErrorBoundary>;
+  return <ErrorBoundary><Calculator /></ErrorBoundary>;
 }
 
 function Calculator() {
