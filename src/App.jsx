@@ -1796,7 +1796,7 @@ function AboutPage() {
         <p className="about-meta">
           Built with care, deployed on Cloudflare Pages, mirrored on Tor (when StartOS mirror goes live).<br />
           Live BTC price via <a href="https://mempool.space" target="_blank" rel="noopener noreferrer">mempool.space</a> — itself a free public good worth supporting.<br /><br />
-          Questions, feedback, corrections: get in touch via the channels listed in the footer.
+          Found something out of date or wrong? <a href="mailto:feedback@stackandborrow.com">feedback@stackandborrow.com</a>
         </p>
 
         <div style={{ marginTop: "2rem" }}>
