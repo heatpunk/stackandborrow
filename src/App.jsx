@@ -1,5 +1,6 @@
 import React, { useState, useMemo, useEffect, useCallback } from "react";
 import { LineChart, Line, XAxis, YAxis, ResponsiveContainer, Tooltip, ReferenceLine } from "recharts";
+import StrategyPage from "./StrategyPage.jsx";
 
 // ============================================================
 // CONFIG
@@ -322,6 +323,34 @@ const STYLES = `
   .text-emerald { color: #6ee7b7; }
   .text-red { color: #fca5a5; }
 
+  .headline-cta {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-top: 1rem; padding: 0.75rem 1rem;
+    border-radius: 0.625rem;
+    background: rgba(247, 147, 26, 0.06);
+    border: 1px solid rgba(247, 147, 26, 0.2);
+    color: rgba(255, 255, 255, 0.85);
+    text-decoration: none;
+    font-size: 0.8125rem;
+    transition: all 200ms;
+  }
+  .headline-cta strong {
+    color: #f7931a;
+    font-weight: 600;
+  }
+  .headline-cta:hover {
+    background: rgba(247, 147, 26, 0.12);
+    border-color: rgba(247, 147, 26, 0.4);
+  }
+  .headline-cta-arrow {
+    color: #f7931a;
+    font-size: 1rem;
+    transition: transform 200ms;
+  }
+  .headline-cta:hover .headline-cta-arrow {
+    transform: translateX(3px);
+  }
+
   /* HEADS-UP */
   .headsup {
     border-radius: 0.75rem; border: 1px solid;
@@ -575,6 +604,70 @@ const STYLES = `
   .footer .mono { color: rgba(255,255,255,0.6); }
   .footer-disclaimer { color: rgba(255,255,255,0.35); }
   .footer-tiny { color: rgba(255,255,255,0.3); }
+  .footer-strategy-link {
+    color: #f7931a;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 150ms;
+  }
+  .footer-strategy-link:hover { color: #ffb04a; text-decoration: underline; }
+
+  /* FOURTH DIMENSION CTA */
+  .fourth-dim-cta {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-top: 1rem; padding: 1.25rem 1.25rem;
+    border-radius: 1rem;
+    background: linear-gradient(135deg, rgba(247, 147, 26, 0.12), rgba(247, 147, 26, 0.03));
+    border: 1px solid rgba(247, 147, 26, 0.35);
+    color: inherit;
+    text-decoration: none;
+    transition: all 200ms;
+    gap: 1rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .fourth-dim-cta::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 80% 50%, rgba(247, 147, 26, 0.15), transparent 60%);
+    pointer-events: none;
+  }
+  .fourth-dim-cta:hover {
+    border-color: rgba(247, 147, 26, 0.6);
+    transform: translateY(-1px);
+  }
+  .fourth-dim-content { position: relative; z-index: 1; flex: 1; min-width: 0; }
+  .fourth-dim-eyebrow {
+    font-size: 0.625rem; text-transform: uppercase;
+    letter-spacing: 0.2em; color: rgba(247, 147, 26, 0.8);
+    font-weight: 500; margin-bottom: 0.375rem;
+  }
+  .fourth-dim-title {
+    font-family: 'Fraunces', Georgia, serif;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #fff;
+    letter-spacing: -0.01em;
+    line-height: 1.2;
+    margin-bottom: 0.375rem;
+  }
+  .fourth-dim-sub {
+    font-size: 0.75rem;
+    color: rgba(255,255,255,0.65);
+    line-height: 1.45;
+  }
+  .fourth-dim-arrow {
+    color: #f7931a;
+    font-size: 1.5rem;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+    transition: transform 200ms;
+  }
+  .fourth-dim-cta:hover .fourth-dim-arrow {
+    transform: translateX(4px);
+  }
 
   /* EMPTY */
   .empty {
@@ -764,7 +857,33 @@ export default function Router() {
   }, []);
 
   if (route === "#about") return <AboutPage />;
+  if (route === "#strategy") return <StrategyPageWrapper />;
   return <Calculator />;
+}
+
+// Wrapper that provides live data + lender list + currency context to StrategyPage.
+// Reuses the same hooks as the Calculator so behavior is consistent.
+function StrategyPageWrapper() {
+  const live = useLivePrices();
+  const { lenders } = useLenders();
+  const [currency] = usePersistentState("currency", detectCurrencyFromLocale());
+  const fiatCurrency = currency === "SAT" ? "USD" : currency;
+
+  const fmtFiatOutput = useCallback((usd) => {
+    if (!live.fxToUsd) return fmtFiat(usd, "USD");
+    if (fiatCurrency === "USD") return fmtFiat(usd, "USD");
+    return fmtFiat(usd / live.fxToUsd[fiatCurrency], fiatCurrency);
+  }, [fiatCurrency, live.fxToUsd]);
+
+  return (
+    <StrategyPage
+      btcSpotUsd={live.btcUsd}
+      lenders={lenders}
+      fiatCurrency={fiatCurrency}
+      fxToUsd={live.fxToUsd}
+      fmtFiatOutput={fmtFiatOutput}
+    />
+  );
 }
 
 function Calculator() {
@@ -1097,6 +1216,10 @@ function Calculator() {
               </div>
             </div>
           </div>
+          <a href="#strategy" className="headline-cta">
+            <span>What if you <strong>stack and borrow</strong> over time?</span>
+            <span className="headline-cta-arrow">→</span>
+          </a>
         </div>
 
         {/* HEADS-UPS */}
@@ -1286,6 +1409,16 @@ function Calculator() {
           </div>
         )}
 
+        {/* FOURTH DIMENSION CTA */}
+        <a href="#strategy" className="fourth-dim-cta anim-in" style={{ animationDelay: "480ms" }}>
+          <div className="fourth-dim-content">
+            <div className="fourth-dim-eyebrow">The full picture</div>
+            <div className="fourth-dim-title">Play with the fourth dimension</div>
+            <div className="fourth-dim-sub">A single loan is just a snapshot. Watch what happens when you keep borrowing — and stacking — over years.</div>
+          </div>
+          <div className="fourth-dim-arrow">→</div>
+        </a>
+
         {/* FOOTER */}
         <div className="footer">
           <div className="footer-row">
@@ -1299,7 +1432,8 @@ function Calculator() {
           <div className="footer-tiny" style={{ marginTop: "0.5rem" }}>
             Not financial advice. Liquidation calc assumes 80% trigger LTV (varies by lender).
           </div>
-          <div style={{ marginTop: "0.75rem" }}>
+          <div style={{ marginTop: "0.75rem", display: "flex", gap: "1.25rem", justifyContent: "center" }}>
+            <a href="#strategy" className="footer-strategy-link">How to stack and borrow →</a>
             <a href="#about" style={{ color: "rgba(255,255,255,0.5)", textDecoration: "underline", textUnderlineOffset: "2px" }}>About this site</a>
           </div>
         </div>
@@ -1806,3 +1940,4 @@ function AboutPage() {
     </div>
   );
 }
+
