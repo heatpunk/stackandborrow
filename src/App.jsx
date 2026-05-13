@@ -19,6 +19,8 @@ import {
 import CalculatorPage from './pages/Calculator.jsx';
 import LendersPage   from './pages/Lenders.jsx';
 import AboutPage     from './pages/About.jsx';
+import LandingPage   from './pages/Landing.jsx';
+import { VoidState404 } from './pages/Void.jsx';
 import { SB } from './system/tokens.js';
 
 // Loads our two webfonts once at the document level.
@@ -75,7 +77,7 @@ class ErrorBoundary extends React.Component {
           {this.state.error?.stack || ''}
         </pre>
         <p style={{ marginTop: '1rem', color: 'rgba(255,255,255,0.7)' }}>
-          Try <a href="#" style={{ color: SB.orange }}>going to the calculator</a>,
+          Try <a href="#" style={{ color: SB.orange }}>returning to the overview</a>,
           or open the browser console for details.
         </p>
       </div>
@@ -106,9 +108,32 @@ export default function App() {
     }
   }, [initialCurrency, route]); // re-check on route change
 
+  // Routes:
+  //   ''        / '#'           → Landing (overview)
+  //   '#calculator'             → Calculator
+  //   '#lenders'                → Lenders
+  //   '#about'                  → Terms / About
+  //   anything else             → 404
   let page;
-  if (route === '#about') {
-    page = <AboutPage />;
+  if (route === '' || route === '#') {
+    page = (
+      <LandingPage
+        live={live}
+        lenders={lenders}
+        region={region}
+        initialCurrency={initialCurrency}
+      />
+    );
+  } else if (route === '#calculator') {
+    page = (
+      <CalculatorPage
+        live={live}
+        lenders={lenders}
+        lastUpdated={lastUpdated}
+        region={region}
+        initialCurrency={initialCurrency}
+      />
+    );
   } else if (route === '#lenders') {
     page = (
       <LendersPage
@@ -119,16 +144,10 @@ export default function App() {
         region={region}
       />
     );
+  } else if (route === '#about') {
+    page = <AboutPage />;
   } else {
-    page = (
-      <CalculatorPage
-        live={live}
-        lenders={lenders}
-        lastUpdated={lastUpdated}
-        region={region}
-        initialCurrency={initialCurrency}
-      />
-    );
+    page = <VoidState404 attemptedPath={route} />;
   }
 
   return <ErrorBoundary>{page}</ErrorBoundary>;

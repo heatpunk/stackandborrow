@@ -206,9 +206,9 @@ export function Row({ label, value, sub, valueStyle = {}, labelStyle = {} }) {
         <span>{label}</span>
         <span style={{
           flex: 1, overflow: 'hidden', whiteSpace: 'nowrap',
-          color: SB.inkFaint, letterSpacing: '0.18em',
+          color: SB.inkFaint, letterSpacing: '0.08em',
         }}>
-          ················································································
+          ................................................................................
         </span>
       </div>
       <div style={{ textAlign: 'right', flexShrink: 0 }}>
@@ -344,19 +344,20 @@ export function Button({ children, onClick, href, color = SB.ink, fill = true, f
 
 // ------------------------------------------------------------
 // PageNav — bottom navigation (page numbers as tabs).
-// The Calculator at root is both landing and primary surface;
-// Lenders and Terms are secondary destinations.
+// Four sections in the booklet: Overview (landing), Calculator,
+// Lenders, Terms.
 // ------------------------------------------------------------
-export function PageNav({ active = 'calc' }) {
+export function PageNav({ active = 'landing' }) {
   const pages = [
-    { id: 'calc',    label: 'CALCULATOR', no: 'I',   href: '#' },
-    { id: 'lender',  label: 'LENDERS',    no: 'II',  href: '#lenders' },
-    { id: 'about',   label: 'TERMS',      no: 'III', href: '#about' },
+    { id: 'landing', label: 'OVERVIEW',   no: 'I',   href: '#' },
+    { id: 'calc',    label: 'CALCULATOR', no: 'II',  href: '#calculator' },
+    { id: 'lender',  label: 'LENDERS',    no: 'III', href: '#lenders' },
+    { id: 'about',   label: 'TERMS',      no: 'IV',  href: '#about' },
   ];
   return (
     <div style={{
       display: 'grid',
-      gridTemplateColumns: 'repeat(3, 1fr)',
+      gridTemplateColumns: 'repeat(4, 1fr)',
       borderTop: `1.5px solid ${SB.ink}`,
       borderBottom: `1px solid ${SB.inkLine}`,
       marginTop: 14,
@@ -370,7 +371,7 @@ export function PageNav({ active = 'calc' }) {
             style={{
               padding: '12px 4px 10px',
               textAlign: 'center',
-              borderRight: i < 2 ? `1px dashed ${SB.inkLine}` : 'none',
+              borderRight: i < 3 ? `1px dashed ${SB.inkLine}` : 'none',
               background: isActive ? SB.inkFill : 'transparent',
               color: isActive ? SB.cream : SB.ink,
               textDecoration: 'none',

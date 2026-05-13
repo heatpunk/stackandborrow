@@ -29,6 +29,11 @@ import {
 } from '../system/components.jsx';
 import { usePersistentState } from '../lib/hooks.js';
 import {
+  VoidStateLoading,
+  VoidStateLoanTooSmall,
+  VoidStateNoRegion,
+} from './Void.jsx';
+import {
   computeInterest,
   projectBtcPrice,
   computeLiquidationPrice,
@@ -131,11 +136,46 @@ export default function CalculatorPage({
   // Format helpers bound to current currency
   const fmt = (usd) => fmtMoney(usd, currency, CURRENCY_META, btcSpotUsd);
 
+  // ===== VOID STATES =====
+  // First-paint loading splash: live prices haven't resolved yet.
+  if (live.loading && live.source === 'fallback') {
+    return <VoidStateLoading source="mempool.space" />;
+  }
+  // Loan below the global $1,000 floor — no lender will quote.
+  if (loanUsd > 0 && loanUsd < 1000) {
+    const resetToValid = () => {
+      const targetUsd = 1500;
+      const inCurrency = usdTo(targetUsd, currency, CURRENCY_META, btcSpotUsd);
+      const s = CURRENCY_STEP[currency] || 1000;
+      const clamped = Math.max(
+        CURRENCY_META[currency].minLoan,
+        Math.round(inCurrency / s) * s
+      );
+      setLoanInCurrency(clamped);
+    };
+    return (
+      <VoidStateLoanTooSmall
+        amountLabel={fmt(loanUsd)}
+        minLabel="$1,000"
+        onReturn={resetToValid}
+      />
+    );
+  }
+  // Region not served by any lender (and lender data is loaded).
+  if (lenders.length > 0 && ranked.length === 0 && region !== 'global') {
+    return (
+      <VoidStateNoRegion
+        regionLabel={regionLabelFor(region)}
+        regionCode={region}
+      />
+    );
+  }
+
   return (
     <PaperFrame>
       <BrandHeader
-        currentPage="I"
-        pageOf="III"
+        currentPage="II"
+        pageOf="IV"
         rightSlot={
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 6 }}>
             <LivePriceBadge btcUsd={live.btcUsd} loading={live.loading} error={live.error} onRefresh={live.refresh} />
@@ -160,12 +200,12 @@ export default function CalculatorPage({
         }}>PRINCIPAL · BORROWED</div>
         <div style={{ display: 'flex', alignItems: 'baseline', gap: 4, marginTop: 8 }}>
           {CURRENCY_META[currency].position === 'pre' && (
-            <span style={{ fontFamily: SB.serif, fontSize: 30, fontWeight: 400, color: SB.inkMute }}>
+            <span style={{ fontFamily: SB.serif, fontSize: 32, fontWeight: 400, color: SB.inkMute }}>
               {CURRENCY_META[currency].symbol}
             </span>
           )}
           <span style={{
-            fontFamily: SB.serif, fontSize: 44, fontWeight: 600,
+            fontFamily: SB.serif, fontSize: 46, fontWeight: 600,
             color: SB.ink, letterSpacing: '-0.025em', lineHeight: 1,
             fontVariantNumeric: 'tabular-nums',
           }}>{fmtNum(loanInCurrency)}</span>
@@ -574,3 +614,13 @@ const pickerBtn = {
   color: SB.ink,
   cursor: 'pointer',
 };
+
+// Friendly label for a region code (used in NoRegion void state).
+function regionLabelFor(code) {
+  const map = {
+    us: 'the US', ca: 'Canada', eu: 'the EU', uk: 'the UK',
+    au: 'Australia', jp: 'Japan', ch: 'Switzerland',
+    global: 'your region',
+  };
+  return map[code] || 'your region';
+}

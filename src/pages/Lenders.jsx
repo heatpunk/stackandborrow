@@ -103,8 +103,8 @@ export default function LendersPage({ lenders, lastUpdated, live, currency, regi
   return (
     <PaperFrame>
       <BrandHeader
-        currentPage="II"
-        pageOf="III"
+        currentPage="III"
+        pageOf="IV"
         rightSlot={<LivePriceBadge btcUsd={live.btcUsd} loading={live.loading} error={live.error} onRefresh={live.refresh} />}
       />
 

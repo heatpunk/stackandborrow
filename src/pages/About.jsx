@@ -59,8 +59,8 @@ export default function AboutPage() {
   return (
     <PaperFrame>
       <BrandHeader
-        currentPage="III"
-        pageOf="III"
+        currentPage="IV"
+        pageOf="IV"
         rightSlot={
           <div style={{
             fontFamily: SB.mono, fontSize: 9, letterSpacing: '0.12em',
