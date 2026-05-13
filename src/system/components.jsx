@@ -43,9 +43,8 @@ function Perf({ side }) {
   return (
     <div style={{
       height: 12,
-      margin: '0 -22px',
       background: `
-        radial-gradient(circle at 7px ${isTop ? '12px' : '0px'}, ${SB.stage} 5px, transparent 5.5px) repeat-x,
+        radial-gradient(circle at 7px ${isTop ? '0px' : '12px'}, ${SB.stage} 5px, transparent 5.5px) repeat-x,
         ${SB.cream}
       `,
       backgroundSize: '14px 12px',
