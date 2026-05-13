@@ -236,7 +236,17 @@ const BRAND_STYLES = `
 `;
 
 const STYLES = `
-  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT,WONK@9..144,500,0..100,1;9..144,600,0..100,1;9..144,700,0..100,1&family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap');
+
+  /* Global Fraunces tuning: WONK on, slight SOFT for character */
+  [class*="logo-text"],
+  [class*="brand-h1"],
+  [class*="brand-h2"],
+  [class*="headline-keep"],
+  [class*="headline-amount"],
+  .display {
+    font-variation-settings: "SOFT" 50, "WONK" 1;
+  }
 
   *, *::before, *::after { box-sizing: border-box; }
 
