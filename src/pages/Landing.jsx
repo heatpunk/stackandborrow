@@ -181,7 +181,7 @@ export default function LandingPage({ live, lenders = [], region, initialCurrenc
           maxWidth: 320,
           textWrap: 'pretty',
         }}>
-          Type any amount. We compare nine lenders and show what it costs
+          Type any amount. We compare lenders and show what it costs
           versus selling — net of tax, in sats.
         </div>
 

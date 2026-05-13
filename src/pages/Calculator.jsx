@@ -143,10 +143,21 @@ export default function CalculatorPage({
   }
   // Loan below the global $1,000 floor — no lender will quote.
   if (loanUsd > 0 && loanUsd < 1000) {
+    const resetToValid = () => {
+      const targetUsd = 1500;
+      const inCurrency = usdTo(targetUsd, currency, CURRENCY_META, btcSpotUsd);
+      const s = CURRENCY_STEP[currency] || 1000;
+      const clamped = Math.max(
+        CURRENCY_META[currency].minLoan,
+        Math.round(inCurrency / s) * s
+      );
+      setLoanInCurrency(clamped);
+    };
     return (
       <VoidStateLoanTooSmall
         amountLabel={fmt(loanUsd)}
         minLabel="$1,000"
+        onReturn={resetToValid}
       />
     );
   }
@@ -189,12 +200,12 @@ export default function CalculatorPage({
         }}>PRINCIPAL · BORROWED</div>
         <div style={{ display: 'flex', alignItems: 'baseline', gap: 4, marginTop: 8 }}>
           {CURRENCY_META[currency].position === 'pre' && (
-            <span style={{ fontFamily: SB.serif, fontSize: 30, fontWeight: 400, color: SB.inkMute }}>
+            <span style={{ fontFamily: SB.serif, fontSize: 32, fontWeight: 400, color: SB.inkMute }}>
               {CURRENCY_META[currency].symbol}
             </span>
           )}
           <span style={{
-            fontFamily: SB.serif, fontSize: 44, fontWeight: 600,
+            fontFamily: SB.serif, fontSize: 46, fontWeight: 600,
             color: SB.ink, letterSpacing: '-0.025em', lineHeight: 1,
             fontVariantNumeric: 'tabular-nums',
           }}>{fmtNum(loanInCurrency)}</span>

@@ -48,7 +48,7 @@ export function VoidStateLoanTooSmall({ amountLabel = '—', minLabel = '$1,000'
       <VoidHero
         eyebrow="ERR · 01"
         title={<>Loan too small.<br /><Italic>No lender will take you.</Italic></>}
-        body={`The lowest minimum across all nine lenders is ${minLabel}. Below that, the math stops being worth it — origination fees would dwarf the loan.`}
+        body={`The lowest minimum across the lenders we cover is ${minLabel}. Below that, the math stops being worth it — origination fees would dwarf the loan.`}
       />
 
       <VoidStampBig line1="LOAN" line2="VOID" line3={`★ < ${minLabel} ★`} color={SB.rust} />
@@ -70,8 +70,8 @@ export function VoidStateLoanTooSmall({ amountLabel = '—', minLabel = '$1,000'
       ]} />
 
       <div style={{ marginTop: 16 }}>
-        <Button href={onReturn ? undefined : '#calculator'} onClick={onReturn}>
-          RETURN TO CALCULATOR
+        <Button onClick={onReturn} href={onReturn ? undefined : '#calculator'}>
+          {onReturn ? 'RESET AMOUNT & CONTINUE' : 'RETURN TO CALCULATOR'}
         </Button>
       </div>
 

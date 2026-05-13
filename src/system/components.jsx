@@ -206,9 +206,9 @@ export function Row({ label, value, sub, valueStyle = {}, labelStyle = {} }) {
         <span>{label}</span>
         <span style={{
           flex: 1, overflow: 'hidden', whiteSpace: 'nowrap',
-          color: SB.inkFaint, letterSpacing: '0.18em',
+          color: SB.inkFaint, letterSpacing: '0.08em',
         }}>
-          ················································································
+          ................................................................................
         </span>
       </div>
       <div style={{ textAlign: 'right', flexShrink: 0 }}>
