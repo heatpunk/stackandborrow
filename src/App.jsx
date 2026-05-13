@@ -123,13 +123,15 @@ const BRAND_STYLES = `
     padding: 1.25rem 1rem 0;
     display: flex;
     align-items: center;
+    justify-content: space-between;
     gap: 0.625rem;
   }
   .brand-header-strategy { max-width: 44rem; }
+  .brand-header-right { flex-shrink: 0; }
   .brand-logo-svg { flex-shrink: 0; }
   .brand-logo-text {
     font-family: 'Fraunces', Georgia, serif;
-    font-size: 1.5rem;
+    font-size: 1.25rem;
     font-weight: 600;
     color: #fff;
     letter-spacing: -0.015em;
@@ -198,7 +200,7 @@ const BRAND_STYLES = `
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    justify-content: flex-end;
+    justify-content: center;
     margin-top: 0.5rem;
     font-size: 0.6875rem;
     color: rgba(255,255,255,0.5);
@@ -306,6 +308,15 @@ const STYLES = `
   .input-row { width: 100%; }
   .input-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 0.5rem; }
   .input-label { font-size: 0.875rem; color: rgba(255,255,255,0.8); }
+  .input-label-large {
+    font-family: 'Fraunces', Georgia, serif;
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #fff;
+    letter-spacing: -0.005em;
+    display: block;
+    margin-bottom: 0.5rem;
+  }
   .input-meta { font-family: 'Geist Mono', monospace; font-size: 0.6875rem; color: rgba(255,255,255,0.55); }
   .input-value-orange { font-family: 'Geist Mono', monospace; font-size: 1rem; color: #f7931a; font-weight: 600; font-variant-numeric: tabular-nums; }
 
@@ -446,22 +457,22 @@ const STYLES = `
 
   .headline-cta {
     display: flex; align-items: center; justify-content: center;
-    margin-top: 1rem; padding: 0.75rem 1rem;
-    border-radius: 0.625rem;
+    margin-top: 1rem; padding: 1.125rem 1.25rem;
+    border-radius: 0.75rem;
     background: rgba(110, 231, 183, 0.08);
-    border: 1px solid rgba(110, 231, 183, 0.35);
+    border: 1px solid rgba(110, 231, 183, 0.4);
     color: #6ee7b7;
     text-decoration: none;
-    font-size: 0.875rem;
     text-align: center;
     transition: all 200ms;
     font-family: 'Fraunces', Georgia, serif;
-    font-weight: 500;
-    font-style: italic;
+    font-size: 1.0625rem;
+    font-weight: 600;
+    letter-spacing: -0.005em;
   }
   .headline-cta:hover {
     background: rgba(110, 231, 183, 0.14);
-    border-color: rgba(110, 231, 183, 0.55);
+    border-color: rgba(110, 231, 183, 0.6);
   }
 
   /* HEADS-UP */
@@ -573,6 +584,39 @@ const STYLES = `
 
   /* CHART */
   .chart-wrap { height: 14rem; }
+
+  /* Net worth chart with year-marker overlay */
+  .nw-chart-wrap {
+    position: relative;
+  }
+  .nw-markers {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+    padding: 0 0.5rem;
+  }
+  .nw-marker { text-align: center; }
+  .nw-marker-year {
+    font-family: 'Geist Mono', monospace;
+    font-size: 0.5625rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: rgba(255,255,255,0.35);
+    margin-bottom: 0.25rem;
+  }
+  .nw-marker-value {
+    font-family: 'Geist Mono', monospace;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.015em;
+    line-height: 1.1;
+  }
+  /* Gradient dampening: Y2 dimmest, Y20 brightest green */
+  .nw-marker-0 .nw-marker-value { font-size: 0.75rem;   color: rgba(110, 231, 183, 0.45); }
+  .nw-marker-1 .nw-marker-value { font-size: 0.875rem;  color: rgba(110, 231, 183, 0.65); }
+  .nw-marker-2 .nw-marker-value { font-size: 1.0625rem; color: rgba(110, 231, 183, 0.85); }
+  .nw-marker-3 .nw-marker-value { font-size: 1.25rem;   color: #6ee7b7; }
   .chart-legend { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 0.5rem; font-size: 0.625rem; }
   .legend-item { display: flex; align-items: center; gap: 0.375rem; color: rgba(255,255,255,0.7); }
   .legend-line { width: 12px; height: 2px; border-radius: 1px; }
@@ -635,15 +679,15 @@ const STYLES = `
   .picker-wrap { position: relative; }
   .picker-button {
     display: flex; align-items: center; gap: 0.375rem;
-    padding: 0.5rem 0.75rem;
-    border-radius: 0.75rem;
-    background: #141417;
-    border: 1px solid rgba(255,255,255,0.15);
-    font-size: 0.75rem; cursor: pointer;
-    transition: border-color 150ms;
-    color: #fff; font-family: inherit;
+    padding: 0.375rem 0.5rem;
+    border-radius: 0.375rem;
+    background: transparent;
+    border: none;
+    font-size: 0.8125rem; cursor: pointer;
+    transition: color 150ms;
+    color: rgba(255,255,255,0.85); font-family: inherit;
   }
-  .picker-button:hover { border-color: rgba(247, 147, 26, 0.5); }
+  .picker-button:hover { color: #f7931a; }
   .picker-currency { font-family: 'Geist Mono', monospace; font-weight: 600; letter-spacing: 0.02em; }
   .picker-caret { color: rgba(255,255,255,0.5); font-size: 0.625rem; }
   .picker-menu {
@@ -964,7 +1008,8 @@ function BrandLogo() {
 }
 
 // Shared brand header — appears on every page. Logo links back to calculator.
-function BrandHeader({ wide = false }) {
+// On Calculator, accepts a rightSlot (currency picker).
+function BrandHeader({ wide = false, rightSlot = null }) {
   return (
     <div className={`brand-header ${wide ? "brand-header-strategy" : ""}`}>
       <a href="#" className="brand-logo-link">
@@ -974,18 +1019,18 @@ function BrandHeader({ wide = false }) {
           <div className="brand-logo-tagline">Keep your sats.</div>
         </div>
       </a>
+      {rightSlot && <div className="brand-header-right">{rightSlot}</div>}
     </div>
   );
 }
 
 // Shared footer used on all pages. Same links, same alignment.
-function BrandFooter({ extraMeta = null }) {
+function BrandFooter({ extraMeta = null, currentPage = "calculator" }) {
   return (
     <div className="brand-footer">
       <div className="brand-footer-links">
-        <a href="#">Calculator</a>
-        <a href="#strategy">Strategy</a>
-        <a href="#about">About</a>
+        {currentPage !== "calculator" && <a href="#">Calculator</a>}
+        {currentPage !== "about" && <a href="#about">About</a>}
       </div>
       {extraMeta && <div className="brand-footer-meta">{extraMeta}</div>}
       <div className="brand-footer-disclaimer">
@@ -1050,7 +1095,6 @@ export default function Router() {
   }, []);
 
   if (route === "#about") return <ErrorBoundary><AboutPage /></ErrorBoundary>;
-  if (route === "#strategy") return <ErrorBoundary><StrategyPage /></ErrorBoundary>;
   return <ErrorBoundary><Calculator /></ErrorBoundary>;
 }
 
@@ -1211,32 +1255,43 @@ function Calculator() {
   // Show net position over time for each PROFILE'S BASE CASE (so chart is comparing the
   // central forecasts of each thinker, not their bull/bear extremes — that would be noisy).
   // The ACTIVE selection (profile + case) shows as the bold line.
+  // 20-year net worth simulation.
+  // Each year the user extracts `loanUsd` from a new refinanced loan.
+  // - Initial collateral = loan / (LTV/100), so for LTV=50%, that's 2× the loan.
+  // - Stack grows by chosen profile CAGR with a 4-yr wobble (realistic, not smooth).
+  // - Debt compounds: year N's new loan refinances year N-1's debt + interest, plus the new draw.
+  // - Net worth = stack value − outstanding debt. Only this line is plotted.
+  const HORIZON_YEARS = 20;
   const chartData = useMemo(() => {
     const points = [];
-    for (let m = 0; m <= termMonths; m++) {
-      const yrs = m / 12;
-      const point = { month: m };
-      if (halMode) {
-        // In Hal mode, only one projection line: Hal's CAGR
-        const price = projectBtcPrice(BTC_SPOT_USD, halCagr, yrs);
-        const owedAtM = m === 0 ? loanUsd : loanUsd + computeInterest(loanUsd, aprPct, m);
-        point.hal = collateralBtcNeeded * price - owedAtM;
-      } else {
-        Object.entries(profiles).forEach(([key, p]) => {
-          // For non-active profiles, use base case. For active profile, use the selected case.
-          const cagrToUse = key === activeProfile ? p.cases[activeCase] : p.cases.base;
-          const price = projectBtcPrice(BTC_SPOT_USD, cagrToUse, yrs);
-          const owedAtM = m === 0 ? loanUsd : loanUsd + computeInterest(loanUsd, aprPct, m);
-          point[key] = collateralBtcNeeded * price - owedAtM;
-        });
-      }
-      // Sell path uses active CAGR
-      const sellPrice = projectBtcPrice(BTC_SPOT_USD, activeCagr, yrs);
-      point.sell = collateralBtcRemainingAfterSell * sellPrice;
-      points.push(point);
+    const cagrToUse = halMode ? halCagr : activeCagr;
+    const priceCurve = generatePriceCurve(BTC_SPOT_USD, cagrToUse, HORIZON_YEARS);
+    let outstandingDebt = 0;
+
+    for (let y = 0; y <= HORIZON_YEARS; y++) {
+      const priceUsd = priceCurve[y];
+      // Annual refinance: previous debt + new draw, plus interest
+      const newLoan = y === 0 ? loanUsd : loanUsd + outstandingDebt;
+      const interest = newLoan * (aprPct / 100);
+      outstandingDebt = newLoan + interest;
+      // Stack value = initial collateral in BTC × current price
+      const stackValueUsd = collateralBtcNeeded * priceUsd;
+      points.push({
+        year: y,
+        netWorth: stackValueUsd - outstandingDebt,
+      });
     }
     return points;
-  }, [profiles, termMonths, collateralBtcNeeded, loanUsd, aprPct, activeProfile, activeCase, activeCagr, BTC_SPOT_USD, collateralBtcRemainingAfterSell, halMode, halCagr]);
+  }, [BTC_SPOT_USD, activeCagr, halCagr, halMode, loanUsd, aprPct, collateralBtcNeeded]);
+
+  // Net worth values at marker years — used as overlay labels on the chart
+  const chartMarkers = useMemo(() => {
+    const years = [2, 5, 10, 20];
+    return years.map(y => ({
+      year: y,
+      value: chartData[y]?.netWorth ?? 0,
+    }));
+  }, [chartData]);
 
   // ===== LENDERS =====
   // For the input field: when SAT is selected currency, it doesn't make sense for "loan amount"
@@ -1262,37 +1317,27 @@ function Calculator() {
     <div className="bcalc">
       <style>{STYLES}</style>
       <style>{BRAND_STYLES}</style>
-      <BrandHeader />
+      <BrandHeader rightSlot={<CurrencyPicker currency={currency} setCurrency={setCurrency} />} />
       <div className="bcalc-wrap">
-        {/* CURRENCY PICKER with discreet live price */}
-        <div className="anim-in" style={{ animationDelay: "30ms", marginBottom: "1.5rem" }}>
-          <div style={{ display: "flex", justifyContent: "flex-end" }}>
-            <CurrencyPicker currency={currency} setCurrency={setCurrency} />
-          </div>
-          <div className="live-price-discreet">
-            <span className={`live-dot ${live.loading ? "loading" : live.error ? "error" : "live"}`} />
-            <span className="live-label">BTC</span>
-            <span className="live-value">{fmtFiat(BTC_SPOT_USD / live.fxToUsd[fiatCurrency], fiatCurrency)}</span>
-            <button className="live-refresh" onClick={live.refresh} title="Refresh">↻</button>
-          </div>
+        {/* Discreet live BTC price, centered under header */}
+        <div className="live-price-discreet anim-in" style={{ animationDelay: "30ms", marginBottom: "1.5rem" }}>
+          <span className={`live-dot ${live.loading ? "loading" : live.error ? "error" : "live"}`} />
+          <span className="live-label">BTC</span>
+          <span className="live-value">{fmtFiat(BTC_SPOT_USD / live.fxToUsd[fiatCurrency], fiatCurrency)}</span>
+          <button className="live-refresh" onClick={live.refresh} title="Refresh">↻</button>
         </div>
 
-        {/* INPUTS */}
-        <div className="card p-5 mb-4 anim-in" style={{ animationDelay: "60ms" }}>
-          <div className="section-label" style={{ marginBottom: "1rem" }}>Your loan</div>
-          <div className="input-stack">
-
-            {/* DESIRED LOAN AMOUNT */}
-            <div className="input-row">
-              <div className="input-header">
-                <label className="input-label">Loan amount</label>
-              </div>
-              <NumInput
-                value={loanInputValue}
-                onChange={onLoanInputChange}
-                suffix={CURRENCY_META[loanInputCurrency].label}
-              />
+        {/* INPUT */}
+        <div className="mb-4 anim-in" style={{ animationDelay: "60ms" }}>
+          <div className="input-row">
+            <div className="input-header">
+              <label className="input-label-large">Extract fiat</label>
             </div>
+            <NumInput
+              value={loanInputValue}
+              onChange={onLoanInputChange}
+              suffix={CURRENCY_META[loanInputCurrency].label}
+            />
           </div>
         </div>
 
@@ -1327,9 +1372,6 @@ function Calculator() {
               </div>
             </div>
           </div>
-          <a href="#strategy" className="headline-cta">
-            <span>What if you stack and borrow over time?</span>
-          </a>
         </div>
 
         {/* PROFILES (or Hal Finney mode) */}
@@ -1376,75 +1418,74 @@ function Calculator() {
               </div>
 
               <div className="profile-blurb">"{profiles[activeProfile].blurb}"</div>
-              <button onClick={() => setEditingProfile(activeProfile)} className="profile-edit-link">
-                Edit {profiles[activeProfile].name}'s assumptions →
-              </button>
+              <div style={{ textAlign: "right" }}>
+                <button onClick={() => setEditingProfile(activeProfile)} className="profile-edit-link">
+                  Edit
+                </button>
+              </div>
             </>
           )}
         </div>
 
-        {/* CHART */}
-        <div className="card p-5 mb-4 anim-in" style={{ animationDelay: "300ms" }}>
-          <div className="section-label" style={{ marginBottom: "0.25rem" }}>Net position over time</div>
-          <div style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.6)", marginBottom: "1rem" }}>
-            Each profile's base case. Active profile/case shown bold.
+        {/* HEADS-UPS — directly below profile selection */}
+        {headsUps.length > 0 && (
+          <div className="stack-2 mb-4 anim-in" style={{ animationDelay: "260ms" }}>
+            {headsUps.map((h, i) => (
+              <div key={i} className={`headsup-compact tone-${h.tone}`}>
+                <span className="headsup-compact-icon">{h.icon}</span>
+                <span className="headsup-compact-text">{h.title}</span>
+              </div>
+            ))}
           </div>
-          <div className="chart-wrap">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={chartData} margin={{ top: 5, right: 5, left: -15, bottom: 0 }}>
-                <XAxis dataKey="month" tick={{ fill: "rgba(255,255,255,0.5)", fontSize: 10, fontFamily: "Geist Mono" }} tickLine={false} axisLine={{ stroke: "rgba(255,255,255,0.1)" }} />
+        )}
+
+        {/* CHART — net worth over 20 years */}
+        <div className="anim-in mb-4" style={{ animationDelay: "300ms" }}>
+          <div className="section-label" style={{ marginBottom: "0.25rem" }}>Net worth over 20 years</div>
+          <div style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.6)", marginBottom: "1rem" }}>
+            If you extract this loan amount every year — refinancing rather than selling.
+          </div>
+          <div className="nw-chart-wrap">
+            <ResponsiveContainer width="100%" height={300}>
+              <LineChart data={chartData} margin={{ top: 30, right: 8, left: -10, bottom: 10 }}>
+                <XAxis
+                  dataKey="year"
+                  tick={{ fill: "rgba(255,255,255,0.4)", fontSize: 10, fontFamily: "Geist Mono" }}
+                  tickLine={false}
+                  axisLine={{ stroke: "rgba(255,255,255,0.08)" }}
+                  ticks={[0, 2, 5, 10, 15, 20]}
+                />
                 <YAxis
-                  tick={{ fill: "rgba(255,255,255,0.5)", fontSize: 10, fontFamily: "Geist Mono" }}
-                  tickLine={false} axisLine={false}
+                  tick={{ fill: "rgba(255,255,255,0.35)", fontSize: 9, fontFamily: "Geist Mono" }}
+                  tickLine={false}
+                  axisLine={false}
                   tickFormatter={(v) => {
                     const conv = v / live.fxToUsd[fiatCurrency];
-                    if (Math.abs(conv) >= 1e6) return `${(conv/1e6).toFixed(1)}M`;
+                    if (Math.abs(conv) >= 1e9) return `${(conv/1e9).toFixed(1)}B`;
+                    if (Math.abs(conv) >= 1e6) return `${(conv/1e6).toFixed(0)}M`;
                     if (Math.abs(conv) >= 1e3) return `${(conv/1e3).toFixed(0)}k`;
                     return Math.round(conv);
                   }}
                 />
-                <Tooltip
-                  contentStyle={{ background: "#0f0f10", border: "1px solid rgba(255,255,255,0.15)", borderRadius: 12, fontFamily: "Geist Mono", fontSize: 11 }}
-                  labelStyle={{ color: "rgba(255,255,255,0.6)" }}
-                  formatter={(v, n) => {
-                    const m = { saylor: "Saylor", wood: "Wood", schiff: "Schiff", hal: "Hal Finney", sell: "If sold" };
-                    return [fmtFiatOutput(v), m[n] || n];
-                  }}
-                  labelFormatter={(m) => `Month ${m}`}
+                <ReferenceLine y={0} stroke="rgba(255,255,255,0.12)" strokeDasharray="2 2" />
+                <Line
+                  type="monotone"
+                  dataKey="netWorth"
+                  stroke="#6ee7b7"
+                  strokeWidth={2.5}
+                  dot={false}
                 />
-                <ReferenceLine y={0} stroke="rgba(255,255,255,0.15)" strokeDasharray="2 2" />
-                {halMode ? (
-                  <Line type="monotone" dataKey="hal" stroke="#f7931a" strokeWidth={2.5} dot={false} />
-                ) : (
-                  Object.entries(profiles).map(([key, p]) => (
-                    <Line key={key} type="monotone" dataKey={key} stroke={p.color}
-                      strokeWidth={key === activeProfile ? 2.5 : 1}
-                      strokeOpacity={key === activeProfile ? 1 : 0.4}
-                      dot={false} />
-                  ))
-                )}
-                <Line type="monotone" dataKey="sell" stroke="rgba(255,255,255,0.6)" strokeWidth={1.5} strokeDasharray="4 3" dot={false} />
               </LineChart>
             </ResponsiveContainer>
           </div>
-          <div className="chart-legend">
-            {halMode ? (
-              <div className="legend-item">
-                <div className="legend-line" style={{ background: "#f7931a" }} />
-                <span>Hal Finney</span>
+          {/* Year markers overlay — net worth at 2/5/10/20 */}
+          <div className="nw-markers">
+            {chartMarkers.map((m, i) => (
+              <div key={m.year} className={`nw-marker nw-marker-${i}`}>
+                <div className="nw-marker-year">Year {m.year}</div>
+                <div className="nw-marker-value">{fmtFiatOutput(m.value)}</div>
               </div>
-            ) : (
-              Object.entries(profiles).map(([key, p]) => (
-                <div key={key} className="legend-item">
-                  <div className="legend-line" style={{ background: p.color }} />
-                  <span>{p.name}</span>
-                </div>
-              ))
-            )}
-            <div className="legend-item">
-              <div className="legend-dashed" />
-              <span>If you sold</span>
-            </div>
+            ))}
           </div>
         </div>
 
@@ -1473,18 +1514,6 @@ function Calculator() {
         </div>
 
         {/* LENDERS */}
-        {/* HEADS-UPS — compact, translucent, above lenders button */}
-        {headsUps.length > 0 && (
-          <div className="stack-2 mb-4 anim-in" style={{ animationDelay: "400ms" }}>
-            {headsUps.map((h, i) => (
-              <div key={i} className={`headsup-compact tone-${h.tone}`}>
-                <span className="headsup-compact-icon">{h.icon}</span>
-                <span className="headsup-compact-text">{h.title}</span>
-              </div>
-            ))}
-          </div>
-        )}
-
         <button onClick={() => setShowLenders(!showLenders)} className="lender-cta anim-in" style={{ animationDelay: "420ms" }}>
           <div className="lender-cta-row">
             <div>
@@ -1515,13 +1544,9 @@ function Calculator() {
           </div>
         )}
 
-        {/* FOURTH DIMENSION CTA */}
-        <a href="#strategy" className="fourth-dim-cta anim-in" style={{ animationDelay: "480ms" }}>
-          <div className="fourth-dim-title">What happens over time?</div>
-        </a>
-
         {/* FOOTER */}
         <BrandFooter
+          currentPage="calculator"
           extraMeta={
             <>
               BTC via <span className="mono">{live.source}</span>
@@ -1952,79 +1977,57 @@ function AboutPage() {
       <div className="about-content">
         <h1 className="brand-h1">About <span className="accent">Stack &amp; Borrow</span></h1>
         <div className="about-subtitle">
-          A calculator built for one question every long-term bitcoiner eventually faces:
+          A calculator for the question every long-term bitcoiner faces eventually:
           should I sell some sats, or borrow against them?
         </div>
 
-        <h2 className="brand-h2">Why this exists</h2>
+        <h2 className="brand-h2">Why this <span className="accent">exists</span></h2>
         <p className="about-p">
-          Most "bitcoin loan calculators" online are one of two things: broken (wrong math, no tax handling, no live prices), or thinly disguised affiliate funnels (rankings tilted toward whoever pays the highest commission). Neither is useful when you're making a real financial decision involving years of stacking.
-        </p>
-        <p className="about-p">
-          Stack & Borrow tries to be the calculator I wished existed when I started looking into this. <strong>Sats are the unit.</strong> The headline number is how many sats you avoid having to sell. Tax is part of the math by default, because in most jurisdictions selling triggers a real cost that borrowing doesn't. Multiple price scenarios — from genuine bull-case views to the comedic permabear — let you stress-test instead of relying on a single forecast.
+          Most bitcoin loan calculators are either broken or affiliate funnels. Stack & Borrow is sats-first, tax-aware, and ranks lenders honestly. That's it.
         </p>
 
         <h2 className="brand-h2">How <span className="accent">rankings</span> work</h2>
         <p className="about-p">
-          Lenders are ranked by <strong>total cost to you</strong> for the loan parameters you set. Effective APR includes the lender's interest rate plus any origination fee, multiplied by your loan term. Lowest cost wins. That's it.
+          Lenders are ranked by total cost to you. Interest rate plus origination fee, multiplied by term. Lowest cost wins.
         </p>
         <p className="about-pull">
-          Affiliate commissions never enter the ranking algorithm. If a lender that pays me nothing offers you the best deal, they win the #1 slot. Period.
+          Affiliate commissions never enter the ranking algorithm. If a lender that pays nothing offers you the best deal, they win.
         </p>
 
         <h2 className="brand-h2">How the site is <span className="accent">funded</span></h2>
         <p className="about-p">
-          Some lender links in the directory are affiliate partnerships. When you click "Visit [Lender]" and end up taking a loan, the lender pays a referral fee. This funds the domain, hosting, and time spent maintaining the data.
-        </p>
-        <p className="about-p">
-          If you'd rather not use an affiliate link, you can always navigate to the lender's site directly. The ranking and the math don't change either way.
+          Some lender links are affiliate partnerships. When you click through and take a loan, the lender pays a referral fee. This funds hosting and maintenance. You can always navigate to a lender directly — the ranking doesn't change either way.
         </p>
 
         <h2 className="brand-h2">What the site does <span className="accent">not</span> do</h2>
         <ul className="about-list">
-          <li><strong>No tracking.</strong> No Google Analytics, no Meta pixel, no third-party advertising scripts. Privacy-respecting analytics may be added (Plausible or self-hosted Umami) — clearly disclosed if so.</li>
-          <li><strong>No signup required.</strong> The calculator works without an account, ever.</li>
-          <li><strong>No data collection.</strong> Your inputs are stored only in your browser's local storage so they persist between visits. They never leave your device.</li>
-          <li><strong>No financial advice.</strong> This is a calculator, not a recommendation. Borrowing against bitcoin involves liquidation risk, custody risk, counterparty risk, and tax complexity that varies by jurisdiction. Talk to a qualified advisor before making decisions involving meaningful money.</li>
+          <li>No tracking, no third-party scripts</li>
+          <li>No signup or account</li>
+          <li>No data leaves your browser</li>
+          <li>No financial advice — this is a calculator</li>
         </ul>
 
         <h2 className="brand-h2">Who should <span className="accent">not</span> use this</h2>
-        <p className="about-p">
-          Borrowing against bitcoin is a tool. Like all tools, it's wrong for many situations. Don't borrow against sats if:
-        </p>
         <ul className="about-list">
-          <li>The loan amount is meaningful relative to your stack and you'd be devastated by liquidation in a 50% drawdown (which has happened 6+ times in BTC's history)</li>
-          <li>You don't fully understand what rehypothecation is and which lenders practice it</li>
-          <li>You're borrowing to speculate on more bitcoin (this is leverage, not strategy)</li>
-          <li>Your job, savings, or emotional well-being depends on the BTC price not falling for the next 12 months</li>
+          <li>Anyone who'd be devastated by a 50% BTC drawdown (which has happened 6+ times)</li>
+          <li>Anyone who doesn't understand rehypothecation and which lenders practice it</li>
+          <li>Anyone borrowing to buy more bitcoin (that's leverage, not strategy)</li>
         </ul>
 
         <h2 className="brand-h2">Lender data <span className="accent">freshness</span></h2>
         <p className="about-p">
-          Rates and terms change. The footer of the calculator shows when lender data was last verified. The goal is quarterly updates at minimum — when a major change happens (a lender shuts down, a new partner launches, regulatory changes), updates happen sooner.
-        </p>
-        <p className="about-p">
-          If you spot something out of date or wrong, please reach out — fixing it benefits everyone.
-        </p>
-
-        <h2 className="brand-h2">Open source & <span className="accent">honest about limits</span></h2>
-        <p className="about-p">
-          The site's source code is public on GitHub. The math is verifiable. The calculations are not magic — they're simple interest calculations and CAGR projections you could do in a spreadsheet. The value is in having them organized, with live BTC prices and lender data, in one place that doesn't waste your time.
-        </p>
-        <p className="about-p">
-          That said: projections are projections. Bitcoin's future price is unknowable. Saylor, Wood, and Schiff are included as conversation pieces, not as oracles. Use the bear/base/bull cases to see how sensitive your decision is to assumptions — that's the real value of running scenarios.
+          Rates change. The calculator footer shows when data was last verified. Goal is quarterly updates — sooner when a lender shuts down or terms shift materially.
         </p>
 
         <hr className="about-divider" />
 
         <p className="about-meta">
-          Built with care, deployed on Cloudflare Pages, mirrored on Tor (when StartOS mirror goes live).<br />
-          Live BTC price via <a href="https://mempool.space" target="_blank" rel="noopener noreferrer">mempool.space</a> — itself a free public good worth supporting.<br /><br />
+          Live BTC price via <a href="https://mempool.space" target="_blank" rel="noopener noreferrer">mempool.space</a>.<br /><br />
           Found something out of date or wrong? <a href="mailto:feedback@stackandborrow.com">feedback@stackandborrow.com</a>
         </p>
       </div>
       <div style={{ maxWidth: "32rem", margin: "0 auto", padding: "0 1.25rem" }}>
-        <BrandFooter />
+        <BrandFooter currentPage="about" />
       </div>
     </div>
   );
@@ -2032,49 +2035,6 @@ function AboutPage() {
 
 
 
-// ============================================================
-// STRATEGY PAGE — focused, single-purpose, intuitive
-// ============================================================
-
-// Maps currency to tax/jurisdiction info used internally (never shown directly)
-function inferJurisdictionFromCurrency(currency) {
-  const map = {
-    USD: { capitalGainsPct: 20, label: "US" },
-    SEK: { capitalGainsPct: 30, label: "SE" },
-    EUR: { capitalGainsPct: 26, label: "EU" },
-    GBP: { capitalGainsPct: 20, label: "UK" },
-    CHF: { capitalGainsPct: 0,  label: "CH" },
-    CAD: { capitalGainsPct: 25, label: "CA" },
-    AUD: { capitalGainsPct: 22, label: "AU" },
-    JPY: { capitalGainsPct: 20, label: "JP" },
-    SAT: { capitalGainsPct: 0,  label: "—" },
-  };
-  return map[currency] || map.USD;
-}
-
-// Picks the best-ranked lender for a given currency/region.
-// Used by strategy to inherit APR and term silently.
-function pickBestLender(lenders, currency, regionLabel) {
-  // Map currency to region used in lender.country arrays
-  const regionMap = {
-    USD: "us", SEK: "eu", EUR: "eu", GBP: "uk",
-    CHF: "ch", CAD: "ca", AUD: "au", JPY: "global", SAT: "global",
-  };
-  const region = regionMap[currency] || "global";
-  const eligible = lenders.filter(l =>
-    l.country.includes(region) || l.country.includes("global")
-  );
-  // Sort by lowest APR in entry tier
-  return eligible.sort((a, b) => {
-    const aRate = a.rateTiers?.[0]?.aprPct ?? 99;
-    const bRate = b.rateTiers?.[0]?.aprPct ?? 99;
-    return aRate - bRate;
-  })[0] || lenders[0];
-}
-
-// Generates a slightly uneven, intuitive-feeling BTC price curve over N years.
-// Real bitcoin price doesn't follow a smooth CAGR — it cycles. We bake in mild
-// 4-year cycles around the long-term CAGR to make the chart feel realistic.
 function generatePriceCurve(spotUsd, cagrPct, years) {
   const points = [];
   for (let y = 0; y <= years; y++) {
@@ -2086,459 +2046,3 @@ function generatePriceCurve(spotUsd, cagrPct, years) {
   return points;
 }
 
-function StrategyPage() {
-  const live = useLivePrices();
-  const { lenders: LENDERS } = useLenders();
-  const BTC_SPOT_USD = live.btcUsd;
-
-  // Inherit currency from calculator. If not set, fall back to locale.
-  const [currency] = usePersistentState("currency", detectCurrencyFromLocale());
-  // Inherit projection profile from calculator
-  const [activeProfile] = usePersistentState("activeProfile", "saylor");
-  const [activeCase] = usePersistentState("activeCase", "base");
-  const [profiles] = usePersistentState("profiles", DEFAULT_PROFILES);
-
-  // The ONLY user input on this page
-  const [annualDrawCurrency, setAnnualDrawCurrency] = usePersistentState(
-    "strat.annualDraw",
-    currency === "SEK" ? 200000 : currency === "EUR" ? 20000 : 25000
-  );
-
-  // Derived: jurisdiction, lender, APR, LTV (all silently inherited)
-  const juri = inferJurisdictionFromCurrency(currency);
-  const lender = pickBestLender(LENDERS, currency, juri.label);
-  const aprPct = lender?.rateTiers?.[0]?.aprPct ?? 10;
-  const LTV_INTERNAL = 50; // fixed 50% — not shown to user
-  const cagrPct = profiles[activeProfile]?.cases[activeCase] ?? 30;
-
-  // Convert annual draw to USD for math
-  const fxToUsd = live.fxToUsd?.[currency] ?? 1;
-  const annualDrawUsd = currency === "SAT"
-    ? (annualDrawCurrency / SATS_PER_BTC) * BTC_SPOT_USD
-    : currency === "USD"
-      ? annualDrawCurrency
-      : annualDrawCurrency * fxToUsd;
-
-  // ============== SIMULATION ==============
-  // Standard buy-borrow-live: each year, take a new loan = previous debt + new draw + origination
-  // Track collateral need vs available. The user starts with "just enough" stack to support this.
-  const sim = useMemo(() => {
-    const HORIZON = 30;
-    const priceCurve = generatePriceCurve(BTC_SPOT_USD, cagrPct, HORIZON);
-    const points = [];
-    let outstandingDebt = 0;
-
-    // Compute initial stack needed at year 0 to support strategy at chosen LTV
-    // Loan size year 1 = annualDrawUsd; collateral needed = annualDrawUsd / (LTV/100)
-    // We need at least that much, plus 50% buffer
-    const initialStackUsd = (annualDrawUsd / (LTV_INTERNAL / 100)) * 1.5;
-    const initialStackSats = (initialStackUsd / BTC_SPOT_USD) * SATS_PER_BTC;
-
-    for (let y = 0; y <= HORIZON; y++) {
-      const priceUsd = priceCurve[y];
-      const newLoan = y === 0 ? 0 : annualDrawUsd + outstandingDebt;
-      const interest = newLoan * (aprPct / 100);
-      outstandingDebt = newLoan + interest;
-
-      const stackValueUsd = (initialStackSats / SATS_PER_BTC) * priceUsd;
-      const netWorthUsd = stackValueUsd - outstandingDebt;
-
-      points.push({
-        year: y,
-        priceUsd,
-        stackValueUsd,
-        outstandingDebt,
-        netWorthUsd,
-      });
-    }
-    return { points, initialStackSats, initialStackUsd };
-  }, [BTC_SPOT_USD, cagrPct, aprPct, annualDrawUsd]);
-
-  // Currency formatting helper for this page
-  const fmtCur = (usdAmount) => {
-    if (currency === "SAT") {
-      return `${fmtSats((usdAmount / BTC_SPOT_USD) * SATS_PER_BTC)} sats`;
-    }
-    if (currency === "USD") return fmtFiat(usdAmount, "USD");
-    const local = usdAmount * fxToUsd;
-    return fmtFiat(local, currency);
-  };
-
-  // Get net worth at specific year markers
-  const markers = [2, 5, 10, 30].map(y => ({
-    year: y,
-    netWorth: sim.points[y]?.netWorthUsd ?? 0,
-    stackValue: sim.points[y]?.stackValueUsd ?? 0,
-  }));
-
-  const purgeAll = () => {
-    if (typeof window !== "undefined") {
-      window.localStorage.removeItem("stackandborrow:strat.annualDraw");
-      window.location.reload();
-    }
-  };
-
-  // Monthly self-paycheck
-  const monthlyDraw = annualDrawCurrency / 12;
-  const monthlyDrawDisplay = currency === "SAT"
-    ? `${fmtSats(Math.round(monthlyDraw))} sats`
-    : fmtFiat(monthlyDraw, currency === "SAT" ? "USD" : currency);
-
-  return (
-    <div className="bcalc">
-      <style>{STYLES}</style>
-      <style>{BRAND_STYLES}</style>
-      <style>{STRAT_STYLES}</style>
-
-      <BrandHeader wide />
-
-      <div className="strat-wrap">
-        {/* HEADLINE */}
-        <header className="strat-intro">
-          <h1 className="brand-h1">
-            Stack <span className="accent">and</span> Borrow
-          </h1>
-          <p className="strat-lede">
-            What if you never sold? Set how much you want each year, watch what happens to the rest.
-          </p>
-        </header>
-
-        {/* THE ONLY INPUT */}
-        <div className="strat-input-card">
-          <label className="strat-input-label">Extract per year</label>
-          <NumInput
-            value={annualDrawCurrency}
-            onChange={(v) => setAnnualDrawCurrency(Math.round(v))}
-            suffix={currency === "SAT" ? "sats" : currency}
-          />
-        </div>
-
-        {/* CHART — uneven curve over 30 years */}
-        <div className="strat-chart">
-          <NetWorthCurve points={sim.points} markers={markers} currency={currency} fmtCur={fmtCur} />
-        </div>
-
-        {/* BIG NUMBERS at year markers */}
-        <div className="strat-markers">
-          {markers.map((m, i) => (
-            <div key={m.year} className={`strat-marker strat-marker-${i}`}>
-              <div className="strat-marker-year">Year {m.year}</div>
-              <div className="strat-marker-value">{fmtCur(m.netWorth)}</div>
-            </div>
-          ))}
-        </div>
-
-        {/* MONTHLY PAYOUTS — compact hint with check */}
-        <details className="strat-hint">
-          <summary>Monthly payouts?</summary>
-          <div className="strat-check">
-            <div className="strat-check-corner-tl">PAY TO THE ORDER OF</div>
-            <div className="strat-check-payee">Yourself</div>
-            <div className="strat-check-amount-line">
-              <span className="strat-check-amount-label">amount</span>
-              <span className="strat-check-amount">{monthlyDrawDisplay}</span>
-            </div>
-            <div className="strat-check-memo">
-              memo: <em>discipline</em>
-            </div>
-          </div>
-          <div className="strat-hint-text">
-            One loan a year. Pay yourself monthly. The only thing between you and a self-paycheck is discipline.
-          </div>
-        </details>
-
-        {/* WHAT COULD GO WRONG — short, witty */}
-        <div className="strat-risk">
-          <h2 className="brand-h2">What could <span className="accent">possibly</span> go wrong?</h2>
-          <ul className="strat-risk-list">
-            <li><strong>Bitcoin drops hard.</strong> Collateral shrinks. You post more or get liquidated.</li>
-            <li><strong>Your lender folds.</strong> Celsius, BlockFi, Genesis — all gone in a year. Pick carefully.</li>
-            <li><strong>Rates climb.</strong> Refinancing gets expensive. Your monthly paycheck shrinks.</li>
-            <li><strong>You spend the lump sum in three months.</strong> The hardest one.</li>
-          </ul>
-        </div>
-
-        {/* GREEN CTA back to calculator */}
-        <a href="#" className="strat-cta-back">Sell vs Borrow</a>
-
-        {/* PURGE */}
-        <div className="strat-purge-row">
-          <button onClick={purgeAll} className="strat-purge">PURGE</button>
-        </div>
-      </div>
-
-      <div style={{ maxWidth: "44rem", margin: "0 auto", padding: "0 1rem" }}>
-        <BrandFooter />
-      </div>
-    </div>
-  );
-}
-
-// Net worth curve — uses simulation points, highlights year markers
-function NetWorthCurve({ points, markers, currency, fmtCur }) {
-  const maxValue = Math.max(...points.map(p => Math.max(p.stackValueUsd, Math.abs(p.netWorthUsd))));
-  const minValue = Math.min(...points.map(p => p.netWorthUsd), 0);
-
-  return (
-    <div className="strat-chart-inner">
-      <ResponsiveContainer width="100%" height={280}>
-        <LineChart data={points} margin={{ top: 20, right: 10, left: -20, bottom: 8 }}>
-          <XAxis
-            dataKey="year"
-            tick={{ fill: "rgba(255,255,255,0.4)", fontSize: 10, fontFamily: "Geist Mono" }}
-            tickLine={false}
-            axisLine={{ stroke: "rgba(255,255,255,0.08)" }}
-            ticks={[0, 2, 5, 10, 20, 30]}
-          />
-          <YAxis
-            tick={{ fill: "rgba(255,255,255,0.4)", fontSize: 9, fontFamily: "Geist Mono" }}
-            tickLine={false}
-            axisLine={false}
-            tickFormatter={(v) => {
-              if (Math.abs(v) >= 1e9) return `${(v/1e9).toFixed(0)}B`;
-              if (Math.abs(v) >= 1e6) return `${(v/1e6).toFixed(0)}M`;
-              if (Math.abs(v) >= 1e3) return `${(v/1e3).toFixed(0)}k`;
-              return v;
-            }}
-          />
-          <ReferenceLine y={0} stroke="rgba(255,255,255,0.1)" strokeDasharray="2 2" />
-          <Line type="monotone" dataKey="stackValueUsd" stroke="#f7931a" strokeWidth={2.5} strokeOpacity={0.5} dot={false} />
-          <Line type="monotone" dataKey="netWorthUsd" stroke="#6ee7b7" strokeWidth={3} dot={false} />
-          <Line type="monotone" dataKey="outstandingDebt" stroke="rgba(252, 165, 165, 0.6)" strokeWidth={1.5} strokeDasharray="4 3" dot={false} />
-        </LineChart>
-      </ResponsiveContainer>
-    </div>
-  );
-}
-
-const STRAT_STYLES = `
-  .strat-wrap {
-    max-width: 28rem;
-    margin: 0 auto;
-    padding: 1.5rem 1rem 4rem;
-  }
-
-  .strat-intro { margin-bottom: 1.75rem; }
-  .strat-intro .brand-h1 { margin-bottom: 0.625rem; }
-  .strat-lede {
-    font-family: 'Fraunces', Georgia, serif;
-    font-size: 1rem;
-    font-style: italic;
-    color: rgba(255,255,255,0.7);
-    line-height: 1.5;
-    margin: 0;
-  }
-
-  .strat-input-card {
-    padding: 1rem 1.125rem;
-    border-radius: 0.875rem;
-    background: #141417;
-    border: 1px solid rgba(255,255,255,0.1);
-    margin-bottom: 1.5rem;
-  }
-  .strat-input-label {
-    display: block;
-    font-size: 0.6875rem;
-    text-transform: uppercase;
-    letter-spacing: 0.15em;
-    color: rgba(255,255,255,0.5);
-    margin-bottom: 0.5rem;
-  }
-
-  .strat-chart {
-    margin-bottom: 1rem;
-  }
-  .strat-chart-inner {
-    padding-top: 0.5rem;
-  }
-
-  .strat-markers {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 0.625rem;
-    margin-bottom: 2.25rem;
-    align-items: end;
-  }
-  .strat-marker {
-    text-align: center;
-  }
-  .strat-marker-year {
-    font-family: 'Geist Mono', monospace;
-    font-size: 0.625rem;
-    color: rgba(255,255,255,0.45);
-    margin-bottom: 0.25rem;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-  }
-  .strat-marker-value {
-    font-family: 'Fraunces', Georgia, serif;
-    font-weight: 600;
-    color: #fff;
-    line-height: 1.05;
-  }
-  /* Make later markers proportionally larger for visual impact */
-  .strat-marker-0 .strat-marker-value { font-size: 0.875rem; }
-  .strat-marker-1 .strat-marker-value { font-size: 1.0625rem; color: #6ee7b7; }
-  .strat-marker-2 .strat-marker-value { font-size: 1.375rem; color: #6ee7b7; }
-  .strat-marker-3 .strat-marker-value { font-size: 1.75rem; color: #6ee7b7; }
-
-  /* Hint disclosure with check */
-  .strat-hint {
-    background: transparent;
-    border: 1px dashed rgba(255,255,255,0.12);
-    border-radius: 0.75rem;
-    padding: 0.75rem 1rem;
-    margin-bottom: 2rem;
-  }
-  .strat-hint summary {
-    cursor: pointer;
-    font-size: 0.8125rem;
-    color: rgba(255,255,255,0.7);
-    list-style: none;
-    user-select: none;
-  }
-  .strat-hint summary::-webkit-details-marker { display: none; }
-  .strat-hint summary::before {
-    content: '＋ ';
-    color: #f7931a;
-    margin-right: 0.25rem;
-  }
-  .strat-hint[open] summary::before {
-    content: '− ';
-  }
-
-  /* Half-realistic check graphic */
-  .strat-check {
-    margin: 1rem 0 0.75rem;
-    padding: 1rem 1.125rem;
-    background: linear-gradient(180deg, #f7f3e8, #ebe5d4);
-    border: 1px solid rgba(0,0,0,0.1);
-    border-radius: 0.375rem;
-    color: #2a2a28;
-    font-family: 'Fraunces', Georgia, serif;
-    position: relative;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.3);
-    transform: rotate(-1.2deg);
-  }
-  .strat-check-corner-tl {
-    font-family: 'Geist Mono', monospace;
-    font-size: 0.5rem;
-    color: rgba(0,0,0,0.5);
-    letter-spacing: 0.12em;
-    margin-bottom: 0.125rem;
-  }
-  .strat-check-payee {
-    font-size: 1.125rem;
-    font-style: italic;
-    border-bottom: 1px solid rgba(0,0,0,0.3);
-    padding-bottom: 0.25rem;
-    margin-bottom: 0.625rem;
-  }
-  .strat-check-amount-line {
-    display: flex;
-    align-items: baseline;
-    gap: 0.75rem;
-    margin-bottom: 0.5rem;
-  }
-  .strat-check-amount-label {
-    font-family: 'Geist Mono', monospace;
-    font-size: 0.5625rem;
-    color: rgba(0,0,0,0.5);
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-  }
-  .strat-check-amount {
-    font-size: 1.5rem;
-    font-weight: 600;
-    color: #1a1a18;
-    font-variant-numeric: tabular-nums;
-  }
-  .strat-check-memo {
-    font-size: 0.6875rem;
-    color: rgba(0,0,0,0.55);
-    font-style: italic;
-  }
-  .strat-check-memo em {
-    color: #c9740d;
-    font-weight: 500;
-    font-style: italic;
-  }
-  .strat-hint-text {
-    font-size: 0.75rem;
-    color: rgba(255,255,255,0.6);
-    line-height: 1.55;
-    font-style: italic;
-    padding: 0 0.25rem;
-  }
-
-  /* Risk section — compact, glimt-i-ögat */
-  .strat-risk {
-    margin: 2rem 0;
-  }
-  .strat-risk .brand-h2 { margin-top: 0; }
-  .strat-risk-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 0.625rem;
-  }
-  .strat-risk-list li {
-    font-size: 0.8125rem;
-    line-height: 1.5;
-    color: rgba(255,255,255,0.7);
-    padding-left: 0.75rem;
-    border-left: 2px solid rgba(247,147,26,0.4);
-  }
-  .strat-risk-list li strong {
-    color: #fff;
-    font-weight: 600;
-  }
-
-  /* Green CTA back to calculator */
-  .strat-cta-back {
-    display: block;
-    margin: 2rem auto 1.5rem;
-    padding: 0.875rem 1.5rem;
-    background: rgba(110, 231, 183, 0.12);
-    border: 1px solid rgba(110, 231, 183, 0.5);
-    color: #6ee7b7;
-    text-align: center;
-    text-decoration: none;
-    border-radius: 0.625rem;
-    font-family: 'Fraunces', Georgia, serif;
-    font-size: 1.0625rem;
-    font-weight: 600;
-    letter-spacing: -0.005em;
-    transition: all 200ms;
-    max-width: 16rem;
-  }
-  .strat-cta-back:hover {
-    background: rgba(110, 231, 183, 0.18);
-    border-color: rgba(110, 231, 183, 0.7);
-  }
-
-  .strat-purge-row {
-    margin-top: 2.5rem;
-    text-align: center;
-  }
-  .strat-purge {
-    background: transparent;
-    border: 1px solid rgba(252, 165, 165, 0.25);
-    color: rgba(252, 165, 165, 0.7);
-    padding: 0.375rem 1rem;
-    border-radius: 0.375rem;
-    font-family: 'Geist Mono', monospace;
-    font-size: 0.6875rem;
-    font-weight: 600;
-    cursor: pointer;
-    letter-spacing: 0.15em;
-    transition: all 150ms;
-  }
-  .strat-purge:hover {
-    background: rgba(252, 165, 165, 0.08);
-    border-color: rgba(252, 165, 165, 0.5);
-    color: rgba(252, 165, 165, 0.95);
-  }
-`;
