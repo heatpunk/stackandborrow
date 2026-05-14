@@ -22,8 +22,8 @@ import { DesktopSpreadFrame } from '../system/desktop.jsx';
 const PRINCIPLES = [
   {
     no: 'I',
-    title: 'Lenders ranked by total cost. Period.',
-    body: 'APR plus origination fee, multiplied by term. Lowest cost wins. Affiliate commissions never enter the ranking algorithm. If a lender that pays nothing offers you the best deal — they win.',
+    title: 'BTC-only first. Then total cost. Period.',
+    body: 'BTC-only lenders rank above multi-collateral, always. Within each tier, lowest total cost wins — with custody-risk and membership fees baked in. Affiliate commissions never enter the algorithm. If a lender that pays us nothing offers you the best deal, they win.',
   },
   {
     no: 'II',
