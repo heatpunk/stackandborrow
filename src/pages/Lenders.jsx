@@ -253,6 +253,14 @@ export default function LendersPage({ lenders, lastUpdated, live, currency, regi
                     fontFamily: SB.mono, fontSize: 9.5,
                     color: SB.inkSoft, marginTop: 2,
                   }}>{fmtMoney(l.totalCost, currency, CURRENCY_META, live.btcUsd)} · 12mo</div>
+                  {l.membershipFeeUsd > 0 && (
+                    <div style={{
+                      fontFamily: SB.mono, fontSize: 9,
+                      color: SB.inkMute, marginTop: 2, letterSpacing: '0.02em',
+                    }}>
+                      incl. {fmtMoney(l.membershipFeeUsd, currency, CURRENCY_META, live.btcUsd)} mbr
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -283,6 +291,9 @@ export default function LendersPage({ lenders, lastUpdated, live, currency, regi
                 )}
                 {l.originationFeePctEffective === 0 && (
                   <span style={flagStyle(SB.forest)}>NO ORIG FEE</span>
+                )}
+                {l.annualMembershipUsd > 0 && (
+                  <span style={flagStyle(SB.orange)}>⚠ MEMBERSHIP REQ</span>
                 )}
                 {l.custodyType === 'multisig' && <span style={flagStyle(SB.forest)}>MULTISIG</span>}
                 {l.btcOnly === true && <span style={flagStyle(SB.forest)}>BTC ONLY</span>}
@@ -523,6 +534,14 @@ function DesktopLendersLayout({
                   <div style={{ fontFamily: SB.mono, fontSize: 10.5, color: SB.inkSoft, marginTop: 2 }}>
                     {fmtMoney(l.totalCost, currency, CURRENCY_META, live.btcUsd)} · 12mo
                   </div>
+                  {l.membershipFeeUsd > 0 && (
+                    <div style={{
+                      fontFamily: SB.mono, fontSize: 10,
+                      color: SB.inkMute, marginTop: 3, letterSpacing: '0.02em',
+                    }}>
+                      incl. {fmtMoney(l.membershipFeeUsd, currency, CURRENCY_META, live.btcUsd)} mbr
+                    </div>
+                  )}
                 </div>
               </div>
               <div style={{
@@ -547,6 +566,9 @@ function DesktopLendersLayout({
                 )}
                 {l.originationFeePctEffective === 0 && (
                   <span style={flagStyle(SB.forest)}>NO ORIG FEE</span>
+                )}
+                {l.annualMembershipUsd > 0 && (
+                  <span style={flagStyle(SB.orange)}>⚠ MEMBERSHIP REQ</span>
                 )}
                 {l.custodyType === 'multisig' && <span style={flagStyle(SB.forest)}>MULTISIG</span>}
                 {l.btcOnly === true && <span style={flagStyle(SB.forest)}>BTC ONLY</span>}
