@@ -158,7 +158,7 @@ export default function LendersPage({ lenders, lastUpdated, live, currency, regi
           lineHeight: 1.05, letterSpacing: '-0.025em', color: SB.ink,
         }}>
           Many lenders.<br />
-          <span style={{ color: SB.orange, fontStyle: 'italic', fontWeight: 500 }}>One ranking metric.</span>
+          <span style={{ color: SB.orange, fontStyle: 'italic', fontWeight: 500 }}>One ranking principle.</span>
         </h1>
         <p style={{
           marginTop: 12, marginBottom: 0,
@@ -400,7 +400,7 @@ function DesktopLendersLayout({
       }}>
         Many lenders.<br />
         <span style={{ color: SB.orange, fontStyle: 'italic', fontWeight: 500 }}>
-          One ranking metric.
+          One ranking principle.
         </span>
       </h1>
       <p style={{
