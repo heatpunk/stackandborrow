@@ -129,5 +129,12 @@ export function rankLenders(allLenders, { loanUsd, region, ltvPct, termMonths, e
         isTiered: (l.rateTiers || []).length > 1,
       };
     })
-    .sort((a, b) => a.adjustedTotalCost - b.adjustedTotalCost);
+    .sort((a, b) => {
+      // Hard tier: BTC-only lenders always rank above multi-collateral.
+      const aBtc = a.btcOnly === true;
+      const bBtc = b.btcOnly === true;
+      if (aBtc !== bBtc) return aBtc ? -1 : 1;
+      // Within tier: adjusted cost (custody-risk weighted).
+      return a.adjustedTotalCost - b.adjustedTotalCost;
+    });
 }
