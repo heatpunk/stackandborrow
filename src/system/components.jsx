@@ -6,6 +6,7 @@
 
 import React from 'react';
 import { SB } from './tokens.js';
+import { useTheme } from './theme.jsx';
 
 // ------------------------------------------------------------
 // BitcoinLogo — public-domain Wikipedia mark.
@@ -22,15 +23,16 @@ export function BitcoinLogo({ size = 32, color = SB.orange }) {
 // ------------------------------------------------------------
 // PaperFrame — the cream "page" with perforated top/bottom edges,
 // subtle horizontal grain, drop shadow against the stage.
-// Wraps every routable page.
+// Wraps every routable page. All visual values resolve to CSS
+// variables so dark themes (carbon / midnight) flip automatically.
 // ------------------------------------------------------------
-export function PaperFrame({ children }) {
+export function PaperFrame({ children, maxWidth = 440, sidePad = 12, innerPad = '0 22px' }) {
   return (
-    <div style={paperStyles.stage}>
+    <div style={{ ...paperStyles.stage, padding: `0 ${sidePad}px` }}>
       <div style={paperStyles.slot} />
-      <div style={paperStyles.paper}>
+      <div style={{ ...paperStyles.paper, maxWidth }}>
         <Perf side="top" />
-        <div style={{ padding: '0 22px' }}>{children}</div>
+        <div style={{ padding: innerPad }}>{children}</div>
         <Perf side="bottom" />
       </div>
       <div style={{ height: 10 }} />
@@ -56,7 +58,6 @@ const paperStyles = {
   stage: {
     minHeight: '100vh',
     background: SB.stage,
-    padding: '0 12px',
     position: 'relative',
   },
   slot: {
@@ -66,40 +67,41 @@ const paperStyles = {
     boxShadow: 'inset 0 -6px 10px rgba(0,0,0,0.55)',
   },
   paper: {
-    maxWidth: 440,
     margin: '0 auto',
     background: SB.cream,
     color: SB.ink,
     position: 'relative',
-    boxShadow: '0 30px 80px rgba(0,0,0,0.55), 0 4px 18px rgba(0,0,0,0.35)',
+    boxShadow: SB.paperShadow,
     backgroundImage: `repeating-linear-gradient(
       0deg,
       transparent 0,
       transparent 3px,
-      rgba(0,0,0,0.012) 3px,
-      rgba(0,0,0,0.012) 4px
+      ${SB.grain} 3px,
+      ${SB.grain} 4px
     )`,
   },
 };
 
 // ------------------------------------------------------------
 // BrandHeader — appears on every page. Logo + wordmark; optional
-// right slot for live BTC price, currency picker, etc.
+// right slot for live BTC price, currency picker, etc. `size="desktop"`
+// scales for the open-spread layout.
 // ------------------------------------------------------------
-export function BrandHeader({ rightSlot = null, currentPage = null, pageOf = null }) {
+export function BrandHeader({ rightSlot = null, currentPage = null, pageOf = null, size = 'mobile' }) {
+  const big = size === 'desktop';
   return (
     <div>
       <div style={{
-        display: 'flex', alignItems: 'center', gap: 12,
-        padding: '18px 0 12px',
+        display: 'flex', alignItems: 'center', gap: big ? 16 : 12,
+        padding: big ? '24px 0 16px' : '18px 0 12px',
         borderBottom: `1.5px solid ${SB.ink}`,
       }}>
-        <a href="#" style={{ display: 'flex', alignItems: 'center', gap: 12, color: 'inherit', textDecoration: 'none', flex: 1, minWidth: 0 }}>
-          <BitcoinLogo size={32} />
+        <a href="#" style={{ display: 'flex', alignItems: 'center', gap: big ? 16 : 12, color: 'inherit', textDecoration: 'none', flex: 1, minWidth: 0 }}>
+          <BitcoinLogo size={big ? 42 : 32} />
           <div style={{ minWidth: 0 }}>
             <div style={{
               fontFamily: SB.serif,
-              fontSize: 22, fontWeight: 600,
+              fontSize: big ? 30 : 22, fontWeight: 600,
               letterSpacing: '-0.005em',
               lineHeight: 1, color: SB.ink,
             }}>
@@ -107,9 +109,9 @@ export function BrandHeader({ rightSlot = null, currentPage = null, pageOf = nul
             </div>
             <div style={{
               fontFamily: SB.mono,
-              fontSize: 8.5, letterSpacing: '0.2em',
+              fontSize: big ? 10 : 8.5, letterSpacing: '0.2em',
               color: SB.inkMute,
-              marginTop: 5, fontWeight: 600,
+              marginTop: big ? 6 : 5, fontWeight: 600,
             }}>
               BITCOIN-BACKED LOAN · BOOKLET
             </div>
@@ -121,9 +123,9 @@ export function BrandHeader({ rightSlot = null, currentPage = null, pageOf = nul
       <div style={{
         display: 'flex', justifyContent: 'space-between', alignItems: 'center',
         fontFamily: SB.mono,
-        fontSize: 9, letterSpacing: '0.18em',
+        fontSize: big ? 10 : 9, letterSpacing: '0.18em',
         color: SB.inkMute,
-        padding: '8px 0 12px',
+        padding: big ? '10px 0 14px' : '8px 0 12px',
         fontWeight: 500,
       }}>
         <span>EST · {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: '2-digit' }).toUpperCase()}</span>
@@ -133,6 +135,109 @@ export function BrandHeader({ rightSlot = null, currentPage = null, pageOf = nul
           <span>NO. 000.50K</span>
         )}
       </div>
+    </div>
+  );
+}
+
+// ------------------------------------------------------------
+// SunMoonStamp — corner toggle for light <-> dark. Cmd-click /
+// right-click resets to "Match system" (preference = 'auto').
+// ------------------------------------------------------------
+export function SunMoonStamp({ size = 76, rotate = 8, style = {} }) {
+  const { theme, toggle, setPreference, preference } = useTheme();
+  const isDark = theme !== 'light';
+  const onClick = (e) => {
+    if (e.metaKey || e.ctrlKey || e.altKey) {
+      setPreference('auto');
+      return;
+    }
+    toggle();
+  };
+  const onContextMenu = (e) => { e.preventDefault(); setPreference('auto'); };
+
+  // Read CSS vars at render so the stamp's stroke matches the active theme.
+  const fg = isDark ? SB.orange : SB.ink;
+  const ringId = `sb-sm-ring-${size}`;
+
+  const title = preference === 'auto'
+    ? `Theme: auto (${theme}) — click to override`
+    : `Theme: ${theme} — click to flip, ⌘-click to match system`;
+
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      onContextMenu={onContextMenu}
+      aria-label={title}
+      title={title}
+      style={{
+        width: size, height: size,
+        borderRadius: '50%',
+        border: `2px solid ${fg}`,
+        background: isDark ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.02)',
+        padding: 0,
+        cursor: 'pointer',
+        transform: `rotate(${rotate}deg)`,
+        opacity: 0.92,
+        position: 'relative',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        ...style,
+      }}
+    >
+      <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{ position: 'absolute', inset: 0 }} aria-hidden="true">
+        <defs>
+          <path id={ringId} d={`M ${size/2}, ${size/2} m -${size/2 - 9}, 0 a ${size/2 - 9},${size/2 - 9} 0 1,1 ${size - 18},0 a ${size/2 - 9},${size/2 - 9} 0 1,1 -${size - 18},0`} />
+        </defs>
+        <text fill={fg} style={{ fontFamily: SB.mono, fontWeight: 700, letterSpacing: '0.22em' }} fontSize={size * 0.11}>
+          <textPath href={`#${ringId}`} startOffset="0">
+            {isDark ? '★ DARK · NIGHT MODE · TAP TO SWITCH ' : '★ LIGHT · DAY MODE · TAP TO SWITCH '}
+          </textPath>
+        </text>
+      </svg>
+      <div style={{
+        width: size * 0.46, height: size * 0.46,
+        borderRadius: '50%',
+        border: `1.5px solid ${fg}`,
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        position: 'relative',
+      }}>
+        {isDark ? (
+          <svg width={size * 0.3} height={size * 0.3} viewBox="0 0 30 30" aria-hidden="true">
+            <path d="M 22 6 A 11 11 0 1 0 22 24 A 9 9 0 0 1 22 6 Z" fill={fg} />
+          </svg>
+        ) : (
+          <svg width={size * 0.34} height={size * 0.34} viewBox="0 0 34 34" aria-hidden="true">
+            <circle cx="17" cy="17" r="5.5" fill={fg} />
+            {[0,45,90,135,180,225,270,315].map((deg) => (
+              <line key={deg}
+                x1={17 + Math.cos(deg * Math.PI/180) * 9}
+                y1={17 + Math.sin(deg * Math.PI/180) * 9}
+                x2={17 + Math.cos(deg * Math.PI/180) * 13}
+                y2={17 + Math.sin(deg * Math.PI/180) * 13}
+                stroke={fg} strokeWidth="1.5" strokeLinecap="round" />
+            ))}
+          </svg>
+        )}
+      </div>
+    </button>
+  );
+}
+
+// ------------------------------------------------------------
+// MobileThemeToggleCorner — fixed-position sun/moon stamp shown
+// only on mobile. Desktop pages place a larger SunMoonStamp inside
+// the open-spread shell, so we suppress this there.
+// ------------------------------------------------------------
+export function MobileThemeToggleCorner() {
+  const { isDesktop } = useTheme();
+  if (isDesktop) return null;
+  return (
+    <div style={{
+      position: 'fixed',
+      top: 14, right: 14,
+      zIndex: 50,
+    }}>
+      <SunMoonStamp size={56} rotate={0} />
     </div>
   );
 }
