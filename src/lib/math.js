@@ -59,7 +59,21 @@ export function resolveTier(lender, loanUsd) {
   };
 }
 
-// Rank lenders for a given loan + region. Total cost = interest + origination.
+// Custody risk premium (pp APR). Additive across three independent axes:
+// custodyType base + rehypothecation surcharge + multi-collateral surcharge.
+// Baseline (0pp) = multisig + no rehyp + BTC-only. Reflects counterparty risk
+// that isn't priced into the nominal APR. See methodology in Lenders.jsx.
+export function custodyRiskPremiumPct(lender) {
+  const base = { multisig: 0.0, 'custodial-mixed': 0.5, custodial: 1.0 };
+  const rehypSurcharge = { no: 0.0, optional: 1.5, yes: 3.0 };
+  const altcoinSurcharge = lender.btcOnly === true ? 0.0 : 0.5;
+  const b = base[lender.custodyType] ?? 1.0;
+  const r = rehypSurcharge[lender.rehypothecation] ?? 1.5;
+  return b + r + altcoinSurcharge;
+}
+
+// Rank lenders for a given loan + region. Total cost = interest + origination,
+// plus a custody-risk premium that captures counterparty risk not priced into APR.
 // Optionally apply a per-region rate adjustment (some lenders charge more
 // outside their home market).
 // When `eligibleOnly` is false (directory mode), every lender is scored and
@@ -94,6 +108,10 @@ export function rankLenders(allLenders, { loanUsd, region, ltvPct, termMonths, e
       const interest = computeInterest(loanUsd, aprPct + regional, termMonths);
       const origFeeUsd = loanUsd * (effectiveOrigFee / 100);
       const totalCost = interest + origFeeUsd;
+      const custodyPremiumPct = custodyRiskPremiumPct(l);
+      const custodyPremiumUsd = loanUsd * (custodyPremiumPct / 100) * (termMonths / 12);
+      const adjustedTotalCost = totalCost + custodyPremiumUsd;
+      const adjustedApr = effectiveApr + custodyPremiumPct;
       return {
         ...l,
         apr: aprPct + regional,
@@ -104,8 +122,12 @@ export function rankLenders(allLenders, { loanUsd, region, ltvPct, termMonths, e
         interest,
         origFeeUsd,
         totalCost,
+        custodyPremiumPct,
+        custodyPremiumUsd,
+        adjustedTotalCost,
+        adjustedApr,
         isTiered: (l.rateTiers || []).length > 1,
       };
     })
-    .sort((a, b) => a.totalCost - b.totalCost);
+    .sort((a, b) => a.adjustedTotalCost - b.adjustedTotalCost);
 }
