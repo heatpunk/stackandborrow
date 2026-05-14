@@ -214,6 +214,7 @@
       "custodyType": "custodial",
       "rehypothecation": "no",
       "btcOnly": true,
+      "annualMembershipUsd": 1000,
       "term": "30, 90, 180, or 365 days (extensions available case-by-case)",
       "rollover": "Yes — loan can be extended once if LTV is healthy (≤45%)",
       "repayment": "Variable interest rate that tracks Federal Reserve rates and updates daily. No fixed payment schedule — pay anytime during the term. Accrued interest is paid first, then principal. Repayable in USD. No early-repayment penalty. Liquidation triggers at 80% LTV; margin call at 65%.",

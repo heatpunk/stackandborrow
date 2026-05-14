@@ -107,7 +107,13 @@ export function rankLenders(allLenders, { loanUsd, region, ltvPct, termMonths, e
       const effectiveApr = aprPct + regional + effectiveOrigFee;
       const interest = computeInterest(loanUsd, aprPct + regional, termMonths);
       const origFeeUsd = loanUsd * (effectiveOrigFee / 100);
-      const totalCost = interest + origFeeUsd;
+      // Some lenders (e.g. Xapo Bank) gate loans behind an annual
+      // membership. Pro-rate it over the loan term so it folds into
+      // totalCost honestly — it's a real out-of-pocket cost, not a risk-
+      // adjustment, and we want apples-to-apples comparisons.
+      const annualMembershipUsd = l.annualMembershipUsd ?? 0;
+      const membershipFeeUsd = annualMembershipUsd * (termMonths / 12);
+      const totalCost = interest + origFeeUsd + membershipFeeUsd;
       const custodyPremiumPct = custodyRiskPremiumPct(l);
       const custodyPremiumUsd = loanUsd * (custodyPremiumPct / 100) * (termMonths / 12);
       const adjustedTotalCost = totalCost + custodyPremiumUsd;
@@ -121,6 +127,8 @@ export function rankLenders(allLenders, { loanUsd, region, ltvPct, termMonths, e
         effectiveApr,
         interest,
         origFeeUsd,
+        annualMembershipUsd,
+        membershipFeeUsd,
         totalCost,
         custodyPremiumPct,
         custodyPremiumUsd,
@@ -129,5 +137,12 @@ export function rankLenders(allLenders, { loanUsd, region, ltvPct, termMonths, e
         isTiered: (l.rateTiers || []).length > 1,
       };
     })
-    .sort((a, b) => a.adjustedTotalCost - b.adjustedTotalCost);
+    .sort((a, b) => {
+      // Hard tier: BTC-only lenders always rank above multi-collateral.
+      const aBtc = a.btcOnly === true;
+      const bBtc = b.btcOnly === true;
+      if (aBtc !== bBtc) return aBtc ? -1 : 1;
+      // Within tier: adjusted cost (custody-risk weighted).
+      return a.adjustedTotalCost - b.adjustedTotalCost;
+    });
 }

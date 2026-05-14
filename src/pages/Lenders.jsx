@@ -158,17 +158,17 @@ export default function LendersPage({ lenders, lastUpdated, live, currency, regi
           lineHeight: 1.05, letterSpacing: '-0.025em', color: SB.ink,
         }}>
           Many lenders.<br />
-          <span style={{ color: SB.orange, fontStyle: 'italic', fontWeight: 500 }}>One ranking metric.</span>
+          <span style={{ color: SB.orange, fontStyle: 'italic', fontWeight: 500 }}>One ranking principle.</span>
         </h1>
         <p style={{
           marginTop: 12, marginBottom: 0,
           fontFamily: SB.sans, fontSize: 12.5, lineHeight: 1.55,
           color: SB.inkSoft, textWrap: 'pretty',
         }}>
-          Ranked by total cost <b style={{ color: SB.ink }}>plus a custody-risk
-          premium</b>. Rehypothecation, pooled custody, and multi-collateral
-          books add unpriced counterparty risk — multisig, no-rehyp, BTC-only
-          lenders carry no premium. Affiliate fees never adjust the order.
+          <b style={{ color: SB.ink }}>BTC-only lenders rank above
+          multi-collateral, always.</b> Within each tier, sorted by total cost
+          and weighted against rehypothecation and pooled custody. Affiliate
+          fees never adjust the order.
         </p>
       </div>
 
@@ -253,12 +253,12 @@ export default function LendersPage({ lenders, lastUpdated, live, currency, regi
                     fontFamily: SB.mono, fontSize: 9.5,
                     color: SB.inkSoft, marginTop: 2,
                   }}>{fmtMoney(l.totalCost, currency, CURRENCY_META, live.btcUsd)} · 12mo</div>
-                  {l.custodyPremiumPct > 0 && (
+                  {l.membershipFeeUsd > 0 && (
                     <div style={{
                       fontFamily: SB.mono, fontSize: 9,
-                      color: SB.rust, marginTop: 3, letterSpacing: '0.02em',
+                      color: SB.inkMute, marginTop: 2, letterSpacing: '0.02em',
                     }}>
-                      +{fmtMoney(l.custodyPremiumUsd, currency, CURRENCY_META, live.btcUsd)} custody risk
+                      incl. {fmtMoney(l.membershipFeeUsd, currency, CURRENCY_META, live.btcUsd)} mbr
                     </div>
                   )}
                 </div>
@@ -291,6 +291,9 @@ export default function LendersPage({ lenders, lastUpdated, live, currency, regi
                 )}
                 {l.originationFeePctEffective === 0 && (
                   <span style={flagStyle(SB.forest)}>NO ORIG FEE</span>
+                )}
+                {l.annualMembershipUsd > 0 && (
+                  <span style={flagStyle(SB.orange)}>⚠ MEMBERSHIP REQ</span>
                 )}
                 {l.custodyType === 'multisig' && <span style={flagStyle(SB.forest)}>MULTISIG</span>}
                 {l.btcOnly === true && <span style={flagStyle(SB.forest)}>BTC ONLY</span>}
@@ -397,7 +400,7 @@ function DesktopLendersLayout({
       }}>
         Many lenders.<br />
         <span style={{ color: SB.orange, fontStyle: 'italic', fontWeight: 500 }}>
-          One ranking metric.
+          One ranking principle.
         </span>
       </h1>
       <p style={{
@@ -405,10 +408,10 @@ function DesktopLendersLayout({
         fontFamily: SB.sans, fontSize: 15, lineHeight: 1.55,
         color: SB.inkSoft, textWrap: 'pretty', maxWidth: 460,
       }}>
-        Ranked by total cost <b style={{ color: SB.ink }}>plus a custody-risk
-        premium</b>. Rehypothecation, pooled custody, and multi-collateral
-        books add unpriced counterparty risk — multisig, no-rehyp, BTC-only
-        lenders carry no premium. Affiliate fees never adjust the order.
+        <b style={{ color: SB.ink }}>BTC-only lenders rank above
+        multi-collateral, always.</b> Within each tier, sorted by total cost
+        and weighted against rehypothecation and pooled custody. Affiliate
+        fees never adjust the order.
       </p>
 
       <DashedRule label="FILTER" />
@@ -455,12 +458,11 @@ function DesktopLendersLayout({
         color: SB.inkSoft, textWrap: 'pretty',
         textAlign: 'center',
       }}>
-        Rates verified quarterly. Tiered lenders resolve to the band
-        that covers your loan size. Ranking adds a <b style={{ color: SB.ink }}>custody-risk
-        premium</b> on top of nominal cost: <b style={{ color: SB.ink }}>+0.0pp</b> for
-        multisig, +0.5pp for custodial-mixed, +1.0pp for fully custodial;
-        plus <b style={{ color: SB.ink }}>+1.5pp</b> if rehyp is optional,
-        +3.0pp if always rehypothecated; plus +0.5pp if collateral is multi-asset.
+        Rates verified quarterly. Tiered lenders resolve to the band that
+        covers your loan size. <b style={{ color: SB.ink }}>BTC-only lenders
+        rank above multi-collateral, always</b> — collateral discipline is
+        both a values signal and a balance-sheet risk signal. Within each
+        tier, ranking weights against rehypothecation and pooled custody.
         Rehypothecation is the single common cause of every major BTC-lender
         failure — Celsius, BlockFi, Genesis, Voyager all rehypothecated.
       </p>
@@ -532,12 +534,12 @@ function DesktopLendersLayout({
                   <div style={{ fontFamily: SB.mono, fontSize: 10.5, color: SB.inkSoft, marginTop: 2 }}>
                     {fmtMoney(l.totalCost, currency, CURRENCY_META, live.btcUsd)} · 12mo
                   </div>
-                  {l.custodyPremiumPct > 0 && (
+                  {l.membershipFeeUsd > 0 && (
                     <div style={{
                       fontFamily: SB.mono, fontSize: 10,
-                      color: SB.rust, marginTop: 4, letterSpacing: '0.02em',
+                      color: SB.inkMute, marginTop: 3, letterSpacing: '0.02em',
                     }}>
-                      +{fmtMoney(l.custodyPremiumUsd, currency, CURRENCY_META, live.btcUsd)} custody risk
+                      incl. {fmtMoney(l.membershipFeeUsd, currency, CURRENCY_META, live.btcUsd)} mbr
                     </div>
                   )}
                 </div>
@@ -564,6 +566,9 @@ function DesktopLendersLayout({
                 )}
                 {l.originationFeePctEffective === 0 && (
                   <span style={flagStyle(SB.forest)}>NO ORIG FEE</span>
+                )}
+                {l.annualMembershipUsd > 0 && (
+                  <span style={flagStyle(SB.orange)}>⚠ MEMBERSHIP REQ</span>
                 )}
                 {l.custodyType === 'multisig' && <span style={flagStyle(SB.forest)}>MULTISIG</span>}
                 {l.btcOnly === true && <span style={flagStyle(SB.forest)}>BTC ONLY</span>}

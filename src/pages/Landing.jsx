@@ -441,7 +441,7 @@ export default function LandingPage({ live, lenders = [], region, initialCurrenc
       <DashedRule label="WHAT'S IN THE BOOKLET" />
       <div style={{ padding: '4px 2px' }}>
         {[
-          ['I.',   'Honest lender ranking', '9 lenders, by total cost only'],
+          ['I.',   'Honest lender ranking', 'BTC-only first, then cost'],
           ['II.',  'Tax-aware comparison',  'sell vs borrow, net'],
           ['III.', 'Multi-year projection', '4 horizons, 3 scenarios'],
           ['IV.',  'Liquidation alerts',     'real-time price-drop math'],
@@ -891,7 +891,7 @@ function DesktopLandingLayout({
 
       <div style={{ padding: '0 2px' }}>
         {[
-          ['I.',   'Honest lender ranking',  'Lenders ranked by total cost only. Affiliate commissions never enter the algorithm — they fund hosting.'],
+          ['I.',   'Honest lender ranking',  'BTC-only lenders rank above multi-collateral, then by total cost. Affiliate commissions never enter the algorithm — they fund hosting.'],
           ['II.',  'Tax-aware comparison',   'Sell vs borrow, net of capital gains. We bake your jurisdiction in.'],
           ['III.', 'Multi-year projection',  '4 horizons × 3 scenarios. Saylor, Wood, or Schiff as your projector.'],
           ['IV.',  'Liquidation alerts',     'Live price-drop math. Six 50%+ drawdowns since 2013. Not if, when.'],
