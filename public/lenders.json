@@ -130,9 +130,9 @@
       "minLoanUsd": 150000,
       "maxLtv": 50,
       "rateTiers": [
-        { "maxLoanUsd": null, "aprPct": 14.0 }
+        { "maxLoanUsd": null, "aprPct": 12.0 }
       ],
-      "originationFeePct": 0,
+      "originationFeePct": 2,
       "feeWaivedFor": [],
       "custody": "Collaborative multisig — keys split between you, Unchained, and a third party. No rehypothecation.",
       "custodyType": "multisig",
@@ -140,7 +140,7 @@
       "term": "6 or 12 months, fixed",
       "rollover": "Yes, refinance at maturity",
       "repayment": "Quarterly interest payments via wire transfer in USD. Principal repaid as balloon at end of term. Refinance available. No early repayment fee, but loan is fixed-term so prepayment doesn't reduce interest already accrued.",
-      "notes": "BUSINESS LOANS ONLY since 2024 (consumer loans paused). $150K minimum. Best-in-class custody — your keys, your bitcoin, even during the loan.",
+      "notes": "BUSINESS LOANS ONLY since 2024 (consumer loans paused). $150K minimum. 12% interest + 2% origination = 14.18% APR (12-month commercial term per Unchained's own pricing page). Origination fee is rolled into the borrowed amount. Best-in-class custody — your keys, your bitcoin, even during the loan.",
       "badge": "Multisig custody",
       "referralUrl": "https://unchained.com"
     },
@@ -174,9 +174,11 @@
       "minLoanUsd": 10000,
       "maxLtv": 70,
       "rateTiers": [
-        { "maxLoanUsd": null, "aprPct": 11.0 }
+        { "maxLoanUsd": 300000, "aprPct": 11.0, "originationFeePct": 1.5 },
+        { "maxLoanUsd": 1000000, "aprPct": 11.0, "originationFeePct": 1.2 },
+        { "maxLoanUsd": null, "aprPct": 11.0, "originationFeePct": 1.0 }
       ],
-      "originationFeePct": 1,
+      "originationFeePct": 1.5,
       "feeWaivedFor": [],
       "custody": "Multisig collaborative custody (2-of-3) between borrower, lender, and Debifi as agent. MiCA-registered.",
       "custodyType": "multisig",
@@ -184,7 +186,7 @@
       "term": "3, 6, 9, or 12 months",
       "rollover": "Yes, on agreement",
       "repayment": "Interest paid at maturity (most common) or monthly depending on individual loan terms. Principal repaid in fiat (EUR, USD) or stablecoin. Bitcoin collateral released automatically via multisig once repayment confirmed. Early repayment generally accepted without penalty.",
-      "notes": "Institutional-grade multisig. P2P marketplace connecting borrowers with vetted lenders — rates vary 9–13% depending on loan. Strong custody model — no single party can move funds unilaterally.",
+      "notes": "Institutional-grade multisig. P2P marketplace connecting borrowers with vetted lenders — rates vary 9–13% depending on loan. Origination fee is tiered by loan size: 1.5% up to $300K, 1.2% to $1M, 1.0% above (plus a fixed 0.0001 BTC transaction fee, and an additional 0.3%/yr after the first year on multi-year loans). Strong custody model — no single party can move funds unilaterally.",
       "badge": "Institutional multisig",
       "referralUrl": "https://debifi.com"
     },
