@@ -31,17 +31,30 @@ import { fmtMoney, fmtNum } from '../lib/format.js';
 // Lender-card terms grid cell.
 function Term({ k, v }) {
   return (
-    <div>
+    <div style={{ minWidth: 0, paddingRight: 6 }}>
       <div style={{
         fontFamily: SB.mono, fontSize: 8.5, fontWeight: 700,
         letterSpacing: '0.16em', color: SB.inkMute,
       }}>{k}</div>
       <div style={{
         fontFamily: SB.mono, fontSize: 11, fontWeight: 600,
-        color: SB.ink, marginTop: 3,
+        color: SB.ink, marginTop: 3, lineHeight: 1.3,
+        overflowWrap: 'break-word',
       }}>{v}</div>
     </div>
   );
+}
+
+// Trim a lender's term string into a compact display label:
+// drop trailing parentheticals, secondary sentences, and the
+// "prepayable anytime" clause — keep the core phrase intact.
+function fmtTerm(t) {
+  if (!t) return '12mo';
+  return t
+    .replace(/,\s*prepayable anytime/i, '')
+    .replace(/\s*\([^)]*\)\s*$/, '')
+    .replace(/\.\s.*$/, '')
+    .trim();
 }
 
 // Translate raw lender object into display badge metadata.
@@ -243,7 +256,7 @@ export default function LendersPage({ lenders, lastUpdated, live, currency, regi
                 borderTop: `1px dotted ${SB.inkLine}`,
               }}>
                 <Term k="MIN" v={'$' + fmtNum(l.minLoanUsd || 0)} />
-                <Term k="TERM" v={(l.term || '12mo').replace(/, prepayable anytime/i, '').slice(0, 16)} />
+                <Term k="TERM" v={fmtTerm(l.term)} />
                 <Term k="CUSTODY" v={custodyShort(l)} />
               </div>
 
@@ -498,7 +511,7 @@ function DesktopLendersLayout({
                 borderTop: `1px dotted ${SB.inkLine}`,
               }}>
                 <Term k="MIN" v={'$' + fmtNum(l.minLoanUsd || 0)} />
-                <Term k="TERM" v={(l.term || '12mo').replace(/, prepayable anytime/i, '').slice(0, 16)} />
+                <Term k="TERM" v={fmtTerm(l.term)} />
                 <Term k="CUSTODY" v={custodyShort(l)} />
               </div>
               {l.notes && (

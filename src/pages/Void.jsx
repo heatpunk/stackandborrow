@@ -349,8 +349,8 @@ export function VoidStateLoading({ source = 'mempool.space' }) {
             <div className="sb-skel" style={{
               height: 11, width: w, borderRadius: 1,
             }} />
-            <span style={{ flex: 1, overflow: 'hidden', whiteSpace: 'nowrap', color: SB.inkFaint, letterSpacing: '0.18em' }}>
-              ··········································································
+            <span style={{ flex: 1, overflow: 'hidden', whiteSpace: 'nowrap', color: SB.inkFaint, letterSpacing: '0.08em' }}>
+              ................................................................................
             </span>
             <div className="sb-skel" style={{ height: 11, width: 60 + i * 8, borderRadius: 1 }} />
           </div>
@@ -843,8 +843,8 @@ function DesktopVoidLoading({ source }) {
             borderBottom: `1px dotted ${SB.inkLine}`,
           }}>
             <div className="sb-skel" style={{ height: 12, width: w, borderRadius: 1 }} />
-            <span style={{ flex: 1, overflow: 'hidden', whiteSpace: 'nowrap', color: SB.inkFaint, letterSpacing: '0.18em' }}>
-              ··········································································
+            <span style={{ flex: 1, overflow: 'hidden', whiteSpace: 'nowrap', color: SB.inkFaint, letterSpacing: '0.08em' }}>
+              ................................................................................
             </span>
             <div className="sb-skel" style={{ height: 12, width: 80 + i * 10, borderRadius: 1 }} />
           </div>
