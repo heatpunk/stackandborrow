@@ -4,7 +4,7 @@
 // lender ranking + projection re-compute on every input change.
 // ============================================================
 
-import React, { useMemo, useCallback, useEffect } from 'react';
+import React, { useMemo, useCallback, useEffect, useState } from 'react';
 import {
   SB,
   CURRENCY_META,
@@ -70,6 +70,7 @@ export default function CalculatorPage({
   const [profileId, setProfileId]             = usePersistentState('activeProfile', 'saylor');
   const [caseId, setCaseId]                   = usePersistentState('activeCase', 'base');
   const [profiles]                            = usePersistentState('profiles', DEFAULT_PROFILES);
+  const [expandedQuoteId, setExpandedQuoteId] = useState(null);
 
   const btcSpotUsd = live.btcUsd;
 
@@ -205,6 +206,8 @@ export default function CalculatorPage({
         taxOwedUsd={taxOwedUsd}
         fmt={fmt}
         lastUpdated={lastUpdated}
+        expandedQuoteId={expandedQuoteId}
+        setExpandedQuoteId={setExpandedQuoteId}
       />
     );
   }
@@ -452,19 +455,25 @@ export default function CalculatorPage({
         </div>
       </div>
 
-      <SectionHead no="§ V" title="Best Quotes" subtitle={`ranked by total cost · top 4 of ${ranked.length}`} />
+      <SectionHead no="§ V" title="Best Quotes" subtitle={`ranked by total cost · ${Math.min(4, ranked.length)} of ${Math.max(4, ranked.length)}`} />
 
       <div style={{ marginBottom: 12 }}>
         {ranked.slice(0, 4).map((q, i) => {
           const rn = ['I', 'II', 'III', 'IV'][i];
+          const isExpanded = expandedQuoteId === q.id;
+          const truncated = q.notes && q.notes.length > 80;
           return (
-            <div key={q.id} style={{
-              display: 'grid',
-              gridTemplateColumns: '28px 1fr auto',
-              alignItems: 'center', gap: 10,
-              padding: '10px 0',
-              borderBottom: `1px dotted ${SB.inkLine}`,
-            }}>
+            <div
+              key={q.id}
+              onClick={() => truncated && setExpandedQuoteId(isExpanded ? null : q.id)}
+              style={{
+                display: 'grid',
+                gridTemplateColumns: '28px 1fr auto',
+                alignItems: 'center', gap: 10,
+                padding: '10px 0',
+                borderBottom: `1px dotted ${SB.inkLine}`,
+                cursor: truncated ? 'pointer' : 'default',
+              }}>
               <div style={{ fontFamily: SB.serif, fontStyle: 'italic', fontSize: 15, color: SB.orange, fontWeight: 500 }}>{rn}</div>
               <div style={{ minWidth: 0 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
@@ -473,8 +482,13 @@ export default function CalculatorPage({
                   {q.isTiered && <Pill color={SB.orange}>TIERED</Pill>}
                 </div>
                 {q.notes && (
-                  <div style={{ fontFamily: SB.mono, fontSize: 9.5, color: SB.inkMute, marginTop: 3, letterSpacing: '0.02em' }}>
-                    {q.notes.length > 80 ? q.notes.slice(0, 80) + '…' : q.notes}
+                  <div style={{ fontFamily: SB.mono, fontSize: 9.5, color: SB.inkMute, marginTop: 3, letterSpacing: '0.02em', lineHeight: 1.45 }}>
+                    {isExpanded || !truncated ? q.notes : q.notes.slice(0, 80) + '…'}
+                    {truncated && (
+                      <span style={{ color: SB.orange, fontWeight: 700, marginLeft: 4 }}>
+                        {isExpanded ? ' show less ▴' : ' show more ▾'}
+                      </span>
+                    )}
                   </div>
                 )}
               </div>
@@ -612,10 +626,11 @@ function Projection({ spot, cagr, collateralBtc, totalOwedUsd, collateralBtcAfte
             </div>
             <div style={{
               fontFamily: SB.serif,
-              fontSize: 12 + i * 1.5,
-              fontWeight: 600, marginTop: 4,
+              fontSize: 20, fontWeight: 600,
+              marginTop: 4,
               color: m.val < 0 ? SB.rust : (i === 3 ? SB.forest : SB.ink),
-              letterSpacing: '-0.01em',
+              letterSpacing: '-0.02em',
+              lineHeight: 1,
               fontVariantNumeric: 'tabular-nums',
             }}>
               {fmtMoneyCompact(m.val)}
@@ -679,6 +694,7 @@ function DesktopCalculatorLayout(props) {
     activeCagr, totalOwedUsd, collateralBtcAfterSell, deltaUsd,
     ranked, bestLender, interestUsd, satsToSell, grossSaleUsd, taxOwedUsd,
     fmt, lastUpdated,
+    expandedQuoteId, setExpandedQuoteId,
   } = props;
   const meta = CURRENCY_META[currency];
 
@@ -927,19 +943,25 @@ function DesktopCalculatorLayout(props) {
         </div>
       </div>
 
-      <DSectionHead no="§ V" title="Best quotes" subtitle={`ranked by total cost · top 4 of ${ranked.length}`} />
+      <DSectionHead no="§ V" title="Best quotes" subtitle={`ranked by total cost · ${Math.min(4, ranked.length)} of ${Math.max(4, ranked.length)}`} />
 
       <div style={{ marginBottom: 14 }}>
         {ranked.slice(0, 4).map((q, i) => {
           const rn = ['I', 'II', 'III', 'IV'][i];
+          const isExpanded = expandedQuoteId === q.id;
+          const truncated = q.notes && q.notes.length > 100;
           return (
-            <div key={q.id} style={{
-              display: 'grid',
-              gridTemplateColumns: '32px 1fr auto',
-              alignItems: 'center', gap: 12,
-              padding: '12px 0',
-              borderBottom: `1px dotted ${SB.inkLine}`,
-            }}>
+            <div
+              key={q.id}
+              onClick={() => truncated && setExpandedQuoteId(isExpanded ? null : q.id)}
+              style={{
+                display: 'grid',
+                gridTemplateColumns: '32px 1fr auto',
+                alignItems: 'center', gap: 12,
+                padding: '12px 0',
+                borderBottom: `1px dotted ${SB.inkLine}`,
+                cursor: truncated ? 'pointer' : 'default',
+              }}>
               <div style={{ fontFamily: SB.serif, fontStyle: 'italic', fontSize: 18, color: SB.orange, fontWeight: 500 }}>{rn}</div>
               <div style={{ minWidth: 0 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
@@ -948,8 +970,13 @@ function DesktopCalculatorLayout(props) {
                   {q.isTiered && <Pill color={SB.orange}>TIERED</Pill>}
                 </div>
                 {q.notes && (
-                  <div style={{ fontFamily: SB.mono, fontSize: 11, color: SB.inkMute, marginTop: 4, letterSpacing: '0.02em' }}>
-                    {q.notes.length > 100 ? q.notes.slice(0, 100) + '…' : q.notes}
+                  <div style={{ fontFamily: SB.mono, fontSize: 11, color: SB.inkMute, marginTop: 4, letterSpacing: '0.02em', lineHeight: 1.5 }}>
+                    {isExpanded || !truncated ? q.notes : q.notes.slice(0, 100) + '…'}
+                    {truncated && (
+                      <span style={{ color: SB.orange, fontWeight: 700, marginLeft: 4 }}>
+                        {isExpanded ? ' show less ▴' : ' show more ▾'}
+                      </span>
+                    )}
                   </div>
                 )}
               </div>

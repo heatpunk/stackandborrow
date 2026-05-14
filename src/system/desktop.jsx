@@ -108,7 +108,7 @@ export function DesktopSpreadFrame({
         <div style={{ padding: '0 0 0 32px', minWidth: 0, position: 'relative' }}>
           {right}
           {showSunMoon && (
-            <div style={{ position: 'absolute', top: -28, right: -8, zIndex: 3 }}>
+            <div style={{ position: 'absolute', top: -28, right: 8, zIndex: 3 }}>
               <SunMoonStamp size={86} rotate={10} />
             </div>
           )}
