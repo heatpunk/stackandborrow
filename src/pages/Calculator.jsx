@@ -25,8 +25,11 @@ import {
   PageNav,
   FineFooter,
   LivePriceBadge,
+  SunMoonStamp,
   ensureSliderCss,
 } from '../system/components.jsx';
+import { useIsDesktop } from '../system/theme.jsx';
+import { DesktopSpreadFrame, DSectionHead } from '../system/desktop.jsx';
 import { usePersistentState } from '../lib/hooks.js';
 import {
   VoidStateLoading,
@@ -59,6 +62,7 @@ export default function CalculatorPage({
 }) {
   // Slider thumb pseudo-element styles need a stylesheet — inject once.
   useEffect(() => { ensureSliderCss(); }, []);
+  const isDesktop = useIsDesktop();
 
   // ===== STATE (all persisted) =====
   const [currency, setCurrency]               = usePersistentState('currency', initialCurrency || 'USD');
@@ -167,6 +171,40 @@ export default function CalculatorPage({
       <VoidStateNoRegion
         regionLabel={regionLabelFor(region)}
         regionCode={region}
+      />
+    );
+  }
+
+  if (isDesktop) {
+    return (
+      <DesktopCalculatorLayout
+        live={live}
+        currency={currency}
+        cycleCurrency={cycleCurrency}
+        loanInCurrency={loanInCurrency}
+        onSlide={onSlide}
+        min={min} max={max} step={step}
+        loanUsd={loanUsd}
+        btcSpotUsd={btcSpotUsd}
+        collateralBtc={collateralBtc}
+        collateralSats={collateralSats}
+        liqUsd={liqUsd}
+        liqDropPct={liqDropPct}
+        profileId={profileId} setProfileId={setProfileId}
+        caseId={caseId} setCaseId={setCaseId}
+        profiles={profiles}
+        activeCagr={activeCagr}
+        totalOwedUsd={totalOwedUsd}
+        collateralBtcAfterSell={collateralBtcAfterSell}
+        deltaUsd={deltaUsd}
+        ranked={ranked}
+        bestLender={bestLender}
+        interestUsd={interestUsd}
+        satsToSell={satsToSell}
+        grossSaleUsd={grossSaleUsd}
+        taxOwedUsd={taxOwedUsd}
+        fmt={fmt}
+        lastUpdated={lastUpdated}
       />
     );
   }
@@ -623,4 +661,343 @@ function regionLabelFor(code) {
     global: 'your region',
   };
   return map[code] || 'your region';
+}
+
+// ============================================================
+// DesktopCalculatorLayout — open-spread variant for >=1024px.
+// Left = inputs, terms, profile picker, scenarios. Right =
+// projection chart, verdict, top-4 quotes, CTA.
+// ============================================================
+function DesktopCalculatorLayout(props) {
+  const {
+    live, currency, cycleCurrency,
+    loanInCurrency, onSlide, min, max, step,
+    loanUsd, btcSpotUsd,
+    collateralBtc, collateralSats,
+    liqUsd, liqDropPct,
+    profileId, setProfileId, caseId, setCaseId, profiles,
+    activeCagr, totalOwedUsd, collateralBtcAfterSell, deltaUsd,
+    ranked, bestLender, interestUsd, satsToSell, grossSaleUsd, taxOwedUsd,
+    fmt, lastUpdated,
+  } = props;
+  const meta = CURRENCY_META[currency];
+
+  const rightSlot = (
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 8 }}>
+      <LivePriceBadge btcUsd={live.btcUsd} loading={live.loading} error={live.error} onRefresh={live.refresh} />
+      <button onClick={cycleCurrency} style={{
+        background: 'transparent',
+        border: `1.5px solid ${SB.ink}`,
+        padding: '4px 10px',
+        fontFamily: SB.mono,
+        fontSize: 11, fontWeight: 700,
+        letterSpacing: '0.08em',
+        color: SB.ink, cursor: 'pointer',
+      }}>
+        {meta.label} ▾
+      </button>
+    </div>
+  );
+
+  const left = (
+    <div>
+      <div style={{
+        fontFamily: SB.mono, fontSize: 10, letterSpacing: '0.24em',
+        color: SB.inkMute, fontWeight: 700,
+        marginTop: 18, marginBottom: 4,
+      }}>
+        PAGE II · LEFT — INPUTS & TERMS
+      </div>
+
+      <DSectionHead no="§ I" title="Loan amount" />
+
+      <div style={{
+        padding: '18px',
+        background: SB.orangeWash,
+        border: `1.5px dashed ${SB.orangeSoft}`,
+      }}>
+        <div style={{
+          fontFamily: SB.mono, fontSize: 10, letterSpacing: '0.22em',
+          color: SB.orange, fontWeight: 700,
+        }}>PRINCIPAL · BORROWED</div>
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: 6, marginTop: 10 }}>
+          {meta.position === 'pre' && (
+            <span style={{ fontFamily: SB.serif, fontSize: 38, fontWeight: 400, color: SB.inkMute }}>{meta.symbol}</span>
+          )}
+          <span style={{
+            fontFamily: SB.serif, fontSize: 60, fontWeight: 600,
+            color: SB.ink, letterSpacing: '-0.025em', lineHeight: 1,
+            fontVariantNumeric: 'tabular-nums',
+          }}>{fmtNum(loanInCurrency)}</span>
+          {meta.position === 'post' && (
+            <span style={{ fontFamily: SB.mono, fontSize: 22, fontWeight: 500, color: SB.inkMute, marginLeft: 6 }}>{meta.symbol}</span>
+          )}
+        </div>
+
+        <div style={{ marginTop: 18 }}>
+          <input
+            type="range"
+            min={min} max={max} step={step}
+            value={loanInCurrency}
+            onChange={onSlide}
+            className="sb-slider"
+            aria-label="Loan amount"
+          />
+          <div style={{
+            display: 'flex', justifyContent: 'space-between', marginTop: 6,
+            fontFamily: SB.mono, fontSize: 10, color: SB.inkFaint, letterSpacing: '0.05em',
+          }}>
+            <span>{rangeLabel(min, currency)}</span>
+            <span>~{fmtMoney(loanUsd, 'USD', CURRENCY_META, btcSpotUsd)} USD</span>
+            <span>{rangeLabel(max, currency)}</span>
+          </div>
+        </div>
+      </div>
+
+      <DSectionHead no="§ II" title="Collateral & terms" />
+
+      <div style={{ padding: '0 2px' }}>
+        <Row label="Collateral required" value={collateralBtc.toFixed(5) + ' BTC'} sub={fmtNum(collateralSats) + ' sats'} />
+        <Row label="Loan-to-value (fixed)" value="50%" />
+        <Row label="Term length" value="12 months" sub="balloon at maturity" />
+        <Row label="Liquidation price"
+             value={'$' + fmtNum(liqUsd)}
+             valueStyle={{ color: SB.rust }}
+             sub={Math.abs(liqDropPct).toFixed(1) + '% drop from spot'} />
+        <Row label="Sats lost if liquidated"
+             value={'−' + fmtNum(collateralSats * (LIQ_LTV_PCT / 100))}
+             valueStyle={{ color: SB.rust }} />
+      </div>
+
+      <div style={{
+        marginTop: 14, padding: '14px 16px',
+        background: SB.rustWash,
+        border: `1px dashed ${SB.rust}`,
+        display: 'flex', alignItems: 'flex-start', gap: 12,
+        fontFamily: SB.mono, fontSize: 12,
+        color: SB.rust, lineHeight: 1.45,
+      }}>
+        <span style={{ fontWeight: 700, marginTop: 1, fontSize: 14 }}>!</span>
+        <div>
+          <div style={{ fontWeight: 700, letterSpacing: '0.1em' }}>HEADS UP</div>
+          <div style={{ marginTop: 4 }}>
+            BTC has dropped &gt;{Math.abs(liqDropPct).toFixed(0)}% from a
+            12-month high in 6 of the last 12 years. Keep cash for buffer.
+          </div>
+        </div>
+      </div>
+
+      <DSectionHead no="§ III" title="Audited by" subtitle="whose BTC projection do you trust?" />
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10 }}>
+        {Object.entries(profiles).map(([id, p]) => {
+          const active = id === profileId;
+          return (
+            <button key={id} onClick={() => setProfileId(id)} style={{
+              padding: '14px 8px 12px',
+              border: `1.5px ${active ? 'solid' : 'dashed'} ${active ? SB.ink : SB.inkLine}`,
+              background: active ? SB.inkFill : 'transparent',
+              color: active ? SB.cream : SB.ink,
+              textAlign: 'center', cursor: 'pointer',
+              fontFamily: 'inherit',
+            }} title={p.blurb}>
+              <div style={{
+                fontFamily: SB.serif, fontSize: 22, fontStyle: 'italic',
+                fontWeight: 500, lineHeight: 1,
+                color: active ? SB.orange : SB.inkSoft,
+              }}>{p.initials}</div>
+              <div style={{
+                fontFamily: SB.mono, fontSize: 10, fontWeight: 700,
+                letterSpacing: '0.12em', marginTop: 8,
+              }}>{p.name}</div>
+              <div style={{
+                fontFamily: SB.mono, fontSize: 9, fontWeight: 600,
+                letterSpacing: '0.14em',
+                color: active ? 'rgba(255,255,255,0.6)' : SB.inkMute,
+                marginTop: 2,
+              }}>{(p.persona || '').toUpperCase()}</div>
+              <div style={{
+                fontFamily: SB.mono, fontSize: 13, fontWeight: 700,
+                marginTop: 8,
+                color: active ? SB.orange : SB.ink,
+              }}>{fmtPct(p.cases.base, 0)}/yr</div>
+            </button>
+          );
+        })}
+      </div>
+
+      <div style={{ display: 'flex', marginTop: 16, border: `1.5px solid ${SB.ink}` }}>
+        {['bear', 'base', 'bull'].map((c, i) => {
+          const active = c === caseId;
+          const v = profiles[profileId].cases[c];
+          return (
+            <button key={c} onClick={() => setCaseId(c)} style={{
+              flex: 1, padding: '14px 8px',
+              textAlign: 'center',
+              borderRight: i < 2 ? `1px dashed ${SB.inkLine}` : 'none',
+              borderTop: 'none', borderLeft: 'none', borderBottom: 'none',
+              background: active ? SB.inkFill : 'transparent',
+              color: active ? SB.cream : SB.ink,
+              cursor: 'pointer', fontFamily: 'inherit',
+            }}>
+              <div style={{
+                fontFamily: SB.mono, fontSize: 10, fontWeight: 700,
+                letterSpacing: '0.18em',
+              }}>{c.toUpperCase()}</div>
+              <div style={{
+                fontFamily: SB.serif, fontSize: 20, fontWeight: 600,
+                marginTop: 4, color: active ? SB.orange : SB.ink,
+                letterSpacing: '-0.01em',
+              }}>{fmtPct(v, 0)}</div>
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+
+  const right = (
+    <div>
+      <div style={{
+        fontFamily: SB.mono, fontSize: 10, letterSpacing: '0.24em',
+        color: SB.inkMute, fontWeight: 700,
+        marginTop: 18, marginBottom: 4,
+      }}>
+        PAGE II · RIGHT — PROJECTION & VERDICT
+      </div>
+
+      <DSectionHead no="§ IV" title="Projection · 20 years" subtitle="net of interest, tax & liquidations" />
+
+      <Projection
+        spot={btcSpotUsd}
+        cagr={activeCagr}
+        collateralBtc={collateralBtc}
+        totalOwedUsd={totalOwedUsd}
+        collateralBtcAfterSell={collateralBtcAfterSell}
+      />
+
+      <DashedRule label="VERDICT" />
+
+      <div style={{ padding: '0 2px' }}>
+        <Row
+          label="If you SELL today"
+          value={'−' + fmtNum(satsToSell) + ' sats'}
+          valueStyle={{ color: SB.rust }}
+          sub={'+' + fmt(taxOwedUsd) + ' tax · ' + fmt(grossSaleUsd) + ' gross sale'}
+        />
+        <Row
+          label="If you BORROW today"
+          value={'−0 sats'}
+          valueStyle={{ color: SB.forest }}
+          sub={fmt(interestUsd) + ' interest over 12mo'}
+        />
+
+        <div style={{
+          display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+          padding: '20px 18px 18px', marginTop: 14,
+          border: `1.5px dashed ${SB.orange}`,
+          background: SB.orangeWash,
+        }}>
+          <div>
+            <div style={{
+              fontFamily: SB.mono, fontSize: 12, fontWeight: 700,
+              letterSpacing: '0.2em', color: SB.orange,
+            }}>NET WORTH @ Y20</div>
+            <div style={{
+              fontFamily: SB.mono, fontSize: 10,
+              color: SB.inkMute, marginTop: 4, letterSpacing: '0.06em',
+            }}>vs selling · {caseId} case · {profileId}</div>
+          </div>
+          <div style={{ textAlign: 'right' }}>
+            <div style={{
+              fontFamily: SB.serif, fontSize: 32, fontWeight: 600,
+              color: SB.ink, letterSpacing: '-0.02em', lineHeight: 1,
+              fontVariantNumeric: 'tabular-nums',
+            }}>
+              {deltaUsd >= 0 ? '+' : ''}{fmtMoneyCompact(deltaUsd)}
+            </div>
+            <div style={{
+              fontFamily: SB.mono, fontSize: 10,
+              color: deltaUsd >= 0 ? SB.forest : SB.rust,
+              marginTop: 6, fontWeight: 700, letterSpacing: '0.12em',
+            }}>
+              {deltaUsd >= 0 ? '↑ KEEP THE STACK' : '↓ SELL WINS HERE'}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <DSectionHead no="§ V" title="Best quotes" subtitle={`ranked by total cost · top 4 of ${ranked.length}`} />
+
+      <div style={{ marginBottom: 14 }}>
+        {ranked.slice(0, 4).map((q, i) => {
+          const rn = ['I', 'II', 'III', 'IV'][i];
+          return (
+            <div key={q.id} style={{
+              display: 'grid',
+              gridTemplateColumns: '32px 1fr auto',
+              alignItems: 'center', gap: 12,
+              padding: '12px 0',
+              borderBottom: `1px dotted ${SB.inkLine}`,
+            }}>
+              <div style={{ fontFamily: SB.serif, fontStyle: 'italic', fontSize: 18, color: SB.orange, fontWeight: 500 }}>{rn}</div>
+              <div style={{ minWidth: 0 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+                  <span style={{ fontFamily: SB.serif, fontSize: 18, fontWeight: 600, color: SB.ink, letterSpacing: '-0.005em' }}>{q.name}</span>
+                  <Pill color={i === 0 ? SB.forest : SB.ink} filled={i === 0}>{q.badge || '—'}</Pill>
+                  {q.isTiered && <Pill color={SB.orange}>TIERED</Pill>}
+                </div>
+                {q.notes && (
+                  <div style={{ fontFamily: SB.mono, fontSize: 11, color: SB.inkMute, marginTop: 4, letterSpacing: '0.02em' }}>
+                    {q.notes.length > 100 ? q.notes.slice(0, 100) + '…' : q.notes}
+                  </div>
+                )}
+              </div>
+              <div style={{ textAlign: 'right' }}>
+                <div style={{ fontFamily: SB.mono, fontSize: 16, fontWeight: 700, color: SB.orange }}>
+                  {q.effectiveApr.toFixed(2)}%
+                </div>
+                <div style={{ fontFamily: SB.mono, fontSize: 10, color: SB.inkSoft, marginTop: 2 }}>
+                  {fmt(q.totalCost)} · 12mo
+                </div>
+              </div>
+            </div>
+          );
+        })}
+        {ranked.length === 0 && (
+          <div style={{
+            padding: '20px 14px', textAlign: 'center',
+            fontFamily: SB.mono, fontSize: 11, color: SB.inkMute,
+            border: `1px dashed ${SB.inkLine}`,
+          }}>
+            No matching lenders for this loan size or region.
+          </div>
+        )}
+      </div>
+
+      <Button href={bestLender?.referralUrl || '#lenders'}>
+        {bestLender ? `OPEN WITH ${bestLender.name.toUpperCase()} — BEST RATE` : 'BROWSE ALL LENDERS'}
+      </Button>
+      <div style={{
+        textAlign: 'center', marginTop: 10,
+        fontFamily: SB.mono, fontSize: 10,
+        letterSpacing: '0.16em', color: SB.inkMute,
+      }}>
+        you'll leave the booklet · we never see your details
+      </div>
+    </div>
+  );
+
+  return (
+    <DesktopSpreadFrame
+      left={left}
+      right={right}
+      active="calc"
+      currentPage="II"
+      pageOf="IV"
+      rightSlot={rightSlot}
+      footerSource={live.source}
+      footerUpdated={lastUpdated}
+    />
+  );
 }

@@ -14,7 +14,10 @@ import {
   Button,
   PageNav,
   FineFooter,
+  SunMoonStamp,
 } from '../system/components.jsx';
+import { useIsDesktop } from '../system/theme.jsx';
+import { DesktopSpreadFrame } from '../system/desktop.jsx';
 
 const PRINCIPLES = [
   {
@@ -56,6 +59,9 @@ const FAQ = [
 ];
 
 export default function AboutPage() {
+  const isDesktop = useIsDesktop();
+  if (isDesktop) return <DesktopAboutLayout />;
+
   return (
     <PaperFrame>
       <BrandHeader
@@ -225,5 +231,194 @@ export default function AboutPage() {
       <PageNav active="about" />
       <div style={{ height: 14 }} />
     </PaperFrame>
+  );
+}
+
+// ============================================================
+// DesktopAboutLayout — open-spread variant for >=1024px.
+// Left  = hero + principles. Right = "Who shouldn't", FAQ,
+// signatures, verified stamp, CTA.
+// ============================================================
+function DesktopAboutLayout() {
+  const rightSlot = (
+    <div style={{
+      fontFamily: SB.mono, fontSize: 10, letterSpacing: '0.14em',
+      color: SB.inkMute, textAlign: 'right',
+    }}>
+      <div style={{ color: SB.ink, fontWeight: 700 }}>READ THIS FIRST</div>
+      <div style={{ marginTop: 5 }}>5-MINUTE READ</div>
+    </div>
+  );
+
+  const left = (
+    <div>
+      <div style={{
+        fontFamily: SB.mono, fontSize: 10, letterSpacing: '0.24em',
+        color: SB.inkMute, fontWeight: 700,
+        marginTop: 18, marginBottom: 14,
+      }}>
+        PAGE IV · LEFT — THE PRINCIPLES
+      </div>
+
+      <div style={{ position: 'relative' }}>
+        <div style={{
+          fontFamily: SB.mono, fontSize: 10, letterSpacing: '0.22em',
+          color: SB.inkMute, fontWeight: 700, marginBottom: 10,
+        }}>
+          INSERT · III · OF III
+        </div>
+        <h1 style={{
+          margin: 0,
+          fontFamily: SB.serif, fontSize: 64, fontWeight: 600,
+          lineHeight: 0.98, letterSpacing: '-0.03em', color: SB.ink,
+        }}>
+          Terms of<br />
+          <span style={{ color: SB.orange, fontStyle: 'italic', fontWeight: 500 }}>philosophy.</span>
+        </h1>
+        <p style={{
+          marginTop: 20, marginBottom: 0,
+          fontFamily: SB.sans, fontSize: 15, lineHeight: 1.55,
+          color: SB.inkSoft, textWrap: 'pretty', maxWidth: 460,
+        }}>
+          A calculator for the question every long-term bitcoiner faces
+          eventually: should I sell some sats, or borrow against them?
+          What follows is how we decided to answer.
+        </p>
+      </div>
+
+      <DashedRule label="THE PRINCIPLES" />
+
+      <div>
+        {PRINCIPLES.map((p) => (
+          <div key={p.no} style={{
+            display: 'grid',
+            gridTemplateColumns: '44px 1fr',
+            gap: 16,
+            padding: '16px 0',
+            borderBottom: `1px dotted ${SB.inkLine}`,
+          }}>
+            <div style={{
+              fontFamily: SB.serif, fontStyle: 'italic',
+              fontSize: 32, fontWeight: 500, color: SB.orange,
+              lineHeight: 1, paddingTop: 2,
+            }}>{p.no}</div>
+            <div>
+              <div style={{
+                fontFamily: SB.serif, fontSize: 19, fontWeight: 600,
+                color: SB.ink, letterSpacing: '-0.01em', lineHeight: 1.2,
+                marginBottom: 8,
+              }}>{p.title}</div>
+              <div style={{
+                fontFamily: SB.sans, fontSize: 13, lineHeight: 1.55,
+                color: SB.inkSoft, textWrap: 'pretty',
+              }}>{p.body}</div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+
+  const right = (
+    <div>
+      <div style={{
+        fontFamily: SB.mono, fontSize: 10, letterSpacing: '0.24em',
+        color: SB.inkMute, fontWeight: 700,
+        marginTop: 18, marginBottom: 14,
+      }}>
+        PAGE IV · RIGHT — CAVEATS, Q&amp;A, SIGNED
+      </div>
+
+      <div style={{
+        padding: '16px 18px',
+        background: SB.rustWash,
+        border: `1px dashed ${SB.rust}`,
+      }}>
+        <div style={{
+          fontFamily: SB.mono, fontSize: 10, letterSpacing: '0.2em',
+          color: SB.rust, fontWeight: 700, marginBottom: 12,
+        }}>
+          ⚠ DO NOT PROCEED IF
+        </div>
+        <ul style={{
+          margin: 0, paddingLeft: 22,
+          fontFamily: SB.sans, fontSize: 13, lineHeight: 1.65,
+          color: SB.ink, textWrap: 'pretty',
+        }}>
+          <li>You'd be devastated by a 50% BTC drawdown (which has happened six times)</li>
+          <li>You don't understand rehypothecation and which lenders practice it</li>
+          <li>You're borrowing to <i>buy more bitcoin</i>. That's leverage — not strategy.</li>
+        </ul>
+      </div>
+
+      <DashedRule label="THE QUESTIONS" />
+
+      <div>
+        {FAQ.map(([q, a], i) => (
+          <div key={i} style={{
+            padding: '14px 0',
+            borderBottom: `1px dotted ${SB.inkLine}`,
+          }}>
+            <div style={{
+              fontFamily: SB.serif, fontSize: 16, fontWeight: 600,
+              color: SB.ink, marginBottom: 8, letterSpacing: '-0.005em',
+            }}>{q}</div>
+            <div style={{
+              fontFamily: SB.sans, fontSize: 13, lineHeight: 1.55,
+              color: SB.inkSoft, textWrap: 'pretty',
+            }}>{a}</div>
+          </div>
+        ))}
+      </div>
+
+      <DashedRule label="SIGNATURES" />
+
+      <div style={{
+        display: 'grid', gridTemplateColumns: '1fr 1fr',
+        gap: 20, marginTop: 4, marginBottom: 14,
+      }}>
+        <div style={{ paddingTop: 32, borderTop: `1.5px solid ${SB.ink}` }}>
+          <div style={{
+            fontFamily: SB.serif, fontStyle: 'italic',
+            fontSize: 22, color: SB.ink, lineHeight: 1,
+            paddingBottom: 6,
+          }}>~ signed</div>
+          <div style={{
+            fontFamily: SB.mono, fontSize: 9.5,
+            letterSpacing: '0.18em', color: SB.inkMute,
+            fontWeight: 600,
+          }}>THE AUTHOR</div>
+        </div>
+        <div style={{ paddingTop: 32, borderTop: `1.5px solid ${SB.ink}` }}>
+          <div style={{
+            fontFamily: SB.serif, fontStyle: 'italic',
+            fontSize: 16, color: SB.ink, lineHeight: 1.2,
+            paddingBottom: 6,
+          }}>stackandborrow.com</div>
+          <div style={{
+            fontFamily: SB.mono, fontSize: 9.5,
+            letterSpacing: '0.18em', color: SB.inkMute,
+            fontWeight: 600,
+          }}>DOMAIN OF RECORD</div>
+        </div>
+      </div>
+
+      <div style={{ display: 'flex', justifyContent: 'center', padding: '10px 0 16px' }}>
+        <Stamp line1="VERIFIED" line2="CALC" line3="★ MAY 2026 ★" size={130} rotate={4} />
+      </div>
+
+      <Button href="#calculator">RUN THE CALCULATOR</Button>
+    </div>
+  );
+
+  return (
+    <DesktopSpreadFrame
+      left={left}
+      right={right}
+      active="about"
+      currentPage="IV"
+      pageOf="IV"
+      rightSlot={rightSlot}
+    />
   );
 }

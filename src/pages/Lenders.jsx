@@ -21,7 +21,10 @@ import {
   PageNav,
   FineFooter,
   LivePriceBadge,
+  SunMoonStamp,
 } from '../system/components.jsx';
+import { useIsDesktop } from '../system/theme.jsx';
+import { DesktopSpreadFrame } from '../system/desktop.jsx';
 import { rankLenders } from '../lib/math.js';
 import { fmtMoney, fmtNum } from '../lib/format.js';
 
@@ -66,6 +69,7 @@ const FILTERS = [
 ];
 
 export default function LendersPage({ lenders, lastUpdated, live, currency, region }) {
+  const isDesktop = useIsDesktop();
   const [filter, setFilter] = useState('all');
   // Standardize on a $50K loan for the default ranking display.
   const QUOTE_LOAN_USD = 50000;
@@ -99,6 +103,22 @@ export default function LendersPage({ lenders, lastUpdated, live, currency, regi
     noRehypo: lenders.filter((l) => l.rehypothecation === 'no' || l.rehypothecation === false).length,
     multisig: lenders.filter((l) => l.custodyType === 'multisig').length,
   }), [lenders]);
+
+  if (isDesktop) {
+    return (
+      <DesktopLendersLayout
+        lenders={lenders}
+        ranked={ranked}
+        filter={filter}
+        setFilter={setFilter}
+        counts={counts}
+        currency={currency}
+        live={live}
+        lastUpdated={lastUpdated}
+        quoteLoanUsd={QUOTE_LOAN_USD}
+      />
+    );
+  }
 
   return (
     <PaperFrame>
@@ -306,4 +326,239 @@ function flagStyle(color) {
     padding: '2px 6px',
     color, border: `1px dashed ${color}`,
   };
+}
+
+// ============================================================
+// DesktopLendersLayout — open-spread variant for >=1024px.
+// Left  = hero, filters, quote header, glossary.
+// Right = ranked lender cards.
+// ============================================================
+function DesktopLendersLayout({
+  lenders, ranked, filter, setFilter, counts,
+  currency, live, lastUpdated, quoteLoanUsd,
+}) {
+  const rightSlot = (
+    <LivePriceBadge
+      btcUsd={live.btcUsd} loading={live.loading}
+      error={live.error} onRefresh={live.refresh}
+    />
+  );
+
+  const left = (
+    <div>
+      <div style={{
+        fontFamily: SB.mono, fontSize: 10, letterSpacing: '0.24em',
+        color: SB.inkMute, fontWeight: 700,
+        marginTop: 18, marginBottom: 14,
+      }}>
+        PAGE III · LEFT — THE DIRECTORY
+      </div>
+
+      <div style={{
+        fontFamily: SB.mono, fontSize: 10, letterSpacing: '0.22em',
+        color: SB.inkMute, fontWeight: 700, marginBottom: 10,
+      }}>
+        DIRECTORY · ALL VETTED QUOTES
+      </div>
+      <h1 style={{
+        margin: 0,
+        fontFamily: SB.serif, fontSize: 56, fontWeight: 600,
+        lineHeight: 1, letterSpacing: '-0.03em', color: SB.ink,
+      }}>
+        {lenders.length} lenders.<br />
+        <span style={{ color: SB.orange, fontStyle: 'italic', fontWeight: 500 }}>
+          One ranking metric.
+        </span>
+      </h1>
+      <p style={{
+        marginTop: 20, marginBottom: 0,
+        fontFamily: SB.sans, fontSize: 15, lineHeight: 1.55,
+        color: SB.inkSoft, textWrap: 'pretty', maxWidth: 460,
+      }}>
+        Ranked by total cost — APR plus origination, against your loan
+        size and region. Affiliate fees never adjust the order.
+      </p>
+
+      <DashedRule label="FILTER" />
+
+      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+        {FILTERS.map((f) => (
+          <Chip key={f.id} active={filter === f.id} onClick={() => setFilter(f.id)}>
+            {f.label} · {counts[f.id] ?? 0}
+          </Chip>
+        ))}
+      </div>
+      <div style={{
+        fontFamily: SB.mono, fontSize: 11,
+        color: SB.inkMute, marginTop: 12, letterSpacing: '0.02em',
+      }}>
+        Quote sized for <b style={{ color: SB.ink }}>
+          {fmtMoney(quoteLoanUsd, currency, CURRENCY_META, live.btcUsd)} · 12mo · 50% LTV
+        </b>.
+      </div>
+
+      <DashedRule label="GLOSSARY" />
+
+      <div>
+        <Row label="Rehypothecation" value="lender lends out your collateral"
+          valueStyle={{ fontFamily: SB.sans, fontWeight: 500, fontSize: 12 }}
+          sub="higher rate, higher risk" />
+        <Row label="Multisig custody" value="keys split 2-of-3"
+          valueStyle={{ fontFamily: SB.sans, fontWeight: 500, fontSize: 12 }}
+          sub="strongest model" />
+        <Row label="Origination fee" value="paid upfront, not APR"
+          valueStyle={{ fontFamily: SB.sans, fontWeight: 500, fontSize: 12 }}
+          sub="effective rate bumps up" />
+      </div>
+
+      <DashedRule label="METHOD" />
+
+      <p style={{
+        margin: 0,
+        fontFamily: SB.sans, fontSize: 12.5, lineHeight: 1.6,
+        color: SB.inkSoft, textWrap: 'pretty',
+      }}>
+        Rates verified quarterly. Tiered lenders (Strike, Ledn, Arch)
+        resolve to the band that covers your loan size. When two
+        lenders tie on APR, the one with no origination fee wins.
+      </p>
+    </div>
+  );
+
+  const right = (
+    <div>
+      <div style={{
+        fontFamily: SB.mono, fontSize: 10, letterSpacing: '0.24em',
+        color: SB.inkMute, fontWeight: 700,
+        marginTop: 18, marginBottom: 14,
+      }}>
+        PAGE III · RIGHT — QUOTES, ASCENDING BY COST
+      </div>
+
+      {ranked.length === 0 && (
+        <div style={{
+          padding: '28px 16px',
+          fontFamily: SB.mono, fontSize: 12,
+          color: SB.inkMute, textAlign: 'center',
+          border: `1px dashed ${SB.inkLine}`,
+        }}>
+          No matching lenders. Try a different filter.
+        </div>
+      )}
+
+      <div>
+        {ranked.map((l, i) => {
+          const rn = ['I','II','III','IV','V','VI','VII','VIII','IX','X'][i] || (i + 1);
+          const isBest = i === 0;
+          const rehypoBad = l.rehypothecation === true || l.rehypothecation === 'yes';
+          return (
+            <div key={l.id} style={{
+              padding: '14px 14px',
+              marginBottom: 10,
+              border: `1.5px ${isBest ? 'solid' : 'dashed'} ${isBest ? SB.ink : SB.inkLine}`,
+              background: isBest ? SB.creamWarm : 'transparent',
+              position: 'relative',
+            }}>
+              {isBest && (
+                <div style={{ position: 'absolute', top: -10, right: 14 }}>
+                  <div style={{
+                    background: SB.orange, color: SB.cream,
+                    padding: '3px 10px',
+                    fontFamily: SB.mono, fontSize: 10, fontWeight: 700,
+                    letterSpacing: '0.18em',
+                  }}>★ TOP QUOTE</div>
+                </div>
+              )}
+              <div style={{
+                display: 'grid', gridTemplateColumns: '28px 1fr auto',
+                gap: 12, alignItems: 'baseline',
+              }}>
+                <div style={{ fontFamily: SB.serif, fontStyle: 'italic', fontSize: 18, color: SB.orange, fontWeight: 500 }}>{rn}</div>
+                <div>
+                  <div style={{ fontFamily: SB.serif, fontSize: 20, fontWeight: 600, color: SB.ink, letterSpacing: '-0.01em', lineHeight: 1 }}>
+                    {l.name}
+                  </div>
+                  <div style={{ display: 'flex', gap: 5, marginTop: 8, flexWrap: 'wrap' }}>
+                    <Pill color={isBest ? SB.forest : SB.ink} filled={isBest}>{badgeFor(l)}</Pill>
+                    {l.isTiered && <Pill color={SB.orange}>TIERED</Pill>}
+                  </div>
+                </div>
+                <div style={{ textAlign: 'right' }}>
+                  <div style={{ fontFamily: SB.mono, fontSize: 18, fontWeight: 700, color: SB.orange, letterSpacing: '-0.01em' }}>
+                    {l.effectiveApr.toFixed(2)}%
+                  </div>
+                  <div style={{ fontFamily: SB.mono, fontSize: 10.5, color: SB.inkSoft, marginTop: 2 }}>
+                    {fmtMoney(l.totalCost, currency, CURRENCY_META, live.btcUsd)} · 12mo
+                  </div>
+                </div>
+              </div>
+              <div style={{
+                display: 'grid', gridTemplateColumns: '1fr 1fr 1fr',
+                marginTop: 12, paddingTop: 12,
+                borderTop: `1px dotted ${SB.inkLine}`,
+              }}>
+                <Term k="MIN" v={'$' + fmtNum(l.minLoanUsd || 0)} />
+                <Term k="TERM" v={(l.term || '12mo').replace(/, prepayable anytime/i, '').slice(0, 16)} />
+                <Term k="CUSTODY" v={custodyShort(l)} />
+              </div>
+              {l.notes && (
+                <div style={{
+                  marginTop: 10,
+                  fontFamily: SB.sans, fontSize: 12, lineHeight: 1.5,
+                  color: SB.inkSoft, textWrap: 'pretty',
+                }}>{l.notes}</div>
+              )}
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 10 }}>
+                {l.originationFeePctEffective > 0 && (
+                  <span style={flagStyle(SB.orange)}>{l.originationFeePctEffective}% ORIG FEE</span>
+                )}
+                {l.originationFeePctEffective === 0 && (
+                  <span style={flagStyle(SB.forest)}>NO ORIG FEE</span>
+                )}
+                {l.custodyType === 'multisig' && <span style={flagStyle(SB.forest)}>MULTISIG</span>}
+                {l.rehypothecation === 'no' && <span style={flagStyle(SB.forest)}>NO REHYPO</span>}
+                {rehypoBad && <span style={flagStyle(SB.rust)}>⚠ REHYPO</span>}
+              </div>
+              <div style={{
+                display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                marginTop: 14, paddingTop: 12,
+                borderTop: `1px dashed ${SB.inkLine}`,
+              }}>
+                <div style={{
+                  fontFamily: SB.mono, fontSize: 10,
+                  color: SB.inkMute, letterSpacing: '0.05em',
+                }}>
+                  {isBest ? 'WE RECOMMEND THIS QUOTE' : 'compare terms before applying'}
+                </div>
+                <a
+                  href={l.referralUrl || '#'}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    fontFamily: SB.mono, fontSize: 12, fontWeight: 700,
+                    letterSpacing: '0.16em',
+                    color: SB.ink, textDecoration: 'none',
+                    borderBottom: `1.5px solid ${SB.orange}`,
+                    paddingBottom: 2, cursor: 'pointer',
+                  }}>APPLY →</a>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+
+  return (
+    <DesktopSpreadFrame
+      left={left}
+      right={right}
+      active="lender"
+      currentPage="III"
+      pageOf="IV"
+      rightSlot={rightSlot}
+      footerSource={live.source || 'mempool.space'}
+      footerUpdated={lastUpdated}
+    />
+  );
 }

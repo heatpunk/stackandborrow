@@ -21,7 +21,9 @@ import LendersPage   from './pages/Lenders.jsx';
 import AboutPage     from './pages/About.jsx';
 import LandingPage   from './pages/Landing.jsx';
 import { VoidState404 } from './pages/Void.jsx';
-import { SB } from './system/tokens.js';
+import { SB, ensureThemeCss } from './system/tokens.js';
+import { ThemeProvider } from './system/theme.jsx';
+import { MobileThemeToggleCorner } from './system/components.jsx';
 
 // Loads our two webfonts once at the document level.
 function ensureFonts() {
@@ -32,8 +34,7 @@ function ensureFonts() {
   link.rel = 'stylesheet';
   link.href = 'https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500;1,9..144,600&family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500;600;700&display=swap';
   document.head.appendChild(link);
-  // Make the page background match the stage by default.
-  document.body.style.background = SB.stage;
+  // Background tracks the active theme via CSS var (set by ensureThemeCss).
   document.body.style.margin = '0';
   document.body.style.fontFamily = "'Geist', system-ui, sans-serif";
   document.body.style.webkitFontSmoothing = 'antialiased';
@@ -87,6 +88,7 @@ class ErrorBoundary extends React.Component {
 
 export default function App() {
   ensureFonts();
+  ensureThemeCss();
   const route = useHashRoute();
   const live = useLivePrices();
   const { lenders, lastUpdated } = useLenders();
@@ -150,7 +152,12 @@ export default function App() {
     page = <VoidState404 attemptedPath={route} />;
   }
 
-  return <ErrorBoundary>{page}</ErrorBoundary>;
+  return (
+    <ThemeProvider>
+      <ErrorBoundary>{page}</ErrorBoundary>
+      <MobileThemeToggleCorner />
+    </ThemeProvider>
+  );
 }
 
 function readStoredCurrency(fallback) {
