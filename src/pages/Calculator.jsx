@@ -626,7 +626,8 @@ function Projection({ spot, cagr, collateralBtc, totalOwedUsd, collateralBtcAfte
             </div>
             <div style={{
               fontFamily: SB.serif,
-              fontSize: 20, fontWeight: 600,
+              fontSize: 14 + i * 3.5,
+              fontWeight: 600,
               marginTop: 4,
               color: m.val < 0 ? SB.rust : (i === 3 ? SB.forest : SB.ink),
               letterSpacing: '-0.02em',

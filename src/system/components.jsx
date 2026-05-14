@@ -315,7 +315,7 @@ export function Row({ label, value, sub, valueStyle = {}, labelStyle = {} }) {
           {'.'.repeat(300)}
         </span>
       </div>
-      <div style={{ textAlign: 'right', flexShrink: 0 }}>
+      <div style={{ textAlign: 'right', flexShrink: 0, minWidth: 110 }}>
         <div style={{
           fontFamily: SB.mono,
           fontSize: 12, fontWeight: 600,

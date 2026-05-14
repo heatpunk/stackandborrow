@@ -880,10 +880,10 @@ function DesktopLandingLayout({
 
       <div style={{ padding: '0 2px' }}>
         {[
-          ['I.',   'Honest lender ranking',  '9 lenders. Ranked by total cost only. Affiliate commissions never enter the algorithm — they fund hosting.'],
+          ['I.',   'Honest lender ranking',  'Lenders ranked by total cost only. Affiliate commissions never enter the algorithm — they fund hosting.'],
           ['II.',  'Tax-aware comparison',   'Sell vs borrow, net of capital gains. We bake your jurisdiction in.'],
           ['III.', 'Multi-year projection',  '4 horizons × 3 scenarios. Saylor, Wood, or Schiff as your projector.'],
-          ['IV.',  'Liquidation alerts',     'Live price-drop math. Six 50%+ drawdowns since 2013 — not "if," "when."'],
+          ['IV.',  'Liquidation alerts',     'Live price-drop math. Six 50%+ drawdowns since 2013. Not if, when.'],
         ].map(([no, t, sub]) => (
           <div key={no} style={{
             display: 'grid',
@@ -963,7 +963,7 @@ function DesktopLandingLayout({
         fontFamily: SB.mono, fontSize: 10,
         letterSpacing: '0.16em', color: SB.inkMute,
       }}>
-        <a href="#lenders" style={{ color: 'inherit', textDecoration: 'underline', textUnderlineOffset: 3 }}>see all 9 →</a>
+        <a href="#lenders" style={{ color: 'inherit', textDecoration: 'underline', textUnderlineOffset: 3 }}>see all →</a>
       </div>
 
       <DashedRule />
