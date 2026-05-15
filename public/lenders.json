@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-05-14",
+  "lastUpdated": "2026-05-15",
   "lenders": [
     {
       "id": "ledn",
@@ -221,6 +221,121 @@
       "notes": "Requires $1,000/year Xapo Bank membership (includes other banking services). Variable rate is unusual in BTC lending — pricing depends on Fed rates. Strong custody model with no rehypothecation. Maximum 1 active loan at a time. $1M max per loan, $5M with custom approval.",
       "badge": "Bank-grade custody",
       "referralUrl": "https://www.xapobank.com"
+    },
+    {
+      "id": "hodlhodl",
+      "name": "Hodl Hodl",
+      "country": ["global"],
+      "excluded": [],
+      "minLoanUsd": 50,
+      "maxLtv": 80,
+      "rateTiers": [
+        { "maxLoanUsd": null, "aprPct": 12.0 }
+      ],
+      "originationFeePct": 1.5,
+      "feeWaivedFor": [],
+      "custody": "Non-custodial P2P multisig escrow. Borrower deposits BTC directly from their own wallet into a multisig contract co-signed by borrower, lender, and Hodl Hodl as arbiter. No KYC.",
+      "custodyType": "multisig",
+      "rehypothecation": "no",
+      "btcOnly": true,
+      "term": "1 to 12 months, set per contract",
+      "rollover": "New contract required at maturity",
+      "repayment": "Crypto-to-crypto only — borrow USDT, USDC, L-BTC, or WBTC against BTC collateral; no fiat. Repay at maturity or per individual contract terms. Bitcoin collateral released from multisig once repayment is confirmed by lender.",
+      "notes": "P2P marketplace — APR set by individual lenders, typical range 10–15%. Origination fee is 1% for 1–5 month terms and 1.5% for 6–12 month terms, paid by borrower into escrow. No KYC and no credit check; $50 minimum. 5% forced-liquidation fee if collateral has to be sold. No fiat — only crypto-to-crypto loans.",
+      "badge": "No-KYC P2P",
+      "referralUrl": "https://lend.hodlhodl.com"
+    },
+    {
+      "id": "lygos",
+      "name": "Lygos",
+      "country": ["global"],
+      "excluded": [],
+      "minLoanUsd": 25000,
+      "maxLtv": 70,
+      "rateTiers": [
+        { "maxLoanUsd": null, "aprPct": 10.0 }
+      ],
+      "originationFeePct": 0,
+      "feeWaivedFor": [],
+      "custody": "Non-custodial via Discreet Log Contracts (DLCs). BTC secured in a native 2-of-2 script — neither Lygos nor the lender can move the bitcoin unilaterally.",
+      "custodyType": "multisig",
+      "rehypothecation": "no",
+      "btcOnly": true,
+      "term": "Flexible; repay any time",
+      "rollover": "Refinance available",
+      "repayment": "USDC or USDT delivered within 30 minutes of verification. Repay any time with no prepayment penalty. Initial LTV 50–70%, at-risk alert at 80%, automatic liquidation at 90% (no mandatory margin call).",
+      "notes": "Institutional-grade non-custodial design using DLCs. Loans from $25K up to $100M. No origination fee, no admin fee — the rate you see is the rate you pay. Launched August 2025 (newer entrant). Availability described as 'may not be available in all jurisdictions' — confirm before applying.",
+      "badge": "DLC non-custodial",
+      "referralUrl": "https://www.lygos.finance"
+    },
+    {
+      "id": "surge",
+      "name": "Surge",
+      "country": ["global"],
+      "excluded": [],
+      "minLoanUsd": 1000,
+      "maxLtv": 50,
+      "rateTiers": [
+        { "maxLoanUsd": null, "aprPct": 6.9 }
+      ],
+      "originationFeePct": 0,
+      "feeWaivedFor": [],
+      "custody": "Non-custodial Taproot vault. BTC locked under programmable Taproot scripts that users can verify on-chain. Zero rehypothecation — collateral remains locked where deposited.",
+      "custodyType": "multisig",
+      "rehypothecation": "no",
+      "btcOnly": true,
+      "term": "Open-ended credit line, no fixed maturity",
+      "rollover": "Revolving — repay and re-draw",
+      "repayment": "Receive funds as USDC (bank and card coming). Repay any time without penalty. 6.9% variable APR or 9.9% fixed. Stablecoin liquidity drawn from a pool on Base, with Ethereum routing supported via CCTP v2.",
+      "notes": "Bitcoin-native credit market — Taproot vaults with rates, liquidation and settlement coordinated by audited code rather than custodians. Lowest published BTC-backed APR at 6.9% variable / 9.9% fixed. Max LTV 50% (the team notes this is 'expanding'). Globally accessible per the site; newer platform.",
+      "badge": "Lowest variable APR",
+      "referralUrl": "https://www.surge.credit"
+    },
+    {
+      "id": "wirex",
+      "name": "Wirex",
+      "country": ["eu", "uk"],
+      "excluded": [],
+      "minLoanUsd": 50,
+      "maxLtv": 70,
+      "rateTiers": [
+        { "maxLoanUsd": null, "aprPct": 12.0 }
+      ],
+      "originationFeePct": 0,
+      "feeWaivedFor": [],
+      "custody": "Custodial. Wirex holds the collateral. Rehypothecation policy not publicly disclosed; assume yes for a CeFi credit-line product.",
+      "custodyType": "custodial",
+      "rehypothecation": "yes",
+      "btcOnly": false,
+      "term": "Open-ended credit line; revolving",
+      "rollover": "Revolving credit line",
+      "repayment": "Borrow up to 70% of collateral value in NXUSD, USDC, USDT, or DAI. Interest accrues daily and is charged to the outstanding balance monthly, repayable in stablecoin. BTC and ETH accepted as collateral.",
+      "notes": "EU/UK-focused; not available to US residents. APR typically 12–17% with occasional 0% promotional offers. Linked to the Wirex card so the credit line can be spent directly at merchants. Multi-crypto collateral (BTC + ETH). Custodial CeFi model — origination fee and rehypothecation policy are not transparent.",
+      "badge": "Card-linked credit",
+      "referralUrl": "https://wirexapp.com/crypto-credit"
+    },
+    {
+      "id": "nexo",
+      "name": "Nexo",
+      "country": ["us", "eu", "ca", "global"],
+      "excluded": [],
+      "minLoanUsd": 50,
+      "maxLtv": 50,
+      "rateTiers": [
+        { "maxLoanUsd": null, "aprPct": 18.9 }
+      ],
+      "originationFeePct": 0,
+      "feeWaivedFor": [],
+      "custody": "Custodial. BTC, ETH, and 100+ assets accepted as collateral. Nexo rehypothecates collateral to fund the yield product paid to depositors.",
+      "custodyType": "custodial",
+      "rehypothecation": "yes",
+      "btcOnly": false,
+      "term": "Open-ended credit line, no fixed maturity",
+      "rollover": "Revolving credit line",
+      "repayment": "Crypto or stablecoin (USDT, USDC) repayment; partial or full repayment any time. Bank transfers available for fiat withdrawal. Interest accrued daily; charged only on amount actually borrowed.",
+      "notes": "Base-tier (no NEXO token) APR is 18.9% — drops to 10.9% at Gold and 2.9% at Platinum, which requires holding 10%+ of portfolio in NEXO tokens (itself a real cost). 50% LTV for BTC/ETH; varies by asset (up to 90% for USDC, down to 15% for NEXO). 150+ jurisdictions; US service rolling out via Bakkt partnership in 2026. Multi-collateral CeFi, fully custodial with rehypothecation.",
+      "badge": "150+ countries",
+      "referralUrl": "https://nexo.com"
     }
   ]
 }
