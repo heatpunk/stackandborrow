@@ -662,7 +662,7 @@ function DesktopLandingLayout({
         maxWidth: 460,
         textWrap: 'pretty',
       }}>
-        Type any amount. We compare nine bitcoin-backed lenders and
+        Type any amount. We compare bitcoin-backed lenders and
         show what the loan really costs versus selling — net of
         capital gains tax, denominated in sats.
       </p>
