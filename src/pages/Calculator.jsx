@@ -417,6 +417,7 @@ export default function CalculatorPage({
         collateralBtc={collateralBtc}
         totalOwedUsd={totalOwedUsd}
         collateralBtcAfterSell={collateralBtcAfterSell}
+        currency={currency}
       />
 
       <DashedRule label="VERDICT" />
@@ -457,7 +458,7 @@ export default function CalculatorPage({
               color: SB.ink, letterSpacing: '-0.02em', lineHeight: 1,
               fontVariantNumeric: 'tabular-nums',
             }}>
-              {deltaUsd >= 0 ? '+' : ''}{fmtMoneyCompact(deltaUsd)}
+              {deltaUsd >= 0 ? '+' : ''}{fmtMoneyCompact(deltaUsd, currency, CURRENCY_META, btcSpotUsd)}
             </div>
             <div style={{
               fontFamily: SB.mono, fontSize: 9,
@@ -574,7 +575,7 @@ export default function CalculatorPage({
 // ============================================================
 // Projection — small SVG sparkline of borrow vs sell paths.
 // ============================================================
-function Projection({ spot, cagr, collateralBtc, totalOwedUsd, collateralBtcAfterSell }) {
+function Projection({ spot, cagr, collateralBtc, totalOwedUsd, collateralBtcAfterSell, currency }) {
   const W = 340, H = 130, P = 12;
   const years = 21;
 
@@ -672,7 +673,7 @@ function Projection({ spot, cagr, collateralBtc, totalOwedUsd, collateralBtcAfte
               lineHeight: 1,
               fontVariantNumeric: 'tabular-nums',
             }}>
-              {fmtMoneyCompact(m.val)}
+              {fmtMoneyCompact(m.val, currency, CURRENCY_META, spot)}
             </div>
           </div>
         ))}
@@ -1116,6 +1117,7 @@ function DesktopCalculatorLayout(props) {
         collateralBtc={collateralBtc}
         totalOwedUsd={totalOwedUsd}
         collateralBtcAfterSell={collateralBtcAfterSell}
+        currency={currency}
       />
 
       <DashedRule label="VERDICT" />
@@ -1156,7 +1158,7 @@ function DesktopCalculatorLayout(props) {
               color: SB.ink, letterSpacing: '-0.02em', lineHeight: 1,
               fontVariantNumeric: 'tabular-nums',
             }}>
-              {deltaUsd >= 0 ? '+' : ''}{fmtMoneyCompact(deltaUsd)}
+              {deltaUsd >= 0 ? '+' : ''}{fmtMoneyCompact(deltaUsd, currency, CURRENCY_META, btcSpotUsd)}
             </div>
             <div style={{
               fontFamily: SB.mono, fontSize: 10,
