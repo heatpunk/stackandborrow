@@ -1185,6 +1185,43 @@ function LongViewSection({
             />
           </div>
 
+          {/* Stack value box — fiat verdict of what's left, mirrors § IV NET WORTH box */}
+          {sane && !underwater && btcRemaining > 0 && (
+            <div style={{
+              display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+              padding: '14px 12px 12px', marginTop: 10,
+              border: `1.5px dashed ${SB.forest}`,
+              background: SB.forestWash,
+            }}>
+              <div>
+                <div style={{
+                  fontFamily: SB.mono, fontSize: 10.5, fontWeight: 700,
+                  letterSpacing: '0.2em', color: SB.forest,
+                }}>STACK VALUE @ Y{years}</div>
+                <div style={{
+                  fontFamily: SB.mono, fontSize: 9,
+                  color: SB.inkMute, marginTop: 3, letterSpacing: '0.06em',
+                }}>at projected price · {persona} · {caseId} case</div>
+              </div>
+              <div style={{ textAlign: 'right' }}>
+                <div style={{
+                  fontFamily: SB.serif, fontSize: 26, fontWeight: 600,
+                  color: SB.forest, letterSpacing: '-0.02em', lineHeight: 1,
+                  fontVariantNumeric: 'tabular-nums',
+                }}>
+                  <FormattedMoney usd={btcRemaining * btcPriceAtN} currency={currency} spot={btcSpotUsd} />
+                </div>
+                <div style={{
+                  fontFamily: SB.mono, fontSize: 9,
+                  color: SB.forest,
+                  marginTop: 4, fontWeight: 700, letterSpacing: '0.1em',
+                }}>
+                  ↑ STACK YOU KEPT
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Bear-case caveat */}
           {underwater && activeCagr < 0 && (
             <div style={{
