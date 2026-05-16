@@ -18,50 +18,25 @@ import {
 } from '../system/components.jsx';
 import { useIsDesktop } from '../system/theme.jsx';
 import { DesktopSpreadFrame } from '../system/desktop.jsx';
-import { GLOSSARY, GLOSSARY_ORDER } from '../lib/glossary.js';
+import { GLOSSARY_ORDER } from '../lib/glossary.js';
+import { useT } from '../i18n/index.jsx';
 
+// Principles & FAQ structure: the array carries the layout-only
+// data (numerals, identity); strings come from i18n via the id.
 const PRINCIPLES = [
-  {
-    no: 'I',
-    title: 'BTC-only first. Then total cost. Period.',
-    body: 'BTC-only lenders rank above multi-collateral, always. Within each tier, lowest total cost wins — with custody-risk and membership fees baked in. Affiliate commissions never enter the algorithm. If a lender that pays us nothing offers you the best deal, they win.',
-  },
-  {
-    no: 'II',
-    title: 'Sats first. Everything else is a translation.',
-    body: 'The headline number is always "sats you keep." Fiat conversions update from live BTC price. You can switch to USD, EUR, SEK and back; the underlying math is denominated in sats.',
-  },
-  {
-    no: 'III',
-    title: 'Tax-aware by default.',
-    body: 'To net $N in cash, you must sell enough BTC to cover $N + capital gains tax. We bake the tax into every comparison. You can edit the rate if your jurisdiction differs.',
-  },
-  {
-    no: 'IV',
-    title: 'No tracking. No accounts. No data leaves your browser.',
-    body: 'Your inputs are saved to localStorage on your device. There are no analytics, no third-party scripts, no signup. The site is a folder of HTML and a JSON of lender rates.',
-  },
-  {
-    no: 'V',
-    title: 'Honest about the risks.',
-    body: 'BTC has dropped >50% from a 12-month high six times since 2013. Borrowing at 50% LTV means a 50% drawdown is your liquidation event. Six times in twelve years is not if but when.',
-  },
+  { id: 'i',   no: 'I' },
+  { id: 'ii',  no: 'II' },
+  { id: 'iii', no: 'III' },
+  { id: 'iv',  no: 'IV' },
+  { id: 'v',   no: 'V' },
 ];
 
-const FAQ = [
-  ['Q: How is the site funded?',
-   'Some lender links are affiliate. When you click through and take a loan, the lender pays a referral fee. This funds hosting. Ranking is unaffected — pick whichever route you prefer.'],
-  ['Q: Where does the BTC price come from?',
-   'mempool.space, polled every five minutes. Fallback is utxoracle.io. If both fail we use a baked-in fallback (visibly marked).'],
-  ['Q: How often are rates updated?',
-   'Quarterly target, sooner when a lender shuts down or moves materially. Last verified date is stamped on the calculator footer.'],
-  ['Q: Found something wrong?',
-   'feedback@stackandborrow.com — short emails get a faster response.'],
-];
+const FAQ_IDS = ['funding', 'prices', 'rates', 'feedback'];
 
 export default function AboutPage() {
   const isDesktop = useIsDesktop();
   if (isDesktop) return <DesktopAboutLayout />;
+  const t = useT();
 
   return (
     <PaperFrame>
@@ -73,8 +48,8 @@ export default function AboutPage() {
             fontFamily: SB.mono, fontSize: 9, letterSpacing: '0.12em',
             color: SB.inkMute, textAlign: 'right',
           }}>
-            <div style={{ color: SB.ink, fontWeight: 700 }}>READ THIS FIRST</div>
-            <div style={{ marginTop: 4 }}>5-MINUTE READ</div>
+            <div style={{ color: SB.ink, fontWeight: 700 }}>{t('about.meta.readFirst')}</div>
+            <div style={{ marginTop: 4 }}>{t('about.meta.readTime')}</div>
           </div>
         }
       />
@@ -85,39 +60,37 @@ export default function AboutPage() {
           fontFamily: SB.mono, fontSize: 9, letterSpacing: '0.22em',
           color: SB.inkMute, fontWeight: 700, marginBottom: 8,
         }}>
-          INSERT · III · OF III
+          {t('about.meta.insert')}
         </div>
         <h1 style={{
           margin: 0,
           fontFamily: SB.serif, fontSize: 34, fontWeight: 600,
           lineHeight: 1.02, letterSpacing: '-0.025em', color: SB.ink,
         }}>
-          Terms of<br />
-          <span style={{ color: SB.orange, fontStyle: 'italic', fontWeight: 500 }}>philosophy.</span>
+          {t('about.hero.titleLine1')}<br />
+          <span style={{ color: SB.orange, fontStyle: 'italic', fontWeight: 500 }}>{t('about.hero.titleLine2')}</span>
         </h1>
         <p style={{
           marginTop: 12, marginBottom: 0,
           fontFamily: SB.sans, fontSize: 13, lineHeight: 1.55,
           color: SB.inkSoft, textWrap: 'pretty',
         }}>
-          A calculator for the question every long-term bitcoiner faces
-          eventually: should I sell some sats, or borrow against them?
-          What follows is how we decided to answer.
+          {t('about.hero.subtitle')}
         </p>
 
         <div style={{
           position: 'absolute', top: -10, right: -8,
           transform: 'rotate(8deg)',
         }}>
-          <Stamp line1="NO" line2="BS" line3="★ SATS FIRST ★" size={76} />
+          <Stamp line1={t('about.heroStamp.line1')} line2={t('about.heroStamp.line2')} line3={t('about.heroStamp.line3')} size={76} />
         </div>
       </div>
 
-      <DashedRule label="THE PRINCIPLES" />
+      <DashedRule label={t('about.section.principles')} />
 
       <div>
         {PRINCIPLES.map((p) => (
-          <div key={p.no} style={{
+          <div key={p.id} style={{
             display: 'grid',
             gridTemplateColumns: '36px 1fr',
             gap: 12,
@@ -134,17 +107,17 @@ export default function AboutPage() {
                 fontFamily: SB.serif, fontSize: 17, fontWeight: 600,
                 color: SB.ink, letterSpacing: '-0.01em', lineHeight: 1.2,
                 marginBottom: 6,
-              }}>{p.title}</div>
+              }}>{t(`about.principle.${p.id}.title`)}</div>
               <div style={{
                 fontFamily: SB.sans, fontSize: 12, lineHeight: 1.55,
                 color: SB.inkSoft, textWrap: 'pretty',
-              }}>{p.body}</div>
+              }}>{t(`about.principle.${p.id}.body`)}</div>
             </div>
           </div>
         ))}
       </div>
 
-      <DashedRule label="WHO SHOULDN'T USE THIS" />
+      <DashedRule label={t('about.section.notForYou')} />
 
       <div style={{
         padding: '12px 14px',
@@ -155,42 +128,42 @@ export default function AboutPage() {
           fontFamily: SB.mono, fontSize: 9, letterSpacing: '0.2em',
           color: SB.rust, fontWeight: 700, marginBottom: 10,
         }}>
-          ⚠ DO NOT PROCEED IF
+          {t('about.warning.heading')}
         </div>
         <ul style={{
           margin: 0, paddingLeft: 18,
           fontFamily: SB.sans, fontSize: 12, lineHeight: 1.6,
           color: SB.ink, textWrap: 'pretty',
         }}>
-          <li>You'd be devastated by a 50% BTC drawdown (which has happened six times)</li>
-          <li>You don't understand rehypothecation and which lenders practice it</li>
-          <li>You're borrowing to <i>buy more bitcoin</i>. That's leverage, not strategy.</li>
+          <li>{t('about.warning.item1')}</li>
+          <li>{t('about.warning.item2')}</li>
+          <li>{t('about.warning.item3.before')}<i>{t('about.warning.item3.italic')}</i>{t('about.warning.item3.after')}</li>
         </ul>
       </div>
 
-      <DashedRule label="THE QUESTIONS" />
+      <DashedRule label={t('about.section.questions')} />
 
       <div>
-        {FAQ.map(([q, a], i) => (
-          <div key={i} style={{
+        {FAQ_IDS.map((id) => (
+          <div key={id} style={{
             padding: '12px 0',
             borderBottom: `1px dotted ${SB.inkLine}`,
           }}>
             <div style={{
               fontFamily: SB.serif, fontSize: 14, fontWeight: 600,
               color: SB.ink, marginBottom: 6, letterSpacing: '-0.005em',
-            }}>{q}</div>
+            }}>{t(`about.faq.${id}.q`)}</div>
             <div style={{
               fontFamily: SB.sans, fontSize: 12, lineHeight: 1.55,
               color: SB.inkSoft, textWrap: 'pretty',
-            }}>{a}</div>
+            }}>{t(`about.faq.${id}.a`)}</div>
           </div>
         ))}
       </div>
 
       <GlossarySection />
 
-      <DashedRule label="SIGNATURES" />
+      <DashedRule label={t('about.section.signatures')} />
 
       <div style={{
         display: 'grid', gridTemplateColumns: '1fr 1fr',
@@ -201,12 +174,12 @@ export default function AboutPage() {
             fontFamily: SB.serif, fontStyle: 'italic',
             fontSize: 18, color: SB.ink, lineHeight: 1,
             paddingBottom: 4,
-          }}>~ signed</div>
+          }}>{t('about.sig.signed')}</div>
           <div style={{
             fontFamily: SB.mono, fontSize: 8.5,
             letterSpacing: '0.18em', color: SB.inkMute,
             fontWeight: 600,
-          }}>THE AUTHOR</div>
+          }}>{t('about.sig.signedRole')}</div>
         </div>
         <div style={{ paddingTop: 28, borderTop: `1.5px solid ${SB.ink}` }}>
           <div style={{
@@ -218,16 +191,16 @@ export default function AboutPage() {
             fontFamily: SB.mono, fontSize: 8.5,
             letterSpacing: '0.18em', color: SB.inkMute,
             fontWeight: 600,
-          }}>DOMAIN OF RECORD</div>
+          }}>{t('about.sig.domainRole')}</div>
         </div>
       </div>
 
       <div style={{ display: 'flex', justifyContent: 'center', padding: '8px 0 4px' }}>
-        <Stamp line1="VERIFIED" line2="CALC" line3="★ MAY 2026 ★" size={106} rotate={4} />
+        <Stamp line1={t('about.verifiedStamp.line1')} line2={t('about.verifiedStamp.line2')} line3={t('about.verifiedStamp.line3')} size={106} rotate={4} />
       </div>
 
       <div style={{ marginTop: 18 }}>
-        <Button href="#calc">RUN THE CALCULATOR</Button>
+        <Button href="#calc">{t('common.cta.runCalculator')}</Button>
       </div>
 
       <FineFooter />
@@ -243,13 +216,14 @@ export default function AboutPage() {
 // signatures, verified stamp, CTA.
 // ============================================================
 function DesktopAboutLayout() {
+  const t = useT();
   const rightSlot = (
     <div style={{
       fontFamily: SB.mono, fontSize: 10, letterSpacing: '0.14em',
       color: SB.inkMute, textAlign: 'right',
     }}>
-      <div style={{ color: SB.ink, fontWeight: 700 }}>READ THIS FIRST</div>
-      <div style={{ marginTop: 5 }}>5-MINUTE READ</div>
+      <div style={{ color: SB.ink, fontWeight: 700 }}>{t('about.meta.readFirst')}</div>
+      <div style={{ marginTop: 5 }}>{t('about.meta.readTime')}</div>
     </div>
   );
 
@@ -260,7 +234,7 @@ function DesktopAboutLayout() {
         color: SB.inkMute, fontWeight: 700,
         marginTop: 18, marginBottom: 14,
       }}>
-        PAGE IV · LEFT — THE PRINCIPLES
+        {t('about.desktop.leftLabel')}
       </div>
 
       <div style={{ position: 'relative' }}>
@@ -268,32 +242,30 @@ function DesktopAboutLayout() {
           fontFamily: SB.mono, fontSize: 10, letterSpacing: '0.22em',
           color: SB.inkMute, fontWeight: 700, marginBottom: 10,
         }}>
-          INSERT · III · OF III
+          {t('about.meta.insert')}
         </div>
         <h1 style={{
           margin: 0,
           fontFamily: SB.serif, fontSize: 64, fontWeight: 600,
           lineHeight: 0.98, letterSpacing: '-0.03em', color: SB.ink,
         }}>
-          Terms of<br />
-          <span style={{ color: SB.orange, fontStyle: 'italic', fontWeight: 500 }}>philosophy.</span>
+          {t('about.hero.titleLine1')}<br />
+          <span style={{ color: SB.orange, fontStyle: 'italic', fontWeight: 500 }}>{t('about.hero.titleLine2')}</span>
         </h1>
         <p style={{
           marginTop: 20, marginBottom: 0,
           fontFamily: SB.sans, fontSize: 15, lineHeight: 1.55,
           color: SB.inkSoft, textWrap: 'pretty', maxWidth: 460,
         }}>
-          A calculator for the question every long-term bitcoiner faces
-          eventually: should I sell some sats, or borrow against them?
-          What follows is how we decided to answer.
+          {t('about.hero.subtitle')}
         </p>
       </div>
 
-      <DashedRule label="THE PRINCIPLES" />
+      <DashedRule label={t('about.section.principles')} />
 
       <div>
         {PRINCIPLES.map((p) => (
-          <div key={p.no} style={{
+          <div key={p.id} style={{
             display: 'grid',
             gridTemplateColumns: '44px 1fr',
             gap: 16,
@@ -310,11 +282,11 @@ function DesktopAboutLayout() {
                 fontFamily: SB.serif, fontSize: 19, fontWeight: 600,
                 color: SB.ink, letterSpacing: '-0.01em', lineHeight: 1.2,
                 marginBottom: 8,
-              }}>{p.title}</div>
+              }}>{t(`about.principle.${p.id}.title`)}</div>
               <div style={{
                 fontFamily: SB.sans, fontSize: 13, lineHeight: 1.55,
                 color: SB.inkSoft, textWrap: 'pretty',
-              }}>{p.body}</div>
+              }}>{t(`about.principle.${p.id}.body`)}</div>
             </div>
           </div>
         ))}
@@ -329,7 +301,7 @@ function DesktopAboutLayout() {
         color: SB.inkMute, fontWeight: 700,
         marginTop: 18, marginBottom: 14,
       }}>
-        PAGE IV · RIGHT — CAVEATS, Q&amp;A, SIGNED
+        {t('about.desktop.rightLabel')}
       </div>
 
       <div style={{
@@ -341,42 +313,42 @@ function DesktopAboutLayout() {
           fontFamily: SB.mono, fontSize: 10, letterSpacing: '0.2em',
           color: SB.rust, fontWeight: 700, marginBottom: 12,
         }}>
-          ⚠ DO NOT PROCEED IF
+          {t('about.warning.heading')}
         </div>
         <ul style={{
           margin: 0, paddingLeft: 22,
           fontFamily: SB.sans, fontSize: 13, lineHeight: 1.65,
           color: SB.ink, textWrap: 'pretty',
         }}>
-          <li>You'd be devastated by a 50% BTC drawdown (which has happened six times)</li>
-          <li>You don't understand rehypothecation and which lenders practice it</li>
-          <li>You're borrowing to <i>buy more bitcoin</i>. That's leverage, not strategy.</li>
+          <li>{t('about.warning.item1')}</li>
+          <li>{t('about.warning.item2')}</li>
+          <li>{t('about.warning.item3.before')}<i>{t('about.warning.item3.italic')}</i>{t('about.warning.item3.after')}</li>
         </ul>
       </div>
 
-      <DashedRule label="THE QUESTIONS" />
+      <DashedRule label={t('about.section.questions')} />
 
       <div>
-        {FAQ.map(([q, a], i) => (
-          <div key={i} style={{
+        {FAQ_IDS.map((id) => (
+          <div key={id} style={{
             padding: '14px 0',
             borderBottom: `1px dotted ${SB.inkLine}`,
           }}>
             <div style={{
               fontFamily: SB.serif, fontSize: 16, fontWeight: 600,
               color: SB.ink, marginBottom: 8, letterSpacing: '-0.005em',
-            }}>{q}</div>
+            }}>{t(`about.faq.${id}.q`)}</div>
             <div style={{
               fontFamily: SB.sans, fontSize: 13, lineHeight: 1.55,
               color: SB.inkSoft, textWrap: 'pretty',
-            }}>{a}</div>
+            }}>{t(`about.faq.${id}.a`)}</div>
           </div>
         ))}
       </div>
 
       <GlossarySection />
 
-      <DashedRule label="SIGNATURES" />
+      <DashedRule label={t('about.section.signatures')} />
 
       <div style={{
         display: 'grid', gridTemplateColumns: '1fr 1fr',
@@ -387,12 +359,12 @@ function DesktopAboutLayout() {
             fontFamily: SB.serif, fontStyle: 'italic',
             fontSize: 22, color: SB.ink, lineHeight: 1,
             paddingBottom: 6,
-          }}>~ signed</div>
+          }}>{t('about.sig.signed')}</div>
           <div style={{
             fontFamily: SB.mono, fontSize: 9.5,
             letterSpacing: '0.18em', color: SB.inkMute,
             fontWeight: 600,
-          }}>THE AUTHOR</div>
+          }}>{t('about.sig.signedRole')}</div>
         </div>
         <div style={{ paddingTop: 32, borderTop: `1.5px solid ${SB.ink}` }}>
           <div style={{
@@ -404,15 +376,15 @@ function DesktopAboutLayout() {
             fontFamily: SB.mono, fontSize: 9.5,
             letterSpacing: '0.18em', color: SB.inkMute,
             fontWeight: 600,
-          }}>DOMAIN OF RECORD</div>
+          }}>{t('about.sig.domainRole')}</div>
         </div>
       </div>
 
       <div style={{ display: 'flex', justifyContent: 'center', padding: '10px 0 16px' }}>
-        <Stamp line1="VERIFIED" line2="CALC" line3="★ MAY 2026 ★" size={130} rotate={4} />
+        <Stamp line1={t('about.verifiedStamp.line1')} line2={t('about.verifiedStamp.line2')} line3={t('about.verifiedStamp.line3')} size={130} rotate={4} />
       </div>
 
-      <Button href="#calculator">RUN THE CALCULATOR</Button>
+      <Button href="#calculator">{t('common.cta.runCalculator')}</Button>
     </div>
   );
 
@@ -435,38 +407,36 @@ function DesktopAboutLayout() {
 // this; font sizes scale via useIsDesktop.
 // ============================================================
 function GlossarySection() {
+  const t = useT();
   const isDesktop = useIsDesktop();
   const titleSize = isDesktop ? 16 : 14;
   const bodySize = isDesktop ? 13 : 12;
   return (
     <>
-      <DashedRule label="GLOSSARY" />
+      <DashedRule label={t('common.glossary.label')} />
       <div id="glossary" style={{ scrollMarginTop: 80 }}>
         <div style={{
           fontFamily: SB.mono, fontSize: 9.5, color: SB.inkMute,
           letterSpacing: '0.04em', lineHeight: 1.55,
           marginBottom: 6, marginTop: -2,
         }}>
-          Plain-language definitions for every term used on this site.
+          {t('about.glossary.intro')}
         </div>
-        {GLOSSARY_ORDER.map((key) => {
-          const term = GLOSSARY[key];
-          return (
-            <div key={key} style={{
-              padding: '12px 0',
-              borderBottom: `1px dotted ${SB.inkLine}`,
-            }}>
-              <div style={{
-                fontFamily: SB.serif, fontSize: titleSize, fontWeight: 600,
-                color: SB.ink, marginBottom: 6, letterSpacing: '-0.005em',
-              }}>{term.title}</div>
-              <div style={{
-                fontFamily: SB.sans, fontSize: bodySize, lineHeight: 1.55,
-                color: SB.inkSoft, textWrap: 'pretty',
-              }}>{term.body}</div>
-            </div>
-          );
-        })}
+        {GLOSSARY_ORDER.map((key) => (
+          <div key={key} style={{
+            padding: '12px 0',
+            borderBottom: `1px dotted ${SB.inkLine}`,
+          }}>
+            <div style={{
+              fontFamily: SB.serif, fontSize: titleSize, fontWeight: 600,
+              color: SB.ink, marginBottom: 6, letterSpacing: '-0.005em',
+            }}>{t(`glossary.${key}.title`)}</div>
+            <div style={{
+              fontFamily: SB.sans, fontSize: bodySize, lineHeight: 1.55,
+              color: SB.inkSoft, textWrap: 'pretty',
+            }}>{t(`glossary.${key}.body`)}</div>
+          </div>
+        ))}
       </div>
     </>
   );

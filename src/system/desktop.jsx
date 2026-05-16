@@ -17,6 +17,7 @@ import {
   FineFooter,
   SunMoonStamp,
 } from './components.jsx';
+import { useT } from '../i18n/index.jsx';
 
 export function DesktopSpreadFrame({
   left,
@@ -26,10 +27,12 @@ export function DesktopSpreadFrame({
   currentPage,
   pageOf,
   showSunMoon = true,
-  spineLabel = 'STACK & BORROW · BOOKLET · 2026',
+  spineLabel,
   footerSource,
   footerUpdated,
 }) {
+  const t = useT();
+  const resolvedSpineLabel = spineLabel ?? t('common.spineLabel');
   return (
     <PaperFrame maxWidth={1320} sidePad={60} innerPad="0 56px">
       <BrandHeader
@@ -100,7 +103,7 @@ export function DesktopSpreadFrame({
             background: SB.cream, padding: '4px 10px',
             zIndex: 2,
           }}>
-            {spineLabel}
+            {resolvedSpineLabel}
           </div>
         </div>
 

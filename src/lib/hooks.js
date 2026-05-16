@@ -36,6 +36,19 @@ export function detectCurrencyFromLocale() {
   return map[country] || 'USD';
 }
 
+// Detect a sensible default UI language from browser locale.
+// Returns one of the supported language codes; falls back to 'en'.
+// Mirrors detectCurrencyFromLocale — same input signal, different
+// mapping target. Used both on first paint and as the "View in <X>"
+// label when the visitor has manually picked English.
+const SUPPORTED_UI_LANGUAGES = ['en', 'sv', 'de', 'es', 'fr', 'pt'];
+export function detectLanguageFromLocale() {
+  if (typeof navigator === 'undefined') return 'en';
+  const locale = navigator.language || navigator.userLanguage || 'en';
+  const lang = locale.split('-')[0]?.toLowerCase() || 'en';
+  return SUPPORTED_UI_LANGUAGES.includes(lang) ? lang : 'en';
+}
+
 // Detect a region key for lender filtering.
 export function detectRegionFromCurrency(currency) {
   switch (currency) {
