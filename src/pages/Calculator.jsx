@@ -566,6 +566,19 @@ export default function CalculatorPage({
         fmt={fmt}
       />
 
+      <LongViewSection
+        lender={bestLender}
+        loanUsd={loanUsd}
+        collateralBtc={collateralBtc}
+        btcSpotUsd={btcSpotUsd}
+        activeCagr={activeCagr}
+        profileId={profileId}
+        caseId={caseId}
+        profiles={profiles}
+        currency={currency}
+        fmt={fmt}
+      />
+
       <FineFooter source={live.source} updated={lastUpdated} />
       <PageNav active="calc" />
       <div style={{ height: 14 }} />
@@ -918,6 +931,324 @@ function MaturityOption({ rn, label, primary, primarySub, right, rightSub, tone,
           marginTop: 3, letterSpacing: '0.14em', fontWeight: 700,
         }}>{rightSub}</div>
       </div>
+    </div>
+  );
+}
+
+// ============================================================
+// LongViewSection — § VII · stretch the loan beyond maturity.
+// A bonus calc for users who want to see what happens if they
+// keep rolling the loan year by year (and, optionally, draw a
+// fresh loan every year to live off BTC). Inherits the BTC
+// price profile from § III and the top-ranked lender from § V.
+// Collapsed by default — mirrors § VI's disclosure pattern.
+// ============================================================
+function LongViewSection({
+  lender, loanUsd, collateralBtc, btcSpotUsd,
+  activeCagr, profileId, caseId, profiles,
+  currency, fmt,
+}) {
+  const [open, setOpen] = useState(false);
+  const [years, setYears] = usePersistentState('longViewYears', 10);
+  const [livingOff, setLivingOff] = usePersistentState('longViewLivingOff', false);
+
+  if (!lender) return null;
+  if (!loanUsd || loanUsd <= 0) return null;
+
+  // === Math ===
+  // Per-year growth model. Origination is charged as a one-shot fee
+  // at the start of each rollover year (not folded into APR), so the
+  // compounding stays honest. Revolving lines have no rollover event,
+  // so no recurring origination.
+  const apr = lender.apr ?? 10;
+  const origPct = lender.originationFeePctEffective ?? 0;
+  const ease = lender.rolloverEase;
+  const annualFactor = 1 + apr / 100;
+  const reorigEachYear = ease !== 'revolving';
+
+  let owed = loanUsd;
+  for (let y = 1; y <= years; y++) {
+    if (livingOff && y > 1) owed += loanUsd;                       // fresh draw at start of year y
+    if (reorigEachYear)     owed = owed * (1 + origPct / 100);     // origination on rolled balance
+    owed = owed * annualFactor;                                    // 12 months of interest
+  }
+
+  const btcPriceAtN = projectBtcPrice(btcSpotUsd, activeCagr, years);
+  const sane = btcPriceAtN >= 1;                  // guard against negative CAGR over many years
+  const btcToSettle = sane ? owed / btcPriceAtN : null;
+  const btcRemaining = btcToSettle != null ? collateralBtc - btcToSettle : null;
+  const underwater = btcRemaining != null && btcRemaining < 0;
+
+  const priceMul = btcPriceAtN / btcSpotUsd;
+  const debtBase = livingOff ? loanUsd * years : loanUsd;
+  const debtMul = debtBase > 0 ? owed / debtBase : 0;
+  const stackPctLeft = btcRemaining != null && collateralBtc > 0
+    ? (btcRemaining / collateralBtc) * 100 : 0;
+
+  // Row II + footnote vary by lender's rolloverEase.
+  const easeLabel =
+    ease === 'revolving'    ? 'revolving line · no rollover'
+    : ease === 'approval'   ? 'refinance every 12 mo'
+    :                         'new loan every 12 mo';
+  const easeFootnote =
+    ease === 'revolving'    ? `Assumes ${lender.name} keeps the line open at today's APR. Interest compounds on whatever balance sits outstanding.`
+    : ease === 'approval'   ? `Assumes ${lender.name} keeps refinancing you at today's APR and ${origPct.toFixed(1)}% origination — approval not guaranteed.`
+    :                         `Each rollover is a brand-new loan application with ${lender.name} — approval not guaranteed. Numbers assume today's terms hold.`;
+
+  const persona = profiles[profileId]?.persona || profileId;
+  const yrLabel = years === 1 ? 'YEAR' : 'YEARS';
+
+  return (
+    <div style={{ marginTop: 14 }}>
+      <button
+        onClick={() => setOpen(!open)}
+        style={{
+          width: '100%',
+          background: 'transparent',
+          border: `1px dashed ${SB.inkLine}`,
+          padding: '10px 14px',
+          textAlign: 'left',
+          cursor: 'pointer',
+          fontFamily: SB.mono,
+          fontSize: 10.5, fontWeight: 700,
+          letterSpacing: '0.14em',
+          color: SB.inkSoft,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: 10,
+        }}
+        aria-expanded={open}
+      >
+        <span>PLAY WITH THE TIMELINE?</span>
+        <span style={{ color: SB.orange, letterSpacing: '0.08em' }}>
+          {open ? '▴ HIDE' : '▾ SHOW'}
+        </span>
+      </button>
+
+      {open && (
+        <>
+          <SectionHead
+            no="§ VII"
+            title="Long view"
+            subtitle={`${persona} · ${caseId} case · ${lender.name}`}
+          />
+          <div style={{
+            marginTop: -2, marginBottom: 10,
+            fontFamily: SB.mono, fontSize: 10, color: SB.inkSoft,
+            letterSpacing: '0.04em', lineHeight: 1.55,
+          }}>
+            Stretch the loan beyond maturity — what does it take to settle later?{' '}
+            <InfoIcon def={GLOSSARY.longView} />
+          </div>
+
+          {/* === Year slider === */}
+          <div style={{
+            padding: '10px 0 4px',
+            borderTop: `1px dotted ${SB.inkLine}`,
+          }}>
+            <div style={{
+              display: 'flex', alignItems: 'baseline', justifyContent: 'space-between',
+              marginBottom: 6,
+            }}>
+              <span style={{
+                fontFamily: SB.mono, fontSize: 9.5, fontWeight: 700,
+                letterSpacing: '0.16em', color: SB.inkSoft,
+              }}>SETTLE IN</span>
+              <span style={{
+                fontFamily: SB.serif, fontSize: 20, fontWeight: 600,
+                color: SB.orange, letterSpacing: '-0.01em',
+                fontVariantNumeric: 'tabular-nums',
+              }}>
+                {years}
+                <span style={{
+                  fontFamily: SB.mono, fontSize: 10, fontWeight: 700,
+                  letterSpacing: '0.14em', color: SB.inkSoft, marginLeft: 6,
+                }}>{yrLabel}</span>
+              </span>
+            </div>
+            <input
+              type="range"
+              min={1} max={20} step={1}
+              value={years}
+              onChange={(e) => setYears(Number(e.target.value))}
+              className="sb-slider"
+              aria-label="Years until settlement"
+            />
+            <div style={{
+              display: 'flex', justifyContent: 'space-between',
+              marginTop: 4,
+              fontFamily: SB.mono, fontSize: 9, color: SB.inkFaint,
+              letterSpacing: '0.05em',
+            }}>
+              <span>1 YR</span>
+              <span>20 YR</span>
+            </div>
+          </div>
+
+          {/* === Living-off toggle === */}
+          <button
+            onClick={() => setLivingOff(!livingOff)}
+            style={{
+              marginTop: 10, width: '100%',
+              padding: '10px 12px',
+              background: livingOff ? SB.orangeWash : 'transparent',
+              border: `1px ${livingOff ? 'solid' : 'dashed'} ${livingOff ? SB.orange : SB.inkLine}`,
+              cursor: 'pointer', textAlign: 'left',
+              display: 'flex', alignItems: 'center', gap: 10,
+              fontFamily: SB.mono, fontSize: 10,
+              color: livingOff ? SB.orange : SB.inkSoft,
+            }}
+            aria-pressed={livingOff}
+          >
+            <span style={{
+              width: 13, height: 13,
+              border: `1.5px solid ${livingOff ? SB.orange : SB.inkLine}`,
+              background: livingOff ? SB.orange : 'transparent',
+              display: 'inline-block', flexShrink: 0,
+              position: 'relative',
+            }}>
+              {livingOff && (
+                <span style={{
+                  position: 'absolute', inset: 0,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  color: SB.cream, fontSize: 10, fontWeight: 900, lineHeight: 1,
+                }}>✓</span>
+              )}
+            </span>
+            <span style={{ letterSpacing: '0.08em', fontWeight: 700 }}>
+              LIVING OFF BTC — DRAW {fmt(loanUsd)} EVERY YEAR
+            </span>
+          </button>
+
+          {/* === Result rows === */}
+          <div style={{ marginTop: 8 }}>
+            <MaturityOption
+              rn="I"
+              label={`BTC PRICE @ Y${years}`}
+              primary={sane
+                ? <FormattedMoney usd={btcPriceAtN} currency={currency} spot={btcSpotUsd} />
+                : 'n/a'}
+              primarySub={`${persona} · ${caseId} case`}
+              right={sane
+                ? `×${priceMul >= 100 ? priceMul.toFixed(0) : priceMul.toFixed(2)}`
+                : '—'}
+              rightSub="VS TODAY"
+              tone={activeCagr >= 0 ? SB.forest : SB.rust}
+            />
+            <MaturityOption
+              rn="II"
+              label={`DEBT @ Y${years}`}
+              primary={<FormattedMoney usd={owed} currency={currency} spot={btcSpotUsd} />}
+              primarySub={
+                <>
+                  compounded · {easeLabel}{' '}
+                  <InfoIcon def={GLOSSARY.rollover} />
+                </>
+              }
+              right={`×${debtMul.toFixed(1)}`}
+              rightSub={livingOff ? 'VS YEARLY DRAWS' : 'VS PRINCIPAL'}
+              tone={SB.inkSoft}
+            />
+            <MaturityOption
+              rn="III"
+              label="BTC TO SETTLE"
+              primary={btcToSettle != null ? btcToSettle.toFixed(5) + ' BTC' : 'n/a'}
+              primarySub={
+                <>
+                  at projected price · no tax event{' '}
+                  <InfoIcon def={GLOSSARY.taxEvent} />
+                </>
+              }
+              right={btcToSettle != null
+                ? <FormattedMoney usd={owed} currency={currency} spot={btcSpotUsd} />
+                : '—'}
+              rightSub="FIAT VALUE"
+              tone={SB.ink}
+            />
+            <MaturityOption
+              rn="IV"
+              label="STACK LEFT"
+              primary={
+                underwater
+                  ? <>UNDERWATER <InfoIcon def={GLOSSARY.liquidation} /></>
+                  : (btcRemaining != null ? btcRemaining.toFixed(5) + ' BTC' : 'n/a')
+              }
+              primarySub={
+                underwater
+                  ? `Debt would need ${btcToSettle.toFixed(5)} BTC — you've locked ${collateralBtc.toFixed(5)}.`
+                  : `of ${collateralBtc.toFixed(5)} BTC originally locked`
+              }
+              right={underwater ? '—' : `${stackPctLeft.toFixed(0)}%`}
+              rightSub={underwater ? 'STACK SHORT' : 'STACK KEPT'}
+              tone={underwater ? SB.rust : SB.forest}
+            />
+          </div>
+
+          {/* Stack value box — fiat verdict of what's left, mirrors § IV NET WORTH box */}
+          {sane && !underwater && btcRemaining > 0 && (
+            <div style={{
+              display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+              padding: '14px 12px 12px', marginTop: 10,
+              border: `1.5px dashed ${SB.forest}`,
+              background: SB.forestWash,
+            }}>
+              <div>
+                <div style={{
+                  fontFamily: SB.mono, fontSize: 10.5, fontWeight: 700,
+                  letterSpacing: '0.2em', color: SB.forest,
+                }}>STACK VALUE @ Y{years}</div>
+                <div style={{
+                  fontFamily: SB.mono, fontSize: 9,
+                  color: SB.inkMute, marginTop: 3, letterSpacing: '0.06em',
+                }}>at projected price · {persona} · {caseId} case</div>
+              </div>
+              <div style={{ textAlign: 'right' }}>
+                <div style={{
+                  fontFamily: SB.serif, fontSize: 26, fontWeight: 600,
+                  color: SB.forest, letterSpacing: '-0.02em', lineHeight: 1,
+                  fontVariantNumeric: 'tabular-nums',
+                }}>
+                  <FormattedMoney usd={btcRemaining * btcPriceAtN} currency={currency} spot={btcSpotUsd} />
+                </div>
+                <div style={{
+                  fontFamily: SB.mono, fontSize: 9,
+                  color: SB.forest,
+                  marginTop: 4, fontWeight: 700, letterSpacing: '0.1em',
+                }}>
+                  ↑ STACK YOU KEPT
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Bear-case caveat */}
+          {underwater && activeCagr < 0 && (
+            <div style={{
+              marginTop: 8,
+              padding: '8px 10px',
+              background: SB.rustWash,
+              border: `1px dashed ${SB.rust}`,
+              fontFamily: SB.mono, fontSize: 10, color: SB.rust,
+              letterSpacing: '0.04em', lineHeight: 1.5,
+            }}>
+              Bear case — BTC needed to settle exceeds your collateral by year {years}.
+            </div>
+          )}
+
+          {/* Footnote */}
+          <div style={{
+            marginTop: 10,
+            padding: '8px 2px 0',
+            fontFamily: SB.mono, fontSize: 9.5, color: SB.inkMute,
+            lineHeight: 1.5,
+            letterSpacing: '0.02em',
+          }}>
+            {easeFootnote}
+            {livingOff && ' Living-off scenario assumes each new draw is approved at the same LTV.'}
+          </div>
+        </>
+      )}
     </div>
   );
 }
@@ -1294,6 +1625,19 @@ function DesktopCalculatorLayout(props) {
         collateralBtc={collateralBtc}
         collateralSats={collateralSats}
         btcSpotUsd={btcSpotUsd}
+        fmt={fmt}
+      />
+
+      <LongViewSection
+        lender={bestLender}
+        loanUsd={loanUsd}
+        collateralBtc={collateralBtc}
+        btcSpotUsd={btcSpotUsd}
+        activeCagr={activeCagr}
+        profileId={profileId}
+        caseId={caseId}
+        profiles={profiles}
+        currency={currency}
         fmt={fmt}
       />
     </div>

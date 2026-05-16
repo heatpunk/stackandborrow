@@ -28,6 +28,10 @@ export const GLOSSARY = {
     title: 'Liquidation',
     body: 'A forced sale of your collateral if BTC drops past a set threshold (the “liquidation price”). The lender sells just enough BTC to cover what you owe — but it counts as a taxable sale.',
   },
+  longView: {
+    title: 'Long view',
+    body: 'Projects what your loan looks like after multiple yearly rollovers. Assumes the top-ranked lender keeps refinancing you at the same APR and origination policy. A useful sanity check, not a forecast — real rates, BTC prices, and lender terms will all drift over time.',
+  },
   balloon: {
     title: 'Balloon payment',
     body: 'A loan where you make no monthly payments (or interest-only payments) during the term, and the full principal is due in a single lump sum at maturity. Most bitcoin-backed loans are structured this way.',
@@ -99,6 +103,7 @@ export const GLOSSARY_ORDER = [
   'dlc',
   'interest',
   'liquidation',
+  'longView',
   'ltv',
   'multisig',
   'newContract',
