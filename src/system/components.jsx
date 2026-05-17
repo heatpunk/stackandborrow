@@ -335,7 +335,7 @@ export function Row({ label, value, sub, valueStyle = {}, labelStyle = {}, info 
         overflow: info ? 'visible' : 'hidden',
         ...labelStyle,
       }}>
-        <span>{label}{info && <InfoIcon def={info} />}</span>
+        <span>{label}{info && <InfoIcon {...info} />}</span>
         <span style={{
           flex: 1, overflow: 'hidden', whiteSpace: 'nowrap',
           color: SB.inkFaint, letterSpacing: '0.08em',
@@ -438,8 +438,14 @@ export function Pill({ children, color = SB.ink, filled = false }) {
 //   Mobile  — tap to toggle. No click-outside dismissal (popovers
 //             stay until you tap the icon again or hit Escape).
 // ------------------------------------------------------------
-export function InfoIcon({ def, glossaryHref = '#about' }) {
+export function InfoIcon({ term, def, glossaryHref = '#about' }) {
   const t = useT();
+  // Preferred API: pass a `term` key (e.g. "collateral") and resolve
+  // title/body via the i18n glossary so popovers are translated.
+  // Legacy `def` prop is still supported for any unmigrated callers.
+  const resolved = term
+    ? { title: t(`glossary.${term}.title`), body: t(`glossary.${term}.body`) }
+    : def;
   const [open, setOpen] = useState(false);
   const isDesktop = useIsDesktop();
   const closeTimerRef = useRef(null);
@@ -457,7 +463,7 @@ export function InfoIcon({ def, glossaryHref = '#about' }) {
     if (closeTimerRef.current) clearTimeout(closeTimerRef.current);
   }, []);
 
-  if (!def) return null;
+  if (!resolved) return null;
 
   const cancelClose = () => {
     if (closeTimerRef.current) {
@@ -504,7 +510,7 @@ export function InfoIcon({ def, glossaryHref = '#about' }) {
         onClick={handleClick}
         onFocus={isDesktop ? cancelClose : undefined}
         onBlur={isDesktop ? scheduleClose : undefined}
-        aria-label={t('common.glossary.iconLabel', { term: def.title })}
+        aria-label={t('common.glossary.iconLabel', { term: resolved.title })}
         aria-expanded={open}
         style={{
           width: 11, height: 11,
@@ -541,11 +547,11 @@ export function InfoIcon({ def, glossaryHref = '#about' }) {
             fontFamily: SB.serif, fontSize: 14, fontWeight: 600,
             color: SB.ink, letterSpacing: '-0.005em',
             marginBottom: 6,
-          }}>{def.title}</div>
+          }}>{resolved.title}</div>
           <div style={{
             fontFamily: SB.mono, fontSize: 10.5, color: SB.inkSoft,
             lineHeight: 1.55, letterSpacing: '0.01em',
-          }}>{def.body}</div>
+          }}>{resolved.body}</div>
           <a
             href={glossaryHref}
             onClick={() => setOpen(false)}

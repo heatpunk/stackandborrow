@@ -26,7 +26,6 @@ import {
   PageNav,
   FineFooter,
   LivePriceBadge,
-  SunMoonStamp,
 } from '../system/components.jsx';
 import { useIsDesktop } from '../system/theme.jsx';
 import { DesktopSpreadFrame } from '../system/desktop.jsx';
@@ -40,13 +39,19 @@ import {
   SATS_PER_BTC,
 } from '../lib/math.js';
 import { fmtNum, fmtMoney } from '../lib/format.js';
+import { useT } from '../i18n/index.jsx';
 
 // Currencies shown as chips. Mirrors the design's
 // "also EUR · GBP · SEK · SAT" hint, but clickable.
 const CHIP_CURRENCIES = ['USD', 'EUR', 'GBP', 'SEK', 'SAT'];
 
+// Booklet feature list — keys map to landing.feature.<id>.{title,subMobile,subDesktop}.
+const FEATURE_IDS = ['ranking', 'tax', 'projection', 'liquidation'];
+const FEATURE_NUMERALS = ['I.', 'II.', 'III.', 'IV.'];
+
 export default function LandingPage({ live, lenders = [], region, initialCurrency }) {
   const isDesktop = useIsDesktop();
+  const t = useT();
   const [currency, setCurrency]           = usePersistentState('currency', initialCurrency || 'USD');
   const [loanInCurrency, setLoanInCurrency] = usePersistentState('desiredLoan', 50000);
   const [showSaveTip, setShowSaveTip]     = useState(false);
@@ -193,7 +198,7 @@ export default function LandingPage({ live, lenders = [], region, initialCurrenc
           fontWeight: 700,
           marginBottom: 10,
         }}>
-          YOUR LOAN ESTIMATE
+          {t('landing.meta.eyebrow')}
         </div>
         <h1 style={{
           margin: 0,
@@ -203,8 +208,8 @@ export default function LandingPage({ live, lenders = [], region, initialCurrenc
           letterSpacing: '-0.025em',
           color: SB.ink,
         }}>
-          Keep your sats.<br />
-          <span style={{ color: SB.orange, fontStyle: 'italic', fontWeight: 500 }}>Free some cash.</span>
+          {t('landing.hero.titleLine1')}<br />
+          <span style={{ color: SB.orange, fontStyle: 'italic', fontWeight: 500 }}>{t('landing.hero.titleLine2')}</span>
         </h1>
         <div style={{
           fontFamily: SB.sans,
@@ -214,13 +219,12 @@ export default function LandingPage({ live, lenders = [], region, initialCurrenc
           maxWidth: 320,
           textWrap: 'pretty',
         }}>
-          Type any amount. We compare lenders and show what it costs
-          versus selling — net of tax, in sats.
+          {t('landing.hero.subtitleMobile')}
         </div>
 
         {/* Stamp */}
         <div style={{ position: 'absolute', top: -6, right: -6 }}>
-          <Stamp line1="TAX" line2="AWARE" size={82} />
+          <Stamp line1={t('landing.heroStamp.line1')} line2={t('landing.heroStamp.line2')} size={82} />
         </div>
       </div>
 
@@ -237,7 +241,7 @@ export default function LandingPage({ live, lenders = [], region, initialCurrenc
           fontSize: 9, letterSpacing: '0.22em',
           color: SB.orange, fontWeight: 700,
         }}>
-          AMOUNT REQUESTED
+          {t('landing.amount.label')}
         </div>
         <div style={{
           display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8,
@@ -262,7 +266,7 @@ export default function LandingPage({ live, lenders = [], region, initialCurrenc
               className="lp-amount-input"
               type="text"
               inputMode="numeric"
-              aria-label="Loan amount"
+              aria-label={t('landing.amount.inputLabel')}
               value={fmtNum(loanInCurrency)}
               onChange={onAmountChange}
               onFocus={(e) => e.target.select()}
@@ -305,7 +309,7 @@ export default function LandingPage({ live, lenders = [], region, initialCurrenc
             padding: '2px 6px', letterSpacing: '0.18em',
             fontWeight: 700, fontSize: 8.5,
             fontFamily: SB.mono,
-          }}>EDIT</span>
+          }}>{t('landing.amount.editChip')}</span>
           {CHIP_CURRENCIES.map((c) => {
             const isActive = c === currency;
             return (
@@ -332,48 +336,48 @@ export default function LandingPage({ live, lenders = [], region, initialCurrenc
         </div>
       </div>
 
-      <DashedRule label="ESTIMATE" />
+      <DashedRule label={t('landing.section.estimate')} />
 
       {/* Itemized — all live */}
       <div style={{ padding: '0 2px' }}>
         <Row
-          label="Collateral required"
+          label={t('landing.row.collateral')}
           value={collateralBtc.toFixed(5) + ' BTC'}
           sub={'≈ ' + fmtNum(collateralSats) + ' sats'}
         />
-        <Row label="Loan-to-value" value={LTV_PCT + '%'} sub="industry standard" />
+        <Row label={t('landing.row.ltv')} value={LTV_PCT + '%'} sub={t('landing.row.ltvSub')} />
         <Row
-          label="Best APR available"
+          label={t('landing.row.apr')}
           value={aprPct.toFixed(2) + '%'}
           valueStyle={{ color: SB.orange }}
-          sub={`${TERM_MONTHS}mo`}
+          sub={t('landing.row.aprSub', { months: TERM_MONTHS })}
         />
         <Row
-          label={`Interest, ${TERM_MONTHS} months`}
+          label={t('landing.row.interest', { months: TERM_MONTHS })}
           value={fmtMoney(interestUsd, currency, CURRENCY_META, btcSpotUsd)}
-          sub="paid at maturity"
+          sub={t('landing.row.interestSub')}
         />
         <Row
-          label="Origination fee"
+          label={t('landing.row.origination')}
           value={fmtMoney(origFeeUsd, currency, CURRENCY_META, btcSpotUsd)}
-          sub={origFeeUsd > 0 ? 'one-time' : 'waived for region'}
+          sub={origFeeUsd > 0 ? t('landing.row.origSubOnce') : t('landing.row.origSubWaived')}
         />
         <Row
-          label="Liquidation price"
+          label={t('landing.row.liquidation')}
           value={'$' + fmtNum(liqUsd)}
           valueStyle={{ color: SB.rust }}
-          sub={Math.abs(liqDropPct).toFixed(1) + '% drop from spot'}
+          sub={t('landing.row.liquidationSub', { pct: Math.abs(liqDropPct).toFixed(1) })}
         />
       </div>
 
-      <DashedRule label="SUBTOTAL" />
+      <DashedRule label={t('landing.section.subtotal')} />
 
       <div style={{ padding: '0 2px' }}>
         <div style={{
           display: 'flex', justifyContent: 'space-between',
           padding: '4px 0', fontSize: 11.5,
         }}>
-          <span style={{ color: SB.inkSoft }}>Total cost over {TERM_MONTHS}mo</span>
+          <span style={{ color: SB.inkSoft }}>{t('landing.subtotal.total', { months: TERM_MONTHS })}</span>
           <span style={{ fontFamily: SB.mono, fontWeight: 700, color: SB.ink }}>
             {fmtMoney(interestUsd + origFeeUsd, currency, CURRENCY_META, btcSpotUsd)}
           </span>
@@ -382,7 +386,7 @@ export default function LandingPage({ live, lenders = [], region, initialCurrenc
           display: 'flex', justifyContent: 'space-between',
           padding: '4px 0', fontSize: 11.5,
         }}>
-          <span style={{ color: SB.inkSoft }}>Sats you'd sell instead</span>
+          <span style={{ color: SB.inkSoft }}>{t('landing.subtotal.satsSold')}</span>
           <span style={{ fontFamily: SB.mono, fontWeight: 700, color: SB.orange }}>
             −{fmtNum(satsToSell)}
           </span>
@@ -401,7 +405,7 @@ export default function LandingPage({ live, lenders = [], region, initialCurrenc
             fontSize: 10.5, letterSpacing: '0.2em',
             fontWeight: 700,
             color: SB.orange,
-          }}>NET SATS KEPT</span>
+          }}>{t('landing.subtotal.netLabel')}</span>
           <span style={{
             fontFamily: SB.serif,
             fontSize: 22, fontWeight: 600,
@@ -413,7 +417,7 @@ export default function LandingPage({ live, lenders = [], region, initialCurrenc
 
       <DashedRule />
 
-      <Button href="#calculator">PRINT FULL BREAKDOWN</Button>
+      <Button href="#calculator">{t('landing.cta.fullBreakdown')}</Button>
 
       {/* Tiny action links */}
       <div style={{
@@ -423,14 +427,14 @@ export default function LandingPage({ live, lenders = [], region, initialCurrenc
         fontSize: 9, letterSpacing: '0.16em',
         color: SB.inkMute,
       }}>
-        <a href="#calculator" className="lp-tiny-link">calculator</a>
+        <a href="#calculator" className="lp-tiny-link">{t('landing.tiny.calculator')}</a>
         <span style={{ margin: '0 6px' }}>·</span>
-        <a href="#lenders" className="lp-tiny-link">pick lender</a>
+        <a href="#lenders" className="lp-tiny-link">{t('landing.tiny.lender')}</a>
         <span style={{ margin: '0 6px' }}>·</span>
         <button
           className="lp-tiny-link"
           onClick={() => setShowSaveTip((v) => !v)}
-        >save scenario</button>
+        >{t('landing.tiny.save')}</button>
 
         {showSaveTip && (
           <SaveScenarioTip onClose={() => setShowSaveTip(false)} />
@@ -438,15 +442,10 @@ export default function LandingPage({ live, lenders = [], region, initialCurrenc
       </div>
 
       {/* What's included — line-item style */}
-      <DashedRule label="WHAT'S IN THE BOOKLET" />
+      <DashedRule label={t('landing.section.booklet')} />
       <div style={{ padding: '4px 2px' }}>
-        {[
-          ['I.',   'Honest lender ranking', 'BTC-only first, then cost'],
-          ['II.',  'Tax-aware comparison',  'sell vs borrow, net'],
-          ['III.', 'Multi-year projection', '4 horizons, 3 scenarios'],
-          ['IV.',  'Liquidation alerts',     'real-time price-drop math'],
-        ].map(([no, t, sub]) => (
-          <div key={no} style={{
+        {FEATURE_IDS.map((id, i) => (
+          <div key={id} style={{
             display: 'grid',
             gridTemplateColumns: '28px 1fr auto',
             alignItems: 'baseline',
@@ -457,16 +456,16 @@ export default function LandingPage({ live, lenders = [], region, initialCurrenc
             <span style={{
               fontFamily: SB.serif, fontStyle: 'italic',
               fontSize: 14, color: SB.orange, fontWeight: 500,
-            }}>{no}</span>
+            }}>{FEATURE_NUMERALS[i]}</span>
             <span style={{
               fontFamily: SB.sans, fontSize: 12.5, fontWeight: 500,
               color: SB.ink,
-            }}>{t}</span>
+            }}>{t(`landing.feature.${id}.title`)}</span>
             <span style={{
               fontFamily: SB.mono, fontSize: 9,
               color: SB.inkMute, letterSpacing: '0.04em',
               textAlign: 'right',
-            }}>{sub}</span>
+            }}>{t(`landing.feature.${id}.subMobile`)}</span>
           </div>
         ))}
       </div>
@@ -487,7 +486,7 @@ export default function LandingPage({ live, lenders = [], region, initialCurrenc
           fontSize: 9, fontWeight: 700,
           letterSpacing: '0.2em',
           color: SB.inkMute,
-        }}>FROM THE FIELD</div>
+        }}>{t('landing.quote.eyebrow')}</div>
         <p style={{
           margin: 0,
           fontFamily: SB.serif, fontStyle: 'italic',
@@ -495,8 +494,7 @@ export default function LandingPage({ live, lenders = [], region, initialCurrenc
           color: SB.ink,
           textWrap: 'pretty',
         }}>
-          &ldquo;Selling triggers tax. Borrowing doesn&rsquo;t. That&rsquo;s not a
-          loophole — that&rsquo;s the whole point.&rdquo;
+          {t('landing.quote.body')}
         </p>
       </div>
 
@@ -514,6 +512,7 @@ export default function LandingPage({ live, lenders = [], region, initialCurrenc
 // way to capture a snapshot they can revisit / share.
 // ============================================================
 function SaveScenarioTip({ onClose }) {
+  const t = useT();
   return (
     <div
       role="dialog"
@@ -548,10 +547,10 @@ function SaveScenarioTip({ onClose }) {
           fontSize: 9, fontWeight: 700,
           letterSpacing: '0.2em',
           color: SB.orange,
-        }}>SAVE SCENARIO</div>
+        }}>{t('landing.saveTip.label')}</div>
         <button
           onClick={onClose}
-          aria-label="Close tip"
+          aria-label={t('landing.saveTip.close')}
           style={{
             background: 'transparent', border: 'none', padding: 0,
             cursor: 'pointer', fontFamily: SB.mono, fontSize: 14,
@@ -566,9 +565,7 @@ function SaveScenarioTip({ onClose }) {
         color: SB.ink,
         textWrap: 'pretty',
       }}>
-        Your inputs are saved here automatically — reload anytime
-        and the numbers come back. For a snapshot you can keep
-        or share, <strong>take a screenshot</strong> of this view.
+        {t('landing.saveTip.body.before')}<strong>{t('landing.saveTip.body.bold')}</strong>{t('landing.saveTip.body.after')}
       </p>
 
       <div style={{
@@ -579,8 +576,8 @@ function SaveScenarioTip({ onClose }) {
         letterSpacing: '0.04em',
         lineHeight: 1.5,
       }}>
-        <div>macOS · ⌘ Shift 4</div>
-        <div>Windows · Win Shift S</div>
+        <div>{t('landing.saveTip.mac')}</div>
+        <div>{t('landing.saveTip.win')}</div>
       </div>
     </div>
   );
@@ -599,6 +596,7 @@ function DesktopLandingLayout({
   liqUsd, liqDropPct, satsToSell,
   ranked, showSaveTip, setShowSaveTip, btcSpotUsd,
 }) {
+  const t = useT();
   const top3 = ranked.slice(0, 3);
 
   const rightSlot = (
@@ -636,7 +634,7 @@ function DesktopLandingLayout({
         fontWeight: 700,
         marginTop: 18, marginBottom: 14,
       }}>
-        PAGE I · LEFT — YOUR LOAN ESTIMATE
+        {t('landing.desktop.leftLabel')}
       </div>
 
       <h1 style={{
@@ -647,10 +645,9 @@ function DesktopLandingLayout({
         letterSpacing: '-0.03em',
         color: SB.ink,
       }}>
-        Keep<br />
-        your sats.<br />
+        {t('landing.hero.titleLine1')}<br />
         <span style={{ color: SB.orange, fontStyle: 'italic', fontWeight: 500 }}>
-          Free some<br />cash.
+          {t('landing.hero.titleLine2')}
         </span>
       </h1>
 
@@ -662,9 +659,7 @@ function DesktopLandingLayout({
         maxWidth: 460,
         textWrap: 'pretty',
       }}>
-        Type any amount. We compare bitcoin-backed lenders and
-        show what the loan really costs versus selling — net of
-        capital gains tax, denominated in sats.
+        {t('landing.hero.subtitleDesktop')}
       </p>
 
       <DashedRule />
@@ -679,7 +674,7 @@ function DesktopLandingLayout({
           fontSize: 10, letterSpacing: '0.22em',
           color: SB.orange, fontWeight: 700,
         }}>
-          AMOUNT REQUESTED
+          {t('landing.amount.label')}
         </div>
         <div style={{
           display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10,
@@ -700,7 +695,7 @@ function DesktopLandingLayout({
               className="dl-amount-input"
               type="text"
               inputMode="numeric"
-              aria-label="Loan amount"
+              aria-label={t('landing.amount.inputLabel')}
               value={fmtNum(loanInCurrency)}
               onChange={onAmountChange}
               onFocus={(e) => e.target.select()}
@@ -736,8 +731,8 @@ function DesktopLandingLayout({
             background: SB.ink, color: SB.cream,
             padding: '3px 8px', letterSpacing: '0.18em',
             fontWeight: 700, fontSize: 9.5,
-          }}>EDIT</span>
-          {['USD', 'EUR', 'GBP', 'SEK', 'SAT'].map((c) => {
+          }}>{t('landing.amount.editChip')}</span>
+          {CHIP_CURRENCIES.map((c) => {
             const isActive = c === currency;
             return (
               <button
@@ -761,40 +756,40 @@ function DesktopLandingLayout({
         </div>
       </div>
 
-      <DashedRule label="ESTIMATE" />
+      <DashedRule label={t('landing.section.estimate')} />
 
       <div style={{ padding: '0 2px' }}>
-        <Row label="Collateral required"
+        <Row label={t('landing.row.collateral')}
           value={collateralBtc.toFixed(5) + ' BTC'}
           sub={'≈ ' + fmtNum(collateralSats) + ' sats'} />
-        <Row label="Loan-to-value" value={LTV_PCT + '%'} sub="industry standard" />
-        <Row label="Best APR available"
+        <Row label={t('landing.row.ltv')} value={LTV_PCT + '%'} sub={t('landing.row.ltvSub')} />
+        <Row label={t('landing.row.apr')}
           value={aprPct.toFixed(2) + '%'}
           valueStyle={{ color: SB.orange }}
-          sub={`${TERM_MONTHS}mo`} />
-        <Row label={`Interest, ${TERM_MONTHS} months`}
+          sub={t('landing.row.aprSub', { months: TERM_MONTHS })} />
+        <Row label={t('landing.row.interest', { months: TERM_MONTHS })}
           value={fmtMoney(interestUsd, currency, CURRENCY_META, btcSpotUsd)}
-          sub="paid at maturity" />
-        <Row label="Origination fee"
+          sub={t('landing.row.interestSub')} />
+        <Row label={t('landing.row.origination')}
           value={fmtMoney(origFeeUsd, currency, CURRENCY_META, btcSpotUsd)}
-          sub={origFeeUsd > 0 ? 'one-time' : 'waived for region'} />
-        <Row label="Liquidation price"
+          sub={origFeeUsd > 0 ? t('landing.row.origSubOnce') : t('landing.row.origSubWaived')} />
+        <Row label={t('landing.row.liquidation')}
           value={'$' + fmtNum(liqUsd)}
           valueStyle={{ color: SB.rust }}
-          sub={Math.abs(liqDropPct).toFixed(1) + '% drop from spot'} />
+          sub={t('landing.row.liquidationSub', { pct: Math.abs(liqDropPct).toFixed(1) })} />
       </div>
 
-      <DashedRule label="SUBTOTAL" />
+      <DashedRule label={t('landing.section.subtotal')} />
 
       <div style={{ padding: '0 2px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', fontSize: 13 }}>
-          <span style={{ color: SB.inkSoft }}>Total cost over {TERM_MONTHS}mo</span>
+          <span style={{ color: SB.inkSoft }}>{t('landing.subtotal.total', { months: TERM_MONTHS })}</span>
           <span style={{ fontFamily: SB.mono, fontWeight: 700, color: SB.ink }}>
             {fmtMoney(interestUsd + origFeeUsd, currency, CURRENCY_META, btcSpotUsd)}
           </span>
         </div>
         <div style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', fontSize: 13 }}>
-          <span style={{ color: SB.inkSoft }}>Sats you'd sell instead</span>
+          <span style={{ color: SB.inkSoft }}>{t('landing.subtotal.satsSold')}</span>
           <span style={{ fontFamily: SB.mono, fontWeight: 700, color: SB.orange }}>
             −{fmtNum(satsToSell)}
           </span>
@@ -809,7 +804,7 @@ function DesktopLandingLayout({
           <span style={{
             fontFamily: SB.mono, fontSize: 12,
             letterSpacing: '0.2em', fontWeight: 700, color: SB.orange,
-          }}>NET SATS KEPT</span>
+          }}>{t('landing.subtotal.netLabel')}</span>
           <span style={{
             fontFamily: SB.serif, fontSize: 32, fontWeight: 600,
             color: SB.ink, letterSpacing: '-0.015em',
@@ -819,7 +814,7 @@ function DesktopLandingLayout({
 
       <DashedRule />
 
-      <Button href="#calculator">PRINT FULL BREAKDOWN</Button>
+      <Button href="#calculator">{t('landing.cta.fullBreakdown')}</Button>
 
       <div style={{
         position: 'relative',
@@ -828,9 +823,9 @@ function DesktopLandingLayout({
         fontSize: 10, letterSpacing: '0.16em',
         color: SB.inkMute,
       }}>
-        <a href="#calculator" style={{ color: 'inherit', textDecoration: 'underline', textUnderlineOffset: 3 }}>calculator</a>
+        <a href="#calculator" style={{ color: 'inherit', textDecoration: 'underline', textUnderlineOffset: 3 }}>{t('landing.tiny.calculator')}</a>
         <span style={{ margin: '0 8px' }}>·</span>
-        <a href="#lenders" style={{ color: 'inherit', textDecoration: 'underline', textUnderlineOffset: 3 }}>pick lender</a>
+        <a href="#lenders" style={{ color: 'inherit', textDecoration: 'underline', textUnderlineOffset: 3 }}>{t('landing.tiny.lender')}</a>
         <span style={{ margin: '0 8px' }}>·</span>
         <button
           onClick={() => setShowSaveTip((v) => !v)}
@@ -839,7 +834,7 @@ function DesktopLandingLayout({
             font: 'inherit', color: 'inherit', letterSpacing: 'inherit',
             cursor: 'pointer', textDecoration: 'underline', textUnderlineOffset: 3,
           }}
-        >save scenario</button>
+        >{t('landing.tiny.save')}</button>
         {showSaveTip && <SaveScenarioTip onClose={() => setShowSaveTip(false)} />}
       </div>
     </div>
@@ -853,7 +848,7 @@ function DesktopLandingLayout({
         color: SB.inkMute, fontWeight: 700,
         marginTop: 18, marginBottom: 14,
       }}>
-        PAGE I · RIGHT — THE PHILOSOPHY
+        {t('landing.desktop.rightLabel')}
       </div>
 
       <div style={{
@@ -867,7 +862,7 @@ function DesktopLandingLayout({
           background: SB.cream, padding: '0 10px',
           fontFamily: SB.mono, fontSize: 10, fontWeight: 700,
           letterSpacing: '0.22em', color: SB.inkMute,
-        }}>FROM THE FIELD</div>
+        }}>{t('landing.quote.eyebrow')}</div>
         <p style={{
           margin: 0,
           fontFamily: SB.serif, fontStyle: 'italic',
@@ -875,28 +870,22 @@ function DesktopLandingLayout({
           color: SB.ink, textWrap: 'pretty',
           letterSpacing: '-0.005em',
         }}>
-          “Selling triggers tax. Borrowing doesn't.
-          That's not a loophole — that's the whole point.”
+          {t('landing.quote.body')}
         </p>
         <div style={{
           marginTop: 18,
           fontFamily: SB.mono, fontSize: 10, fontWeight: 700,
           letterSpacing: '0.18em', color: SB.orange,
         }}>
-          — A LONG-TERM HOLDER · NAME WITHHELD
+          {t('landing.quote.attribution')}
         </div>
       </div>
 
-      <DashedRule label="WHAT'S IN THE BOOKLET" />
+      <DashedRule label={t('landing.section.booklet')} />
 
       <div style={{ padding: '0 2px' }}>
-        {[
-          ['I.',   'Honest lender ranking',  'BTC-only lenders rank above multi-collateral, then by total cost. Affiliate commissions never enter the algorithm — they fund hosting.'],
-          ['II.',  'Tax-aware comparison',   'Sell vs borrow, net of capital gains. We bake your jurisdiction in.'],
-          ['III.', 'Multi-year projection',  '4 horizons × 3 scenarios. Saylor, Wood, or Schiff as your projector.'],
-          ['IV.',  'Liquidation alerts',     'Live price-drop math. Six 50%+ drawdowns since 2013. Not if, when.'],
-        ].map(([no, t, sub]) => (
-          <div key={no} style={{
+        {FEATURE_IDS.map((id, i) => (
+          <div key={id} style={{
             display: 'grid',
             gridTemplateColumns: '40px 1fr',
             alignItems: 'baseline', gap: 16,
@@ -907,22 +896,22 @@ function DesktopLandingLayout({
               fontFamily: SB.serif, fontStyle: 'italic',
               fontSize: 24, color: SB.orange, fontWeight: 500,
               lineHeight: 1, paddingTop: 3,
-            }}>{no}</span>
+            }}>{FEATURE_NUMERALS[i]}</span>
             <div>
               <div style={{
                 fontFamily: SB.serif, fontSize: 17, fontWeight: 600,
                 color: SB.ink, letterSpacing: '-0.005em', marginBottom: 4,
-              }}>{t}</div>
+              }}>{t(`landing.feature.${id}.title`)}</div>
               <div style={{
                 fontFamily: SB.sans, fontSize: 13, lineHeight: 1.5,
                 color: SB.inkSoft, textWrap: 'pretty',
-              }}>{sub}</div>
+              }}>{t(`landing.feature.${id}.subDesktop`)}</div>
             </div>
           </div>
         ))}
       </div>
 
-      <DashedRule label={`TODAY'S TOP THREE QUOTES · ${TERM_MONTHS}MO`} />
+      <DashedRule label={t('landing.desktop.topQuotes', { months: TERM_MONTHS })} />
 
       <div style={{ padding: '0 2px' }}>
         {top3.length === 0 && (
@@ -931,7 +920,7 @@ function DesktopLandingLayout({
             fontFamily: SB.mono, fontSize: 11, color: SB.inkMute,
             border: `1px dashed ${SB.inkLine}`,
           }}>
-            Loading lender quotes…
+            {t('landing.desktop.loadingQuotes')}
           </div>
         )}
         {top3.map((q, i) => {
@@ -974,13 +963,15 @@ function DesktopLandingLayout({
         fontFamily: SB.mono, fontSize: 10,
         letterSpacing: '0.16em', color: SB.inkMute,
       }}>
-        <a href="#lenders" style={{ color: 'inherit', textDecoration: 'underline', textUnderlineOffset: 3 }}>see all →</a>
+        <a href="#lenders" style={{ color: 'inherit', textDecoration: 'underline', textUnderlineOffset: 3 }}>{t('landing.desktop.seeAll')}</a>
       </div>
 
       <DashedRule />
 
       <Button href={bestLender?.referralUrl || '#lenders'}>
-        {bestLender ? `OPEN WITH ${bestLender.name.toUpperCase()} — BEST RATE` : 'BROWSE ALL LENDERS'}
+        {bestLender
+          ? t('common.cta.openWithBest', { name: bestLender.name.toUpperCase() })
+          : t('common.cta.browseAll')}
       </Button>
       <div style={{
         textAlign: 'center', marginTop: 10,
@@ -988,8 +979,8 @@ function DesktopLandingLayout({
         letterSpacing: '0.16em', color: SB.inkMute,
         display: 'flex', flexDirection: 'column', gap: 4,
       }}>
-        <span>· you&apos;ll leave Stack &amp; Borrow ·</span>
-        <span>not your details</span>
+        <span>{t('common.leave.line1')}</span>
+        <span>{t('common.leave.line2')}</span>
       </div>
     </div>
   );

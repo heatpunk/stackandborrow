@@ -24,12 +24,14 @@ import {
 } from '../system/components.jsx';
 import { useIsDesktop } from '../system/theme.jsx';
 import { DesktopSpreadFrame } from '../system/desktop.jsx';
+import { useT } from '../i18n/index.jsx';
 
 // ============================================================
 // 01 · Loan too small
 // ============================================================
 export function VoidStateLoanTooSmall({ amountLabel = '—', minLabel = '$1,000', onReturn }) {
   const isDesktop = useIsDesktop();
+  const t = useT();
   if (isDesktop) {
     return <DesktopVoidLoanTooSmall amountLabel={amountLabel} minLabel={minLabel} onReturn={onReturn} />;
   }
@@ -43,41 +45,46 @@ export function VoidStateLoanTooSmall({ amountLabel = '—', minLabel = '$1,000'
             fontFamily: SB.mono, fontSize: 9, letterSpacing: '0.12em',
             color: SB.rust, textAlign: 'right', fontWeight: 700,
           }}>
-            <div>NO QUOTES</div>
+            <div>{t('void.common.noQuotes')}</div>
             <div style={{ marginTop: 4, color: SB.inkMute, fontWeight: 500 }}>
-              AMOUNT BELOW MINIMUM
+              {t('void.common.amountBelowMin')}
             </div>
           </div>
         }
       />
 
       <VoidHero
-        eyebrow="ERR · 01"
-        title={<>Loan too small.<br /><Italic>No lender will take you.</Italic></>}
-        body={`The lowest minimum across the lenders we cover is ${minLabel}. Below that, the math stops being worth it — origination fees would dwarf the loan.`}
+        eyebrow={t('void.loanTooSmall.err')}
+        title={<>{t('void.loanTooSmall.titleLine1')}<br /><Italic>{t('void.loanTooSmall.titleLine2')}</Italic></>}
+        body={t('void.loanTooSmall.body', { min: minLabel })}
       />
 
-      <VoidStampBig line1="LOAN" line2="VOID" line3={`★ < ${minLabel} ★`} color={SB.rust} />
+      <VoidStampBig
+        line1={t('void.loanTooSmall.stamp1')}
+        line2={t('void.loanTooSmall.stamp2')}
+        line3={t('void.loanTooSmall.stamp3', { min: minLabel })}
+        color={SB.rust}
+      />
 
-      <DashedRule label="THE NUMBERS" />
+      <DashedRule label={t('void.loanTooSmall.section.numbers')} />
 
       <div style={{ padding: '0 2px' }}>
-        <Row label="Amount requested" value={amountLabel} valueStyle={{ color: SB.rust }} />
-        <Row label="Minimum across all lenders" value={minLabel} sub="Ledn · Firefish · Xapo" />
-        <Row label="Origination would be" value="~$50" sub="dwarfs the principal" valueStyle={{ color: SB.rust }} />
+        <Row label={t('void.loanTooSmall.row.requested')} value={amountLabel} valueStyle={{ color: SB.rust }} />
+        <Row label={t('void.loanTooSmall.row.minimum')} value={minLabel} sub={t('void.loanTooSmall.row.minimumSub')} />
+        <Row label={t('void.loanTooSmall.row.origination')} value={t('void.loanTooSmall.row.originationValue')} sub={t('void.loanTooSmall.row.originationSub')} valueStyle={{ color: SB.rust }} />
       </div>
 
-      <DashedRule label="WHAT NOW" />
+      <DashedRule label={t('void.loanTooSmall.section.whatNow')} />
 
       <BulletList items={[
-        ['Increase your loan amount', `try ${minLabel} or more`],
-        ['Sell a small chunk instead', 'no interest, no liquidation risk'],
-        ['Wait until you need more', 'borrow once, less friction'],
+        [t('void.loanTooSmall.option1.title'), t('void.loanTooSmall.option1.sub', { min: minLabel })],
+        [t('void.loanTooSmall.option2.title'), t('void.loanTooSmall.option2.sub')],
+        [t('void.loanTooSmall.option3.title'), t('void.loanTooSmall.option3.sub')],
       ]} />
 
       <div style={{ marginTop: 16 }}>
         <Button onClick={onReturn} href={onReturn ? undefined : '#calculator'}>
-          {onReturn ? 'RESET AMOUNT & CONTINUE' : 'RETURN TO CALCULATOR'}
+          {onReturn ? t('void.loanTooSmall.cta.reset') : t('void.loanTooSmall.cta.return')}
         </Button>
       </div>
 
@@ -93,9 +100,11 @@ export function VoidStateLoanTooSmall({ amountLabel = '—', minLabel = '$1,000'
 // ============================================================
 export function VoidStateNoRegion({ regionLabel = 'your region', regionCode = '—' }) {
   const isDesktop = useIsDesktop();
+  const t = useT();
   if (isDesktop) {
     return <DesktopVoidNoRegion regionLabel={regionLabel} regionCode={regionCode} />;
   }
+  const code = regionCode.toUpperCase();
   return (
     <PaperFrame>
       <BrandHeader
@@ -106,28 +115,33 @@ export function VoidStateNoRegion({ regionLabel = 'your region', regionCode = '�
             fontFamily: SB.mono, fontSize: 9, letterSpacing: '0.12em',
             color: SB.rust, textAlign: 'right', fontWeight: 700,
           }}>
-            <div>NO QUOTES</div>
+            <div>{t('void.common.noQuotes')}</div>
             <div style={{ marginTop: 4, color: SB.inkMute, fontWeight: 500 }}>
-              REGION NOT SERVED
+              {t('void.common.regionNotServed')}
             </div>
           </div>
         }
       />
 
       <VoidHero
-        eyebrow="ERR · 02"
-        title={<>No lenders<br /><Italic>in {regionLabel}.</Italic></>}
-        body={`Bitcoin-backed lending is regulated unevenly. We don't currently have a verified lender that serves residents of your detected region (${regionCode.toUpperCase()}).`}
+        eyebrow={t('void.noRegion.err')}
+        title={<>{t('void.noRegion.titleLine1')}<br /><Italic>{t('void.noRegion.titleLine2', { region: regionLabel })}</Italic></>}
+        body={t('void.noRegion.body', { code })}
       />
 
-      <VoidStampBig line1="REGION" line2="VOID" line3={`★ ${regionCode.toUpperCase()} · 0 LENDERS ★`} color={SB.rust} />
+      <VoidStampBig
+        line1={t('void.noRegion.stamp1')}
+        line2={t('void.noRegion.stamp2')}
+        line3={t('void.noRegion.stamp3', { code })}
+        color={SB.rust}
+      />
 
-      <DashedRule label="WHAT'S BLOCKING THIS" />
+      <DashedRule label={t('void.noRegion.section.blocking')} />
 
       <div style={{ padding: '0 2px' }}>
-        <Row label="Your detected region" value={`${regionCode.toUpperCase()} · ${regionLabel}`} />
-        <Row label="Lenders that serve you" value="0 of 9" valueStyle={{ color: SB.rust }} />
-        <Row label="Closest available" value="Global · 3 lenders" sub="Strike · Firefish · Xapo" />
+        <Row label={t('void.noRegion.row.detected')} value={t('void.noRegion.row.detectedValue', { code, region: regionLabel })} />
+        <Row label={t('void.noRegion.row.servers')} value={t('void.noRegion.row.serversValue')} valueStyle={{ color: SB.rust }} />
+        <Row label={t('void.noRegion.row.closest')} value={t('void.noRegion.row.closestValue')} sub={t('void.noRegion.row.closestSub')} />
       </div>
 
       <div style={{
@@ -138,27 +152,26 @@ export function VoidStateNoRegion({ regionLabel = 'your region', regionCode = '�
         <div style={{
           fontFamily: SB.mono, fontSize: 9, letterSpacing: '0.2em',
           color: SB.inkMute, fontWeight: 700, marginBottom: 8,
-        }}>WHY THIS HAPPENS</div>
+        }}>{t('void.noRegion.whyHeading')}</div>
         <p style={{
           margin: 0,
           fontFamily: SB.sans, fontSize: 12, lineHeight: 1.55,
           color: SB.inkSoft, textWrap: 'pretty',
         }}>
-          Some jurisdictions classify BTC lending in ways that make regulated lenders
-          stay out of the market until rules clarify. We&rsquo;ll keep an eye on it.
+          {t('void.noRegion.whyBody')}
         </p>
       </div>
 
-      <DashedRule label="WHAT NOW" />
+      <DashedRule label={t('void.noRegion.section.whatNow')} />
 
       <BulletList items={[
-        ['Switch currency in the calculator', 'see lenders for US / EU / CA'],
-        ['Browse the global lender list',     'shows everyone regardless of region'],
-        ['Read the terms',                    'philosophy & method'],
+        [t('void.noRegion.option1.title'), t('void.noRegion.option1.sub')],
+        [t('void.noRegion.option2.title'), t('void.noRegion.option2.sub')],
+        [t('void.noRegion.option3.title'), t('void.noRegion.option3.sub')],
       ]} />
 
       <div style={{ marginTop: 16 }}>
-        <Button href="#lenders">BROWSE GLOBAL LENDERS</Button>
+        <Button href="#lenders">{t('void.noRegion.cta')}</Button>
       </div>
 
       <FineFooter />
@@ -173,6 +186,7 @@ export function VoidStateNoRegion({ regionLabel = 'your region', regionCode = '�
 // ============================================================
 export function VoidState404({ attemptedPath = '' }) {
   const isDesktop = useIsDesktop();
+  const t = useT();
   const path = attemptedPath || (typeof window !== 'undefined' ? window.location.hash : '');
   if (isDesktop) {
     return <DesktopVoid404 path={path} />;
@@ -187,21 +201,26 @@ export function VoidState404({ attemptedPath = '' }) {
             fontFamily: SB.mono, fontSize: 9, letterSpacing: '0.12em',
             color: SB.rust, textAlign: 'right', fontWeight: 700,
           }}>
-            <div>PAGE MISSING</div>
+            <div>{t('void.common.pageMissing')}</div>
             <div style={{ marginTop: 4, color: SB.inkMute, fontWeight: 500 }}>
-              ERR · 04
+              {t('void.notFound.err')}
             </div>
           </div>
         }
       />
 
       <VoidHero
-        eyebrow="404 · NOT IN BOOKLET"
-        title={<>This page<br /><Italic>was never printed.</Italic></>}
-        body="The URL you tried doesn't match anything in our four-section booklet. Maybe a typo. Maybe a stale link. Either way — let's get you back."
+        eyebrow={t('void.notFound.eyebrow')}
+        title={<>{t('void.notFound.titleLine1')}<br /><Italic>{t('void.notFound.titleLine2')}</Italic></>}
+        body={t('void.notFound.body')}
       />
 
-      <VoidStampBig line1="PAGE" line2="VOID" line3="★ HTTP · 404 ★" color={SB.ink} />
+      <VoidStampBig
+        line1={t('void.notFound.stamp1')}
+        line2={t('void.notFound.stamp2')}
+        line3={t('void.notFound.stamp3')}
+        color={SB.ink}
+      />
 
       {/* "You tried to reach" receipt */}
       <div style={{
@@ -214,7 +233,7 @@ export function VoidState404({ attemptedPath = '' }) {
         <div style={{
           fontFamily: SB.mono, fontSize: 9, letterSpacing: '0.2em',
           color: SB.inkMute, fontWeight: 700, marginBottom: 8,
-        }}>YOU TRIED TO REACH</div>
+        }}>{t('void.notFound.youTried')}</div>
         <div style={{
           fontFamily: SB.mono, fontSize: 13, fontWeight: 600,
           color: SB.ink, padding: '6px 0',
@@ -230,18 +249,18 @@ export function VoidState404({ attemptedPath = '' }) {
           color: SB.inkSoft, lineHeight: 1.5,
           textWrap: 'pretty',
         }}>
-          We&rsquo;ve only ever published these four sections. Try one below.
+          {t('void.notFound.published')}
         </div>
       </div>
 
-      <DashedRule label="JUMP TO" />
+      <DashedRule label={t('void.notFound.section.jumpTo')} />
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
         {[
-          { no: 'I',   t: 'Overview',   sub: 'the pitch',   href: '#' },
-          { no: 'II',  t: 'Calculator', sub: 'run numbers', href: '#calculator' },
-          { no: 'III', t: 'Lenders',    sub: 'compare 9',   href: '#lenders' },
-          { no: 'IV',  t: 'Terms',      sub: 'philosophy',  href: '#about' },
+          { no: 'I',   tKey: 'overview',   href: '#' },
+          { no: 'II',  tKey: 'calculator', href: '#calculator' },
+          { no: 'III', tKey: 'lenders',    href: '#lenders' },
+          { no: 'IV',  tKey: 'terms',      href: '#about' },
         ].map((p) => (
           <a key={p.no} href={p.href} style={{
             padding: '14px 12px',
@@ -257,10 +276,10 @@ export function VoidState404({ attemptedPath = '' }) {
             </span>
             <div>
               <div style={{ fontFamily: SB.serif, fontSize: 14, fontWeight: 600, color: SB.ink, lineHeight: 1 }}>
-                {p.t}
+                {t(`void.notFound.option.${p.tKey}`)}
               </div>
               <div style={{ fontFamily: SB.mono, fontSize: 9, color: SB.inkMute, marginTop: 4, letterSpacing: '0.08em' }}>
-                {p.sub.toUpperCase()}
+                {t(`void.notFound.option.${p.tKey}Sub`).toUpperCase()}
               </div>
             </div>
           </a>
@@ -268,7 +287,7 @@ export function VoidState404({ attemptedPath = '' }) {
       </div>
 
       <div style={{ marginTop: 16 }}>
-        <Button href="#">BACK TO OVERVIEW</Button>
+        <Button href="#">{t('void.notFound.cta')}</Button>
       </div>
 
       <FineFooter />
@@ -283,6 +302,7 @@ export function VoidState404({ attemptedPath = '' }) {
 // ============================================================
 export function VoidStateLoading({ source = 'mempool.space' }) {
   const isDesktop = useIsDesktop();
+  const t = useT();
   if (isDesktop) {
     return <DesktopVoidLoading source={source} />;
   }
@@ -303,7 +323,7 @@ export function VoidStateLoading({ source = 'mempool.space' }) {
                 background: SB.orange,
                 animation: 'sb-pulse 1.2s ease-in-out infinite',
               }} />
-              FETCHING BTC
+              {t('void.loading.fetchingBtc')}
             </div>
             <div>{source} · …</div>
           </div>
@@ -329,14 +349,19 @@ export function VoidStateLoading({ source = 'mempool.space' }) {
       `}</style>
 
       <VoidHero
-        eyebrow="DRAFT · UNVERIFIED"
-        title={<>Pulling live<br /><Italic>BTC price&hellip;</Italic></>}
-        body={`We refuse to quote stale rates. Hold tight — we're checking ${source} and locking in this minute's spot.`}
+        eyebrow={t('void.loading.eyebrow')}
+        title={<>{t('void.loading.titleLine1')}<br /><Italic>{t('void.loading.titleLine2')}</Italic></>}
+        body={t('void.loading.body', { source })}
       />
 
-      <VoidStampBig line1="DRAFT" line2="ONLY" line3="★ NOT VERIFIED ★" color={SB.orange} />
+      <VoidStampBig
+        line1={t('void.loading.stamp1')}
+        line2={t('void.loading.stamp2')}
+        line3={t('void.loading.stamp3')}
+        color={SB.orange}
+      />
 
-      <DashedRule label="SKETCHING ESTIMATE" />
+      <DashedRule label={t('void.loading.section.sketching')} />
 
       {/* Skeleton rows */}
       <div style={{ padding: '0 2px' }}>
@@ -357,7 +382,7 @@ export function VoidStateLoading({ source = 'mempool.space' }) {
         ))}
       </div>
 
-      <DashedRule label="THIS WON'T TAKE LONG" />
+      <DashedRule label={t('void.loading.section.wontTakeLong')} />
 
       <div style={{
         marginTop: 4, padding: '14px',
@@ -438,7 +463,7 @@ function BulletList({ items }) {
   const numerals = ['I.', 'II.', 'III.', 'IV.'];
   return (
     <div>
-      {items.map(([t, sub], i) => (
+      {items.map(([title, sub], i) => (
         <div key={i} style={{
           display: 'grid',
           gridTemplateColumns: '28px 1fr auto',
@@ -454,7 +479,7 @@ function BulletList({ items }) {
             {numerals[i] || `${i + 1}.`}
           </span>
           <span style={{ fontFamily: SB.sans, fontSize: 12.5, fontWeight: 500, color: SB.ink }}>
-            {t}
+            {title}
           </span>
           <span style={{
             fontFamily: SB.mono, fontSize: 9,
@@ -514,6 +539,7 @@ function DVoidStampBig({ line1, line2, line3, color, rotate = -6 }) {
 }
 
 function DesktopVoidLoanTooSmall({ amountLabel, minLabel, onReturn }) {
+  const t = useT();
   const left = (
     <div>
       <div style={{
@@ -521,14 +547,20 @@ function DesktopVoidLoanTooSmall({ amountLabel, minLabel, onReturn }) {
         color: SB.inkMute, fontWeight: 700,
         marginTop: 18, marginBottom: 14,
       }}>
-        PAGE — · LEFT — VOIDED ESTIMATE
+        {t('void.loanTooSmall.desktopLeftLabel')}
       </div>
       <DVoidHero
-        eyebrow="ERR · 01"
-        title={<>Loan too small.<br /><Italic>No lender will take you.</Italic></>}
-        body={`The lowest minimum across the lenders we cover is ${minLabel}. Below that, the math stops being worth it — origination fees would dwarf the loan.`}
+        eyebrow={t('void.loanTooSmall.err')}
+        title={<>{t('void.loanTooSmall.titleLine1')}<br /><Italic>{t('void.loanTooSmall.titleLine2')}</Italic></>}
+        body={t('void.loanTooSmall.body', { min: minLabel })}
       />
-      <DVoidStampBig line1="LOAN" line2="VOID" line3={`★ < ${minLabel} ★`} color={SB.rust} rotate={-7} />
+      <DVoidStampBig
+        line1={t('void.loanTooSmall.stamp1')}
+        line2={t('void.loanTooSmall.stamp2')}
+        line3={t('void.loanTooSmall.stamp3', { min: minLabel })}
+        color={SB.rust}
+        rotate={-7}
+      />
     </div>
   );
 
@@ -539,26 +571,26 @@ function DesktopVoidLoanTooSmall({ amountLabel, minLabel, onReturn }) {
         color: SB.inkMute, fontWeight: 700,
         marginTop: 18, marginBottom: 14,
       }}>
-        PAGE — · RIGHT — WHAT WENT WRONG
+        {t('void.loanTooSmall.desktopRightLabel')}
       </div>
 
-      <DashedRule label="THE NUMBERS" />
+      <DashedRule label={t('void.loanTooSmall.section.numbers')} />
       <div style={{ padding: '0 2px' }}>
-        <Row label="Amount requested" value={amountLabel} valueStyle={{ color: SB.rust }} />
-        <Row label="Minimum across all lenders" value={minLabel} sub="Ledn · Firefish · Xapo" />
-        <Row label="Origination would be" value="~$50" sub="dwarfs the principal" valueStyle={{ color: SB.rust }} />
+        <Row label={t('void.loanTooSmall.row.requested')} value={amountLabel} valueStyle={{ color: SB.rust }} />
+        <Row label={t('void.loanTooSmall.row.minimum')} value={minLabel} sub={t('void.loanTooSmall.row.minimumSub')} />
+        <Row label={t('void.loanTooSmall.row.origination')} value={t('void.loanTooSmall.row.originationValue')} sub={t('void.loanTooSmall.row.originationSub')} valueStyle={{ color: SB.rust }} />
       </div>
 
-      <DashedRule label="WHAT NOW" />
+      <DashedRule label={t('void.loanTooSmall.section.whatNow')} />
       <BulletList items={[
-        ['Increase your loan amount', `try ${minLabel} or more`],
-        ['Sell a small chunk instead', 'no interest, no liquidation risk'],
-        ['Wait until you need more', 'borrow once, less friction'],
+        [t('void.loanTooSmall.option1.title'), t('void.loanTooSmall.option1.sub', { min: minLabel })],
+        [t('void.loanTooSmall.option2.title'), t('void.loanTooSmall.option2.sub')],
+        [t('void.loanTooSmall.option3.title'), t('void.loanTooSmall.option3.sub')],
       ]} />
 
       <div style={{ marginTop: 22 }}>
         <Button onClick={onReturn} href={onReturn ? undefined : '#calculator'}>
-          {onReturn ? 'RESET AMOUNT & CONTINUE' : 'RETURN TO CALCULATOR'}
+          {onReturn ? t('void.loanTooSmall.cta.reset') : t('void.loanTooSmall.cta.return')}
         </Button>
       </div>
     </div>
@@ -568,15 +600,15 @@ function DesktopVoidLoanTooSmall({ amountLabel, minLabel, onReturn }) {
     <DesktopSpreadFrame
       left={left} right={right}
       active="calc" currentPage="—" pageOf="—"
-      spineLabel="VOID · ERR 01 · LOAN BELOW MINIMUM"
+      spineLabel={t('void.loanTooSmall.spine')}
       rightSlot={
         <div style={{
           fontFamily: SB.mono, fontSize: 11, letterSpacing: '0.14em',
           color: SB.rust, textAlign: 'right', fontWeight: 700,
         }}>
-          <div>NO QUOTES</div>
+          <div>{t('void.common.noQuotes')}</div>
           <div style={{ marginTop: 5, color: SB.inkMute, fontWeight: 500 }}>
-            AMOUNT BELOW MINIMUM
+            {t('void.common.amountBelowMin')}
           </div>
         </div>
       }
@@ -585,6 +617,8 @@ function DesktopVoidLoanTooSmall({ amountLabel, minLabel, onReturn }) {
 }
 
 function DesktopVoidNoRegion({ regionLabel, regionCode }) {
+  const t = useT();
+  const code = regionCode.toUpperCase();
   const left = (
     <div>
       <div style={{
@@ -592,14 +626,20 @@ function DesktopVoidNoRegion({ regionLabel, regionCode }) {
         color: SB.inkMute, fontWeight: 700,
         marginTop: 18, marginBottom: 14,
       }}>
-        PAGE — · LEFT — REGION REJECTED
+        {t('void.noRegion.desktopLeftLabel')}
       </div>
       <DVoidHero
-        eyebrow="ERR · 02"
-        title={<>No lenders<br /><Italic>in {regionLabel}.</Italic></>}
-        body={`Bitcoin-backed lending is regulated unevenly. We don't currently have a verified lender that serves residents of your detected region (${regionCode.toUpperCase()}).`}
+        eyebrow={t('void.noRegion.err')}
+        title={<>{t('void.noRegion.titleLine1')}<br /><Italic>{t('void.noRegion.titleLine2', { region: regionLabel })}</Italic></>}
+        body={t('void.noRegion.body', { code })}
       />
-      <DVoidStampBig line1="REGION" line2="VOID" line3={`★ ${regionCode.toUpperCase()} · 0 LENDERS ★`} color={SB.rust} rotate={-6} />
+      <DVoidStampBig
+        line1={t('void.noRegion.stamp1')}
+        line2={t('void.noRegion.stamp2')}
+        line3={t('void.noRegion.stamp3', { code })}
+        color={SB.rust}
+        rotate={-6}
+      />
     </div>
   );
 
@@ -610,14 +650,14 @@ function DesktopVoidNoRegion({ regionLabel, regionCode }) {
         color: SB.inkMute, fontWeight: 700,
         marginTop: 18, marginBottom: 14,
       }}>
-        PAGE — · RIGHT — WHAT'S BLOCKING THIS
+        {t('void.noRegion.desktopRightLabel')}
       </div>
 
-      <DashedRule label="WHAT'S BLOCKING THIS" />
+      <DashedRule label={t('void.noRegion.section.blocking')} />
       <div style={{ padding: '0 2px' }}>
-        <Row label="Your detected region" value={`${regionCode.toUpperCase()} · ${regionLabel}`} />
-        <Row label="Lenders that serve you" value="0 of 9" valueStyle={{ color: SB.rust }} />
-        <Row label="Closest available" value="Global · 3 lenders" sub="Strike · Firefish · Xapo" />
+        <Row label={t('void.noRegion.row.detected')} value={t('void.noRegion.row.detectedValue', { code, region: regionLabel })} />
+        <Row label={t('void.noRegion.row.servers')} value={t('void.noRegion.row.serversValue')} valueStyle={{ color: SB.rust }} />
+        <Row label={t('void.noRegion.row.closest')} value={t('void.noRegion.row.closestValue')} sub={t('void.noRegion.row.closestSub')} />
       </div>
 
       <div style={{
@@ -628,26 +668,25 @@ function DesktopVoidNoRegion({ regionLabel, regionCode }) {
         <div style={{
           fontFamily: SB.mono, fontSize: 10, letterSpacing: '0.2em',
           color: SB.inkMute, fontWeight: 700, marginBottom: 10,
-        }}>WHY THIS HAPPENS</div>
+        }}>{t('void.noRegion.whyHeading')}</div>
         <p style={{
           margin: 0,
           fontFamily: SB.sans, fontSize: 13, lineHeight: 1.6,
           color: SB.inkSoft, textWrap: 'pretty',
         }}>
-          Some jurisdictions classify BTC lending in ways that make regulated lenders
-          stay out of the market until rules clarify. We'll keep an eye on it.
+          {t('void.noRegion.whyBody')}
         </p>
       </div>
 
-      <DashedRule label="WHAT NOW" />
+      <DashedRule label={t('void.noRegion.section.whatNow')} />
       <BulletList items={[
-        ['Switch currency in the calculator', 'see lenders for US / EU / CA'],
-        ['Browse the global lender list',     'shows everyone regardless of region'],
-        ['Read the terms',                    'philosophy & method'],
+        [t('void.noRegion.option1.title'), t('void.noRegion.option1.sub')],
+        [t('void.noRegion.option2.title'), t('void.noRegion.option2.sub')],
+        [t('void.noRegion.option3.title'), t('void.noRegion.option3.sub')],
       ]} />
 
       <div style={{ marginTop: 22 }}>
-        <Button href="#lenders">BROWSE GLOBAL LENDERS</Button>
+        <Button href="#lenders">{t('void.noRegion.cta')}</Button>
       </div>
     </div>
   );
@@ -656,15 +695,15 @@ function DesktopVoidNoRegion({ regionLabel, regionCode }) {
     <DesktopSpreadFrame
       left={left} right={right}
       active="lender" currentPage="—" pageOf="—"
-      spineLabel={`VOID · ERR 02 · ${regionCode.toUpperCase()} NOT SERVED`}
+      spineLabel={t('void.noRegion.spine', { code })}
       rightSlot={
         <div style={{
           fontFamily: SB.mono, fontSize: 11, letterSpacing: '0.14em',
           color: SB.rust, textAlign: 'right', fontWeight: 700,
         }}>
-          <div>NO QUOTES</div>
+          <div>{t('void.common.noQuotes')}</div>
           <div style={{ marginTop: 5, color: SB.inkMute, fontWeight: 500 }}>
-            REGION NOT SERVED
+            {t('void.common.regionNotServed')}
           </div>
         </div>
       }
@@ -673,6 +712,7 @@ function DesktopVoidNoRegion({ regionLabel, regionCode }) {
 }
 
 function DesktopVoid404({ path }) {
+  const t = useT();
   const left = (
     <div>
       <div style={{
@@ -680,14 +720,20 @@ function DesktopVoid404({ path }) {
         color: SB.inkMute, fontWeight: 700,
         marginTop: 18, marginBottom: 14,
       }}>
-        PAGE — · LEFT — UNPRINTED
+        {t('void.notFound.desktopLeftLabel')}
       </div>
       <DVoidHero
-        eyebrow="404 · NOT IN BOOKLET"
-        title={<>This page<br /><Italic>was never printed.</Italic></>}
-        body="The URL you tried doesn't match anything in our four-section booklet. Maybe a typo. Maybe a stale link. Either way — let's get you back."
+        eyebrow={t('void.notFound.eyebrow')}
+        title={<>{t('void.notFound.titleLine1')}<br /><Italic>{t('void.notFound.titleLine2')}</Italic></>}
+        body={t('void.notFound.body')}
       />
-      <DVoidStampBig line1="PAGE" line2="VOID" line3="★ HTTP · 404 ★" color={SB.ink} rotate={-6} />
+      <DVoidStampBig
+        line1={t('void.notFound.stamp1')}
+        line2={t('void.notFound.stamp2')}
+        line3={t('void.notFound.stamp3')}
+        color={SB.ink}
+        rotate={-6}
+      />
     </div>
   );
 
@@ -698,7 +744,7 @@ function DesktopVoid404({ path }) {
         color: SB.inkMute, fontWeight: 700,
         marginTop: 18, marginBottom: 14,
       }}>
-        PAGE — · RIGHT — JUMP TO
+        {t('void.notFound.desktopRightLabel')}
       </div>
 
       <div style={{
@@ -710,7 +756,7 @@ function DesktopVoid404({ path }) {
         <div style={{
           fontFamily: SB.mono, fontSize: 10, letterSpacing: '0.2em',
           color: SB.inkMute, fontWeight: 700, marginBottom: 10,
-        }}>YOU TRIED TO REACH</div>
+        }}>{t('void.notFound.youTried')}</div>
         <div style={{
           fontFamily: SB.mono, fontSize: 15, fontWeight: 600,
           color: SB.ink, padding: '6px 0',
@@ -725,18 +771,18 @@ function DesktopVoid404({ path }) {
           color: SB.inkSoft, lineHeight: 1.55,
           textWrap: 'pretty',
         }}>
-          We've only ever published these four sections. Try one below.
+          {t('void.notFound.published')}
         </div>
       </div>
 
-      <DashedRule label="JUMP TO" />
+      <DashedRule label={t('void.notFound.section.jumpTo')} />
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
         {[
-          { no: 'I',   t: 'Overview',   sub: 'the pitch',   href: '#' },
-          { no: 'II',  t: 'Calculator', sub: 'run numbers', href: '#calculator' },
-          { no: 'III', t: 'Lenders',    sub: 'compare 9',   href: '#lenders' },
-          { no: 'IV',  t: 'Terms',      sub: 'philosophy',  href: '#about' },
+          { no: 'I',   tKey: 'overview',   href: '#' },
+          { no: 'II',  tKey: 'calculator', href: '#calculator' },
+          { no: 'III', tKey: 'lenders',    href: '#lenders' },
+          { no: 'IV',  tKey: 'terms',      href: '#about' },
         ].map((p) => (
           <a key={p.no} href={p.href} style={{
             padding: '18px 16px',
@@ -750,10 +796,10 @@ function DesktopVoid404({ path }) {
             </span>
             <div>
               <div style={{ fontFamily: SB.serif, fontSize: 17, fontWeight: 600, color: SB.ink, lineHeight: 1 }}>
-                {p.t}
+                {t(`void.notFound.option.${p.tKey}`)}
               </div>
               <div style={{ fontFamily: SB.mono, fontSize: 10, color: SB.inkMute, marginTop: 6, letterSpacing: '0.1em' }}>
-                {p.sub.toUpperCase()}
+                {t(`void.notFound.option.${p.tKey}Sub`).toUpperCase()}
               </div>
             </div>
           </a>
@@ -761,7 +807,7 @@ function DesktopVoid404({ path }) {
       </div>
 
       <div style={{ marginTop: 22 }}>
-        <Button href="#">BACK TO OVERVIEW</Button>
+        <Button href="#">{t('void.notFound.cta')}</Button>
       </div>
     </div>
   );
@@ -770,15 +816,15 @@ function DesktopVoid404({ path }) {
     <DesktopSpreadFrame
       left={left} right={right}
       active="landing" currentPage="—" pageOf="—"
-      spineLabel="VOID · 404 · NOT IN BOOKLET"
+      spineLabel={t('void.notFound.spine')}
       rightSlot={
         <div style={{
           fontFamily: SB.mono, fontSize: 11, letterSpacing: '0.14em',
           color: SB.rust, textAlign: 'right', fontWeight: 700,
         }}>
-          <div>PAGE MISSING</div>
+          <div>{t('void.common.pageMissing')}</div>
           <div style={{ marginTop: 5, color: SB.inkMute, fontWeight: 500 }}>
-            ERR · 04
+            {t('void.notFound.err')}
           </div>
         </div>
       }
@@ -787,6 +833,7 @@ function DesktopVoid404({ path }) {
 }
 
 function DesktopVoidLoading({ source }) {
+  const t = useT();
   const skelRows = [220, 280, 240, 320, 200];
   const left = (
     <div>
@@ -813,14 +860,20 @@ function DesktopVoidLoading({ source }) {
         color: SB.inkMute, fontWeight: 700,
         marginTop: 18, marginBottom: 14,
       }}>
-        PAGE II · LEFT — SKETCHING ESTIMATE
+        {t('void.loading.desktopLeftLabel')}
       </div>
       <DVoidHero
-        eyebrow="DRAFT · UNVERIFIED"
-        title={<>Pulling live<br /><Italic>BTC price…</Italic></>}
-        body={`We refuse to quote stale rates. Hold tight — we're checking ${source} and locking in this minute's spot.`}
+        eyebrow={t('void.loading.eyebrow')}
+        title={<>{t('void.loading.titleLine1')}<br /><Italic>{t('void.loading.titleLine2')}</Italic></>}
+        body={t('void.loading.body', { source })}
       />
-      <DVoidStampBig line1="DRAFT" line2="ONLY" line3="★ NOT VERIFIED ★" color={SB.orange} rotate={-5} />
+      <DVoidStampBig
+        line1={t('void.loading.stamp1')}
+        line2={t('void.loading.stamp2')}
+        line3={t('void.loading.stamp3')}
+        color={SB.orange}
+        rotate={-5}
+      />
     </div>
   );
 
@@ -831,10 +884,10 @@ function DesktopVoidLoading({ source }) {
         color: SB.inkMute, fontWeight: 700,
         marginTop: 18, marginBottom: 14,
       }}>
-        PAGE II · RIGHT — SKELETONS
+        {t('void.loading.desktopRightLabel')}
       </div>
 
-      <DashedRule label="SKETCHING ESTIMATE" />
+      <DashedRule label={t('void.loading.section.sketching')} />
       <div style={{ padding: '0 2px' }}>
         {skelRows.map((w, i) => (
           <div key={i} style={{
@@ -851,7 +904,7 @@ function DesktopVoidLoading({ source }) {
         ))}
       </div>
 
-      <DashedRule label="THIS WON'T TAKE LONG" />
+      <DashedRule label={t('void.loading.section.wontTakeLong')} />
 
       <div style={{
         marginTop: 4, padding: '16px 18px',
@@ -876,7 +929,7 @@ function DesktopVoidLoading({ source }) {
     <DesktopSpreadFrame
       left={left} right={right}
       active="calc" currentPage="II" pageOf="IV"
-      spineLabel="DRAFT · FETCHING SPOT PRICE"
+      spineLabel={t('void.loading.spine')}
       rightSlot={
         <div style={{
           display: 'flex', flexDirection: 'column', alignItems: 'flex-end',
@@ -889,7 +942,7 @@ function DesktopVoidLoading({ source }) {
               background: SB.orange,
               animation: 'sb-pulse 1.2s ease-in-out infinite',
             }} />
-            FETCHING BTC
+            {t('void.loading.fetchingBtc')}
           </div>
           <div>{source} · …</div>
         </div>

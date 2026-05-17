@@ -21,12 +21,12 @@ import {
   PageNav,
   FineFooter,
   LivePriceBadge,
-  SunMoonStamp,
 } from '../system/components.jsx';
 import { useIsDesktop } from '../system/theme.jsx';
 import { DesktopSpreadFrame } from '../system/desktop.jsx';
 import { rankLenders } from '../lib/math.js';
 import { fmtMoney, fmtNum } from '../lib/format.js';
+import { useT } from '../i18n/index.jsx';
 
 // Lender-card terms grid cell.
 function Term({ k, v }) {
@@ -48,9 +48,9 @@ function Term({ k, v }) {
 // Trim a lender's term string into a compact display label:
 // drop trailing parentheticals, secondary sentences, and the
 // "prepayable anytime" clause — keep the core phrase intact.
-function fmtTerm(t) {
-  if (!t) return '12mo';
-  return t
+function fmtTerm(termStr) {
+  if (!termStr) return '12mo';
+  return termStr
     .replace(/,\s*prepayable anytime/i, '')
     .replace(/\s*\([^)]*\)\s*$/, '')
     .replace(/\.\s.*$/, '')
@@ -58,37 +58,32 @@ function fmtTerm(t) {
 }
 
 // Translate raw lender object into display badge metadata.
-function badgeFor(l) {
+// Falls back to a translated NON-CUSTODIAL badge for multisig lenders.
+function badgeFor(l, t) {
   if (l.badge) return l.badge;
-  if (l.custodyType === 'multisig') return 'NON-CUSTODIAL';
+  if (l.custodyType === 'multisig') return t('lenders.badge.nonCustodial');
   return '—';
 }
 
-// Custody label for the terms grid.
-function custodyShort(l) {
+// Custody label for the terms grid (translated via t()).
+function custodyShort(l, t) {
   if (l.custodyType === 'multisig') {
-    if (l.custodyKind === 'taproot-vault')   return 'TAPROOT';
-    if (l.custodyKind === 'dlc')             return 'DLC';
-    if (l.custodyKind === 'collab-multisig') return 'COLLAB MSIG';
-    return 'MULTISIG';
+    if (l.custodyKind === 'taproot-vault')   return t('lenders.custody.taproot');
+    if (l.custodyKind === 'dlc')             return t('lenders.custody.dlc');
+    if (l.custodyKind === 'collab-multisig') return t('lenders.custody.collabMsig');
+    return t('lenders.custody.multisig');
   }
-  if (l.custodyType === 'segregated') return 'SEGREGATED';
-  if (l.custodyType === 'custodial')  return 'CUSTODIAL';
-  if (l.custodyType === 'custodial-mixed') return 'MIXED';
-  return l.custodyType?.toUpperCase() || 'CUSTODIAL';
+  if (l.custodyType === 'segregated') return t('lenders.custody.segregated');
+  if (l.custodyType === 'custodial')  return t('lenders.custody.custodial');
+  if (l.custodyType === 'custodial-mixed') return t('lenders.custody.mixed');
+  return l.custodyType?.toUpperCase() || t('lenders.custody.custodial');
 }
 
-const FILTERS = [
-  { id: 'all',      label: 'ALL' },
-  { id: 'us',       label: 'US' },
-  { id: 'eu',       label: 'EU' },
-  { id: 'btcOnly',  label: 'BTC ONLY' },
-  { id: 'noRehypo', label: 'NO REHYPO' },
-  { id: 'multisig', label: 'MULTISIG' },
-];
+const FILTER_IDS = ['all', 'us', 'eu', 'btcOnly', 'noRehypo', 'multisig'];
 
 export default function LendersPage({ lenders, lastUpdated, live, currency, region }) {
   const isDesktop = useIsDesktop();
+  const t = useT();
   const [filter, setFilter] = useState('all');
   // Standardize on a $50K loan for the default ranking display.
   const QUOTE_LOAN_USD = 50000;
@@ -155,25 +150,22 @@ export default function LendersPage({ lenders, lastUpdated, live, currency, regi
           fontFamily: SB.mono, fontSize: 9, letterSpacing: '0.22em',
           color: SB.inkMute, fontWeight: 700, marginBottom: 8,
         }}>
-          DIRECTORY · ALL VETTED QUOTES
+          {t('lenders.meta.eyebrow')}
         </div>
         <h1 style={{
           margin: 0,
           fontFamily: SB.serif, fontSize: 30, fontWeight: 600,
           lineHeight: 1.05, letterSpacing: '-0.025em', color: SB.ink,
         }}>
-          Many lenders.<br />
-          <span style={{ color: SB.orange, fontStyle: 'italic', fontWeight: 500 }}>One ranking principle.</span>
+          {t('lenders.hero.titleLine1')}<br />
+          <span style={{ color: SB.orange, fontStyle: 'italic', fontWeight: 500 }}>{t('lenders.hero.titleLine2')}</span>
         </h1>
         <p style={{
           marginTop: 12, marginBottom: 0,
           fontFamily: SB.sans, fontSize: 12.5, lineHeight: 1.55,
           color: SB.inkSoft, textWrap: 'pretty',
         }}>
-          <b style={{ color: SB.ink }}>BTC-only lenders rank above
-          multi-collateral, always.</b> Within each tier, sorted by total cost
-          and weighted against rehypothecation and pooled custody. Affiliate
-          fees never adjust the order.
+          <b style={{ color: SB.ink }}>{t('lenders.hero.bodyBold')}</b>{t('lenders.hero.bodyAfter')}
         </p>
       </div>
 
@@ -183,9 +175,9 @@ export default function LendersPage({ lenders, lastUpdated, live, currency, regi
         margin: '14px 0 4px',
         justifyContent: 'center',
       }}>
-        {FILTERS.map((f) => (
-          <Chip key={f.id} active={filter === f.id} onClick={() => setFilter(f.id)}>
-            {f.label} · {counts[f.id] ?? 0}
+        {FILTER_IDS.map((id) => (
+          <Chip key={id} active={filter === id} onClick={() => setFilter(id)}>
+            {t(`lenders.filter.${id}`)} · {counts[id] ?? 0}
           </Chip>
         ))}
       </div>
@@ -194,10 +186,10 @@ export default function LendersPage({ lenders, lastUpdated, live, currency, regi
         color: SB.inkMute, marginTop: 8, letterSpacing: '0.02em',
         textAlign: 'center',
       }}>
-        Quote sized for <b style={{ color: SB.ink }}>{fmtMoney(QUOTE_LOAN_USD, currency, CURRENCY_META, live.btcUsd)} · 12mo · 50% LTV</b>.
+        {t('lenders.quoteSizedBefore')}<b style={{ color: SB.ink }}>{t('lenders.quoteSizedValue', { amount: fmtMoney(QUOTE_LOAN_USD, currency, CURRENCY_META, live.btcUsd), months: TERM_MONTHS, ltv: LTV_PCT })}</b>.
       </div>
 
-      <DashedRule label="QUOTES · ASCENDING BY ADJUSTED COST" />
+      <DashedRule label={t('lenders.section.ascending')} />
 
       {ranked.length === 0 && (
         <div style={{
@@ -206,7 +198,7 @@ export default function LendersPage({ lenders, lastUpdated, live, currency, regi
           color: SB.inkMute, textAlign: 'center',
           border: `1px dashed ${SB.inkLine}`,
         }}>
-          No matching lenders. Try a different filter.
+          {t('lenders.empty')}
         </div>
       )}
 
@@ -230,7 +222,7 @@ export default function LendersPage({ lenders, lastUpdated, live, currency, regi
                     padding: '2px 8px',
                     fontFamily: SB.mono, fontSize: 9, fontWeight: 700,
                     letterSpacing: '0.18em',
-                  }}>★ TOP QUOTE</div>
+                  }}>{t('lenders.topQuote')}</div>
                 </div>
               )}
 
@@ -245,8 +237,8 @@ export default function LendersPage({ lenders, lastUpdated, live, currency, regi
                     {l.name}
                   </div>
                   <div style={{ display: 'flex', gap: 4, marginTop: 6, flexWrap: 'wrap' }}>
-                    <Pill color={isBest ? SB.forest : SB.ink} filled={isBest}>{badgeFor(l)}</Pill>
-                    {l.isTiered && <Pill color={SB.orange}>TIERED</Pill>}
+                    <Pill color={isBest ? SB.forest : SB.ink} filled={isBest}>{badgeFor(l, t)}</Pill>
+                    {l.isTiered && <Pill color={SB.orange}>{t('lenders.badge.tiered')}</Pill>}
                   </div>
                 </div>
                 <div style={{ textAlign: 'right' }}>
@@ -263,7 +255,7 @@ export default function LendersPage({ lenders, lastUpdated, live, currency, regi
                       fontFamily: SB.mono, fontSize: 9,
                       color: SB.inkMute, marginTop: 2, letterSpacing: '0.02em',
                     }}>
-                      incl. {fmtMoney(l.membershipFeeUsd, currency, CURRENCY_META, live.btcUsd)} mbr
+                      {t('lenders.includesMembership', { fee: fmtMoney(l.membershipFeeUsd, currency, CURRENCY_META, live.btcUsd) })}
                     </div>
                   )}
                 </div>
@@ -275,9 +267,9 @@ export default function LendersPage({ lenders, lastUpdated, live, currency, regi
                 marginTop: 10, paddingTop: 10,
                 borderTop: `1px dotted ${SB.inkLine}`,
               }}>
-                <Term k="MIN" v={'$' + fmtNum(l.minLoanUsd || 0)} />
-                <Term k="TERM" v={fmtTerm(l.term)} />
-                <Term k="CUSTODY" v={custodyShort(l)} />
+                <Term k={t('lenders.term.min')} v={'$' + fmtNum(l.minLoanUsd || 0)} />
+                <Term k={t('lenders.term.term')} v={fmtTerm(l.term)} />
+                <Term k={t('lenders.term.custody')} v={custodyShort(l, t)} />
               </div>
 
               {/* Note */}
@@ -292,19 +284,19 @@ export default function LendersPage({ lenders, lastUpdated, live, currency, regi
               {/* Flags */}
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 10 }}>
                 {l.originationFeePctEffective > 0 && (
-                  <span style={flagStyle(SB.orange)}>{l.originationFeePctEffective}% ORIG FEE</span>
+                  <span style={flagStyle(SB.orange)}>{t('lenders.flag.origFee', { pct: l.originationFeePctEffective })}</span>
                 )}
                 {l.originationFeePctEffective === 0 && (
-                  <span style={flagStyle(SB.forest)}>NO ORIG FEE</span>
+                  <span style={flagStyle(SB.forest)}>{t('lenders.flag.noOrigFee')}</span>
                 )}
                 {l.annualMembershipUsd > 0 && (
-                  <span style={flagStyle(SB.orange)}>⚠ MEMBERSHIP REQ</span>
+                  <span style={flagStyle(SB.orange)}>{t('lenders.flag.membership')}</span>
                 )}
-                {l.custodyType === 'multisig' && <span style={flagStyle(SB.forest)}>MULTISIG</span>}
-                {l.btcOnly === true && <span style={flagStyle(SB.forest)}>BTC ONLY</span>}
-                {l.btcOnly === false && <span style={flagStyle(SB.rust)}>MULTI-COLLATERAL</span>}
-                {l.rehypothecation === 'no' && <span style={flagStyle(SB.forest)}>NO REHYPO</span>}
-                {rehypoBad && <span style={flagStyle(SB.rust)}>⚠ REHYPO</span>}
+                {l.custodyType === 'multisig' && <span style={flagStyle(SB.forest)}>{t('lenders.flag.multisig')}</span>}
+                {l.btcOnly === true && <span style={flagStyle(SB.forest)}>{t('lenders.flag.btcOnly')}</span>}
+                {l.btcOnly === false && <span style={flagStyle(SB.rust)}>{t('lenders.flag.multiCollateral')}</span>}
+                {l.rehypothecation === 'no' && <span style={flagStyle(SB.forest)}>{t('lenders.flag.noRehypo')}</span>}
+                {rehypoBad && <span style={flagStyle(SB.rust)}>{t('lenders.flag.rehypo')}</span>}
               </div>
 
               {/* Apply link */}
@@ -317,7 +309,7 @@ export default function LendersPage({ lenders, lastUpdated, live, currency, regi
                   fontFamily: SB.mono, fontSize: 9,
                   color: SB.inkMute, letterSpacing: '0.05em',
                 }}>
-                  {isBest ? 'WE RECOMMEND THIS QUOTE' : 'compare terms before applying'}
+                  {isBest ? t('lenders.recommend') : t('lenders.compare')}
                 </div>
                 <a
                   href={l.referralUrl || '#'}
@@ -329,25 +321,25 @@ export default function LendersPage({ lenders, lastUpdated, live, currency, regi
                     color: SB.ink, textDecoration: 'none',
                     borderBottom: `1.5px solid ${SB.orange}`,
                     paddingBottom: 1, cursor: 'pointer',
-                  }}>APPLY →</a>
+                  }}>{t('lenders.apply')}</a>
               </div>
             </div>
           );
         })}
       </div>
 
-      <DashedRule label="GLOSSARY" />
+      <DashedRule label={t('common.glossary.label')} />
 
       <div>
-        <Row label="Rehypothecation" value="lender lends out your collateral"
+        <Row label={t('lenders.glossary.rehypo.label')} value={t('lenders.glossary.rehypo.value')}
           valueStyle={{ fontFamily: SB.sans, fontWeight: 500, fontSize: 11.5 }}
-          sub="higher rate, higher risk" />
-        <Row label="Multisig custody" value="no single-party control"
+          sub={t('lenders.glossary.rehypo.sub')} />
+        <Row label={t('lenders.glossary.multisig.label')} value={t('lenders.glossary.multisig.value')}
           valueStyle={{ fontFamily: SB.sans, fontWeight: 500, fontSize: 11.5 }}
-          sub="strongest model" />
-        <Row label="Origination fee" value="paid upfront, not APR"
+          sub={t('lenders.glossary.multisig.sub')} />
+        <Row label={t('lenders.glossary.orig.label')} value={t('lenders.glossary.orig.value')}
           valueStyle={{ fontFamily: SB.sans, fontWeight: 500, fontSize: 11.5 }}
-          sub="effective rate bumps up" />
+          sub={t('lenders.glossary.orig.sub')} />
       </div>
 
       <FineFooter source={live.source || 'mempool.space'} updated={lastUpdated} />
@@ -375,6 +367,7 @@ function DesktopLendersLayout({
   lenders, ranked, filter, setFilter, counts,
   currency, live, lastUpdated, quoteLoanUsd,
 }) {
+  const t = useT();
   const rightSlot = (
     <LivePriceBadge
       btcUsd={live.btcUsd} loading={live.loading}
@@ -389,23 +382,23 @@ function DesktopLendersLayout({
         color: SB.inkMute, fontWeight: 700,
         marginTop: 18, marginBottom: 14,
       }}>
-        PAGE III · LEFT — THE DIRECTORY
+        {t('lenders.desktop.leftLabel')}
       </div>
 
       <div style={{
         fontFamily: SB.mono, fontSize: 10, letterSpacing: '0.22em',
         color: SB.inkMute, fontWeight: 700, marginBottom: 10,
       }}>
-        DIRECTORY · ALL VETTED QUOTES
+        {t('lenders.meta.eyebrow')}
       </div>
       <h1 style={{
         margin: 0,
         fontFamily: SB.serif, fontSize: 56, fontWeight: 600,
         lineHeight: 1, letterSpacing: '-0.03em', color: SB.ink,
       }}>
-        Many lenders.<br />
+        {t('lenders.hero.titleLine1')}<br />
         <span style={{ color: SB.orange, fontStyle: 'italic', fontWeight: 500 }}>
-          One ranking principle.
+          {t('lenders.hero.titleLine2')}
         </span>
       </h1>
       <p style={{
@@ -413,21 +406,18 @@ function DesktopLendersLayout({
         fontFamily: SB.sans, fontSize: 15, lineHeight: 1.55,
         color: SB.inkSoft, textWrap: 'pretty', maxWidth: 460,
       }}>
-        <b style={{ color: SB.ink }}>BTC-only lenders rank above
-        multi-collateral, always.</b> Within each tier, sorted by total cost
-        and weighted against rehypothecation and pooled custody. Affiliate
-        fees never adjust the order.
+        <b style={{ color: SB.ink }}>{t('lenders.hero.bodyBold')}</b>{t('lenders.hero.bodyAfter')}
       </p>
 
-      <DashedRule label="FILTER" />
+      <DashedRule label={t('lenders.section.filter')} />
 
       <div style={{
         display: 'flex', gap: 8, flexWrap: 'wrap',
         justifyContent: 'center',
       }}>
-        {FILTERS.map((f) => (
-          <Chip key={f.id} active={filter === f.id} onClick={() => setFilter(f.id)}>
-            {f.label} · {counts[f.id] ?? 0}
+        {FILTER_IDS.map((id) => (
+          <Chip key={id} active={filter === id} onClick={() => setFilter(id)}>
+            {t(`lenders.filter.${id}`)} · {counts[id] ?? 0}
           </Chip>
         ))}
       </div>
@@ -436,26 +426,26 @@ function DesktopLendersLayout({
         color: SB.inkMute, marginTop: 12, letterSpacing: '0.02em',
         textAlign: 'center',
       }}>
-        Quote sized for <b style={{ color: SB.ink }}>
-          {fmtMoney(quoteLoanUsd, currency, CURRENCY_META, live.btcUsd)} · 12mo · 50% LTV
+        {t('lenders.quoteSizedBefore')}<b style={{ color: SB.ink }}>
+          {t('lenders.quoteSizedValue', { amount: fmtMoney(quoteLoanUsd, currency, CURRENCY_META, live.btcUsd), months: TERM_MONTHS, ltv: LTV_PCT })}
         </b>.
       </div>
 
-      <DashedRule label="GLOSSARY" />
+      <DashedRule label={t('common.glossary.label')} />
 
       <div>
-        <Row label="Rehypothecation" value="lender lends out your collateral"
+        <Row label={t('lenders.glossary.rehypo.label')} value={t('lenders.glossary.rehypo.value')}
           valueStyle={{ fontFamily: SB.sans, fontWeight: 500, fontSize: 12 }}
-          sub="higher rate, higher risk" />
-        <Row label="Multisig custody" value="no single-party control"
+          sub={t('lenders.glossary.rehypo.sub')} />
+        <Row label={t('lenders.glossary.multisig.label')} value={t('lenders.glossary.multisig.value')}
           valueStyle={{ fontFamily: SB.sans, fontWeight: 500, fontSize: 12 }}
-          sub="strongest model" />
-        <Row label="Origination fee" value="paid upfront, not APR"
+          sub={t('lenders.glossary.multisig.sub')} />
+        <Row label={t('lenders.glossary.orig.label')} value={t('lenders.glossary.orig.value')}
           valueStyle={{ fontFamily: SB.sans, fontWeight: 500, fontSize: 12 }}
-          sub="effective rate bumps up" />
+          sub={t('lenders.glossary.orig.sub')} />
       </div>
 
-      <DashedRule label="METHOD" />
+      <DashedRule label={t('lenders.section.method')} />
 
       <p style={{
         margin: 0,
@@ -463,13 +453,7 @@ function DesktopLendersLayout({
         color: SB.inkSoft, textWrap: 'pretty',
         textAlign: 'center',
       }}>
-        Rates verified quarterly. Tiered lenders resolve to the band that
-        covers your loan size. <b style={{ color: SB.ink }}>BTC-only lenders
-        rank above multi-collateral, always</b> — collateral discipline is
-        both a values signal and a balance-sheet risk signal. Within each
-        tier, ranking weights against rehypothecation and pooled custody.
-        Rehypothecation is the single common cause of every major BTC-lender
-        failure — Celsius, BlockFi, Genesis, Voyager all rehypothecated.
+        {t('lenders.method.bodyBefore')}<b style={{ color: SB.ink }}>{t('lenders.method.bodyBold')}</b>{t('lenders.method.bodyAfter')}
       </p>
     </div>
   );
@@ -481,7 +465,7 @@ function DesktopLendersLayout({
         color: SB.inkMute, fontWeight: 700,
         marginTop: 18, marginBottom: 14,
       }}>
-        PAGE III · RIGHT — QUOTES, ASCENDING BY ADJUSTED COST
+        {t('lenders.desktop.rightLabel')}
       </div>
 
       {ranked.length === 0 && (
@@ -491,7 +475,7 @@ function DesktopLendersLayout({
           color: SB.inkMute, textAlign: 'center',
           border: `1px dashed ${SB.inkLine}`,
         }}>
-          No matching lenders. Try a different filter.
+          {t('lenders.empty')}
         </div>
       )}
 
@@ -515,7 +499,7 @@ function DesktopLendersLayout({
                     padding: '3px 10px',
                     fontFamily: SB.mono, fontSize: 10, fontWeight: 700,
                     letterSpacing: '0.18em',
-                  }}>★ TOP QUOTE</div>
+                  }}>{t('lenders.topQuote')}</div>
                 </div>
               )}
               <div style={{
@@ -528,8 +512,8 @@ function DesktopLendersLayout({
                     {l.name}
                   </div>
                   <div style={{ display: 'flex', gap: 5, marginTop: 8, flexWrap: 'wrap' }}>
-                    <Pill color={isBest ? SB.forest : SB.ink} filled={isBest}>{badgeFor(l)}</Pill>
-                    {l.isTiered && <Pill color={SB.orange}>TIERED</Pill>}
+                    <Pill color={isBest ? SB.forest : SB.ink} filled={isBest}>{badgeFor(l, t)}</Pill>
+                    {l.isTiered && <Pill color={SB.orange}>{t('lenders.badge.tiered')}</Pill>}
                   </div>
                 </div>
                 <div style={{ textAlign: 'right' }}>
@@ -544,7 +528,7 @@ function DesktopLendersLayout({
                       fontFamily: SB.mono, fontSize: 10,
                       color: SB.inkMute, marginTop: 3, letterSpacing: '0.02em',
                     }}>
-                      incl. {fmtMoney(l.membershipFeeUsd, currency, CURRENCY_META, live.btcUsd)} mbr
+                      {t('lenders.includesMembership', { fee: fmtMoney(l.membershipFeeUsd, currency, CURRENCY_META, live.btcUsd) })}
                     </div>
                   )}
                 </div>
@@ -554,9 +538,9 @@ function DesktopLendersLayout({
                 marginTop: 12, paddingTop: 12,
                 borderTop: `1px dotted ${SB.inkLine}`,
               }}>
-                <Term k="MIN" v={'$' + fmtNum(l.minLoanUsd || 0)} />
-                <Term k="TERM" v={fmtTerm(l.term)} />
-                <Term k="CUSTODY" v={custodyShort(l)} />
+                <Term k={t('lenders.term.min')} v={'$' + fmtNum(l.minLoanUsd || 0)} />
+                <Term k={t('lenders.term.term')} v={fmtTerm(l.term)} />
+                <Term k={t('lenders.term.custody')} v={custodyShort(l, t)} />
               </div>
               {l.notes && (
                 <div style={{
@@ -567,19 +551,19 @@ function DesktopLendersLayout({
               )}
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 10 }}>
                 {l.originationFeePctEffective > 0 && (
-                  <span style={flagStyle(SB.orange)}>{l.originationFeePctEffective}% ORIG FEE</span>
+                  <span style={flagStyle(SB.orange)}>{t('lenders.flag.origFee', { pct: l.originationFeePctEffective })}</span>
                 )}
                 {l.originationFeePctEffective === 0 && (
-                  <span style={flagStyle(SB.forest)}>NO ORIG FEE</span>
+                  <span style={flagStyle(SB.forest)}>{t('lenders.flag.noOrigFee')}</span>
                 )}
                 {l.annualMembershipUsd > 0 && (
-                  <span style={flagStyle(SB.orange)}>⚠ MEMBERSHIP REQ</span>
+                  <span style={flagStyle(SB.orange)}>{t('lenders.flag.membership')}</span>
                 )}
-                {l.custodyType === 'multisig' && <span style={flagStyle(SB.forest)}>MULTISIG</span>}
-                {l.btcOnly === true && <span style={flagStyle(SB.forest)}>BTC ONLY</span>}
-                {l.btcOnly === false && <span style={flagStyle(SB.rust)}>MULTI-COLLATERAL</span>}
-                {l.rehypothecation === 'no' && <span style={flagStyle(SB.forest)}>NO REHYPO</span>}
-                {rehypoBad && <span style={flagStyle(SB.rust)}>⚠ REHYPO</span>}
+                {l.custodyType === 'multisig' && <span style={flagStyle(SB.forest)}>{t('lenders.flag.multisig')}</span>}
+                {l.btcOnly === true && <span style={flagStyle(SB.forest)}>{t('lenders.flag.btcOnly')}</span>}
+                {l.btcOnly === false && <span style={flagStyle(SB.rust)}>{t('lenders.flag.multiCollateral')}</span>}
+                {l.rehypothecation === 'no' && <span style={flagStyle(SB.forest)}>{t('lenders.flag.noRehypo')}</span>}
+                {rehypoBad && <span style={flagStyle(SB.rust)}>{t('lenders.flag.rehypo')}</span>}
               </div>
               <div style={{
                 display: 'flex', justifyContent: 'space-between', alignItems: 'center',
@@ -590,7 +574,7 @@ function DesktopLendersLayout({
                   fontFamily: SB.mono, fontSize: 10,
                   color: SB.inkMute, letterSpacing: '0.05em',
                 }}>
-                  {isBest ? 'WE RECOMMEND THIS QUOTE' : 'compare terms before applying'}
+                  {isBest ? t('lenders.recommend') : t('lenders.compare')}
                 </div>
                 <a
                   href={l.referralUrl || '#'}
@@ -602,7 +586,7 @@ function DesktopLendersLayout({
                     color: SB.ink, textDecoration: 'none',
                     borderBottom: `1.5px solid ${SB.orange}`,
                     paddingBottom: 2, cursor: 'pointer',
-                  }}>APPLY →</a>
+                  }}>{t('lenders.apply')}</a>
               </div>
             </div>
           );
