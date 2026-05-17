@@ -8,6 +8,23 @@ import React, { useState, useEffect, useRef } from 'react';
 import { SB } from './tokens.js';
 import { useTheme, useIsDesktop } from './theme.jsx';
 import { useT, useLanguage, LANGUAGE_SWITCH_LABELS } from '../i18n/index.jsx';
+import { navigate } from '../lib/hooks.js';
+
+// Click handler shared by internal-link <a> tags throughout the
+// design system. Intercepts plain left-clicks on same-origin paths
+// and routes them through history.pushState (no full page reload).
+// Modifier keys, middle-click, and external/mailto links fall
+// through to the browser default.
+function handleInternalClick(e) {
+  const href = e.currentTarget?.getAttribute('href');
+  if (!href) return;
+  if (href.startsWith('//') || href.includes('://')) return;
+  if (href.startsWith('mailto:') || href.startsWith('tel:')) return;
+  if (!href.startsWith('/')) return;
+  if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+  e.preventDefault();
+  navigate(href);
+}
 
 // ------------------------------------------------------------
 // BitcoinLogo — public-domain Wikipedia mark.
@@ -104,7 +121,7 @@ export function BrandHeader({ rightSlot = null, currentPage = null, pageOf = nul
         padding: big ? '24px 0 16px' : '18px 0 12px',
         borderBottom: `1.5px solid ${SB.ink}`,
       }}>
-        <a href="#" style={{ display: 'flex', alignItems: 'center', gap: big ? 16 : 12, color: 'inherit', textDecoration: 'none', flex: 1, minWidth: 0 }}>
+        <a href="/" onClick={handleInternalClick} style={{ display: 'flex', alignItems: 'center', gap: big ? 16 : 12, color: 'inherit', textDecoration: 'none', flex: 1, minWidth: 0 }}>
           <BitcoinLogo size={big ? 42 : 32} />
           <div style={{ minWidth: 0 }}>
             <div style={{
@@ -592,6 +609,11 @@ export function Chip({ children, active = false, color = SB.ink, onClick }) {
 
 // ------------------------------------------------------------
 // Button — primary CTA. Dashed outline + filled body.
+//
+// When given an internal href (starts with "/"), the click is
+// intercepted and routed through history.pushState so we don't
+// trigger a full page reload. External links (mailto:, http://)
+// fall through to normal browser behavior.
 // ------------------------------------------------------------
 export function Button({ children, onClick, href, color = SB.ink, fill = true, full = true }) {
   const baseStyle = {
@@ -617,9 +639,31 @@ export function Button({ children, onClick, href, color = SB.ink, fill = true, f
     </>
   );
   if (href) {
-    return <a href={href} onClick={onClick} style={baseStyle}>{inside}</a>;
+    const handleClick = (e) => {
+      if (onClick) onClick(e);
+      if (e.defaultPrevented) return;
+      if (isInternalHref(href) && isPlainLeftClick(e)) {
+        e.preventDefault();
+        navigate(href);
+      }
+    };
+    return <a href={href} onClick={handleClick} style={baseStyle}>{inside}</a>;
   }
   return <button onClick={onClick} style={baseStyle}>{inside}</button>;
+}
+
+// Treat "/", "/calculator", "/lenders", "/about" as internal.
+// Anything with a protocol or starting with "mailto:" / "#" goes
+// through the default browser handler.
+function isInternalHref(href) {
+  if (!href) return false;
+  if (href.startsWith('//') || href.includes('://')) return false;
+  if (href.startsWith('mailto:') || href.startsWith('tel:')) return false;
+  return href.startsWith('/');
+}
+
+function isPlainLeftClick(e) {
+  return e.button === 0 && !e.metaKey && !e.ctrlKey && !e.shiftKey && !e.altKey;
 }
 
 // ------------------------------------------------------------
@@ -630,10 +674,10 @@ export function Button({ children, onClick, href, color = SB.ink, fill = true, f
 export function PageNav({ active = 'landing' }) {
   const t = useT();
   const pages = [
-    { id: 'landing', label: t('common.nav.overview'),   no: 'I',   href: '#' },
-    { id: 'calc',    label: t('common.nav.calculator'), no: 'II',  href: '#calculator' },
-    { id: 'lender',  label: t('common.nav.lenders'),    no: 'III', href: '#lenders' },
-    { id: 'about',   label: t('common.nav.terms'),      no: 'IV',  href: '#about' },
+    { id: 'landing', label: t('common.nav.overview'),   no: 'I',   href: '/' },
+    { id: 'calc',    label: t('common.nav.calculator'), no: 'II',  href: '/calculator' },
+    { id: 'lender',  label: t('common.nav.lenders'),    no: 'III', href: '/lenders' },
+    { id: 'about',   label: t('common.nav.terms'),      no: 'IV',  href: '/about' },
   ];
   return (
     <div style={{
@@ -649,6 +693,7 @@ export function PageNav({ active = 'landing' }) {
           <a
             key={p.id}
             href={p.href}
+            onClick={handleInternalClick}
             style={{
               padding: '12px 4px 10px',
               textAlign: 'center',

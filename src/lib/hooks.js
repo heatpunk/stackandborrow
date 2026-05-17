@@ -179,16 +179,150 @@ export function usePersistentState(key, defaultValue) {
   return [value, setAndPersist];
 }
 
-// Hash routing — re-renders on hashchange. Returns the current hash
-// string (with leading "#" or empty).
-export function useHashRoute() {
-  const [route, setRoute] = useState(
-    typeof window !== 'undefined' ? window.location.hash : ''
-  );
+// Path routing — re-renders on history navigation. Returns a
+// normalized route name: '', 'calculator', 'lenders', 'about', or
+// '__notfound__' for anything else. Real URLs (e.g. /calculator)
+// are used so each page can be indexed by search engines as its
+// own document with its own <title> and meta description.
+//
+// Backwards compat: legacy hash URLs (#calculator, #lenders,
+// #about) and the alternate Swedish surface (#calc, #kalkylator,
+// #langivare, /kalkylator, /langivare, /om) are redirected to
+// the canonical English path via history.replaceState on first
+// paint, so old bookmarks and shared links continue to work and
+// search engines see a single canonical URL per page.
+const ROUTE_ALIASES = {
+  // legacy hash routes
+  '#calculator': 'calculator',
+  '#calc': 'calculator',
+  '#lenders': 'lenders',
+  '#about': 'about',
+  // Swedish / alternate paths
+  '/kalkylator': 'calculator',
+  '/kalkylator/': 'calculator',
+  '/langivare': 'lenders',
+  '/langivare/': 'lenders',
+  '/long-givare': 'lenders',
+  '/om': 'about',
+  '/om/': 'about',
+};
+
+const CANONICAL_PATH = {
+  '': '/',
+  calculator: '/calculator',
+  lenders: '/lenders',
+  about: '/about',
+};
+
+function normalizePath(pathname, hash) {
+  // Strip trailing slash except for root.
+  let p = pathname.replace(/\/+$/, '') || '/';
+  if (p === '/' && hash) {
+    const aliased = ROUTE_ALIASES[hash];
+    if (aliased !== undefined) return aliased;
+    // Bare # or unknown hash on root → landing.
+    return '';
+  }
+  if (p === '/') return '';
+  // Canonical English paths.
+  if (p === '/calculator') return 'calculator';
+  if (p === '/lenders')    return 'lenders';
+  if (p === '/about')      return 'about';
+  // Alias paths (Swedish, legacy).
+  const aliased = ROUTE_ALIASES[p] ?? ROUTE_ALIASES[p + '/'];
+  if (aliased !== undefined) return aliased;
+  return '__notfound__';
+}
+
+// Read the current normalized route from window.location.
+function readRoute() {
+  if (typeof window === 'undefined') return '';
+  return normalizePath(window.location.pathname, window.location.hash);
+}
+
+export function useRoute() {
+  const [route, setRoute] = useState(readRoute);
+
   useEffect(() => {
-    const onHashChange = () => setRoute(window.location.hash);
-    window.addEventListener('hashchange', onHashChange);
-    return () => window.removeEventListener('hashchange', onHashChange);
+    // On first paint, canonicalize the URL: replace hash routes and
+    // alias paths with the canonical English path, without adding a
+    // history entry (replaceState, not pushState).
+    const current = readRoute();
+    if (typeof window !== 'undefined' && current !== '__notfound__') {
+      const canonical = CANONICAL_PATH[current];
+      const here = window.location.pathname.replace(/\/+$/, '') || '/';
+      const needsRewrite =
+        (window.location.hash && current !== '') ||
+        (canonical && here !== canonical && !(canonical === '/' && here === ''));
+      if (needsRewrite && canonical) {
+        try {
+          window.history.replaceState(
+            window.history.state,
+            '',
+            canonical + window.location.search,
+          );
+          setRoute(current);
+        } catch { /* sandboxed history — ignore */ }
+      }
+    }
+
+    const onChange = () => setRoute(readRoute());
+    window.addEventListener('popstate', onChange);
+    window.addEventListener('sb:navigate', onChange);
+    // Keep hashchange so legacy in-page anchors still work if any
+    // remain (e.g. accessibility skip-links).
+    window.addEventListener('hashchange', onChange);
+
+    // Document-level click interceptor: any <a> with an internal
+    // href ("/", "/calculator", "/lenders", "/about") gets routed
+    // through history.pushState instead of triggering a full page
+    // reload. External links, mailto:, modifier-clicked links, and
+    // links with target="_blank" pass through to the browser.
+    const onDocClick = (e) => {
+      if (e.defaultPrevented) return;
+      if (e.button !== 0) return;
+      if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+      const anchor = e.target && e.target.closest ? e.target.closest('a') : null;
+      if (!anchor) return;
+      if (anchor.target && anchor.target !== '' && anchor.target !== '_self') return;
+      if (anchor.hasAttribute('download')) return;
+      const href = anchor.getAttribute('href');
+      if (!href) return;
+      if (href.startsWith('//') || href.includes('://')) return;
+      if (href.startsWith('mailto:') || href.startsWith('tel:')) return;
+      // In-page hash like #calc, #section — let it scroll natively.
+      if (href.startsWith('#')) return;
+      if (!href.startsWith('/')) return;
+      e.preventDefault();
+      navigate(href);
+    };
+    document.addEventListener('click', onDocClick);
+
+    return () => {
+      window.removeEventListener('popstate', onChange);
+      window.removeEventListener('sb:navigate', onChange);
+      window.removeEventListener('hashchange', onChange);
+      document.removeEventListener('click', onDocClick);
+    };
   }, []);
+
   return route;
 }
+
+// Programmatic navigation. Use this from click handlers in Link
+// components to update the URL without a full page reload.
+export function navigate(path) {
+  if (typeof window === 'undefined') return;
+  const target = path || '/';
+  try {
+    window.history.pushState({}, '', target);
+    window.dispatchEvent(new Event('sb:navigate'));
+    // Reset scroll on route change (browsers don't do this for
+    // pushState the way they do for full navigations).
+    window.scrollTo(0, 0);
+  } catch { /* ignore */ }
+}
+
+// Back-compat alias — older code imports useHashRoute. Returns
+// the same normalized route name as useRoute.
+export const useHashRoute = useRoute;

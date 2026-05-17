@@ -469,7 +469,7 @@ export default function LandingPage({ live, lenders = [], region, initialCurrenc
 
       <DashedRule />
 
-      <Button href="#calculator">{t('landing.cta.fullBreakdown')}</Button>
+      <Button href="/calculator">{t('landing.cta.fullBreakdown')}</Button>
 
       {/* Tiny action links */}
       <div style={{
@@ -479,9 +479,9 @@ export default function LandingPage({ live, lenders = [], region, initialCurrenc
         fontSize: 9, letterSpacing: '0.16em',
         color: SB.inkMute,
       }}>
-        <a href="#calculator" className="lp-tiny-link">{t('landing.tiny.calculator')}</a>
+        <a href="/calculator" className="lp-tiny-link">{t('landing.tiny.calculator')}</a>
         <span style={{ margin: '0 6px' }}>·</span>
-        <a href="#lenders" className="lp-tiny-link">{t('landing.tiny.lender')}</a>
+        <a href="/lenders" className="lp-tiny-link">{t('landing.tiny.lender')}</a>
         <span style={{ margin: '0 6px' }}>·</span>
         <button
           className="lp-tiny-link"
@@ -867,7 +867,7 @@ function DesktopLandingLayout({
 
       <DashedRule />
 
-      <Button href="#calculator">{t('landing.cta.fullBreakdown')}</Button>
+      <Button href="/calculator">{t('landing.cta.fullBreakdown')}</Button>
 
       <div style={{
         position: 'relative',
@@ -876,9 +876,9 @@ function DesktopLandingLayout({
         fontSize: 10, letterSpacing: '0.16em',
         color: SB.inkMute,
       }}>
-        <a href="#calculator" style={{ color: 'inherit', textDecoration: 'underline', textUnderlineOffset: 3 }}>{t('landing.tiny.calculator')}</a>
+        <a href="/calculator" style={{ color: 'inherit', textDecoration: 'underline', textUnderlineOffset: 3 }}>{t('landing.tiny.calculator')}</a>
         <span style={{ margin: '0 8px' }}>·</span>
-        <a href="#lenders" style={{ color: 'inherit', textDecoration: 'underline', textUnderlineOffset: 3 }}>{t('landing.tiny.lender')}</a>
+        <a href="/lenders" style={{ color: 'inherit', textDecoration: 'underline', textUnderlineOffset: 3 }}>{t('landing.tiny.lender')}</a>
         <span style={{ margin: '0 8px' }}>·</span>
         <button
           onClick={() => setShowSaveTip((v) => !v)}
@@ -1016,7 +1016,7 @@ function DesktopLandingLayout({
         fontFamily: SB.mono, fontSize: 10,
         letterSpacing: '0.16em', color: SB.inkMute,
       }}>
-        <a href="#lenders" style={{ color: 'inherit', textDecoration: 'underline', textUnderlineOffset: 3 }}>{t('landing.desktop.seeAll')}</a>
+        <a href="/lenders" style={{ color: 'inherit', textDecoration: 'underline', textUnderlineOffset: 3 }}>{t('landing.desktop.seeAll')}</a>
       </div>
 
       <DashedRule />

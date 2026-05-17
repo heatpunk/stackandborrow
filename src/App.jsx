@@ -11,10 +11,11 @@ import React from 'react';
 import {
   useLivePrices,
   useLenders,
-  useHashRoute,
+  useRoute,
   detectCurrencyFromLocale,
   detectRegionFromCurrency,
 } from './lib/hooks.js';
+import { applyRouteSeo } from './lib/seo.js';
 
 import CalculatorPage from './pages/Calculator.jsx';
 import LendersPage   from './pages/Lenders.jsx';
@@ -98,9 +99,16 @@ class ErrorBoundary extends React.Component {
 export default function App() {
   ensureFonts();
   ensureThemeCss();
-  const route = useHashRoute();
+  const route = useRoute();
   const live = useLivePrices();
   const { lenders, lastUpdated } = useLenders();
+
+  // Keep <title>, meta description, canonical, OG, and JSON-LD in
+  // sync with the active route. Static HTML files set the initial
+  // values at first paint (so crawlers without JS see correct
+  // meta), and this keeps them right when users navigate
+  // client-side.
+  React.useEffect(() => { applyRouteSeo(route); }, [route]);
 
   // Currency defaults from locale (first visit). The Calculator owns the
   // persistent storage; we only seed the initial value.
@@ -119,14 +127,14 @@ export default function App() {
     }
   }, [initialCurrency, route]); // re-check on route change
 
-  // Routes:
-  //   ''        / '#'           → Landing (overview)
-  //   '#calculator'             → Calculator
-  //   '#lenders'                → Lenders
-  //   '#about'                  → Terms / About
-  //   anything else             → 404
+  // Routes — useRoute() returns a normalized route name:
+  //   ''           → Landing (overview, /)
+  //   'calculator' → Calculator (/calculator)
+  //   'lenders'    → Lenders (/lenders)
+  //   'about'      → Terms / About (/about)
+  //   anything else → 404
   let page;
-  if (route === '' || route === '#') {
+  if (route === '') {
     page = (
       <LandingPage
         live={live}
@@ -135,7 +143,7 @@ export default function App() {
         initialCurrency={initialCurrency}
       />
     );
-  } else if (route === '#calculator') {
+  } else if (route === 'calculator') {
     page = (
       <CalculatorPage
         live={live}
@@ -145,7 +153,7 @@ export default function App() {
         initialCurrency={initialCurrency}
       />
     );
-  } else if (route === '#lenders') {
+  } else if (route === 'lenders') {
     page = (
       <LendersPage
         lenders={lenders}
@@ -155,7 +163,7 @@ export default function App() {
         region={region}
       />
     );
-  } else if (route === '#about') {
+  } else if (route === 'about') {
     page = <AboutPage />;
   } else {
     page = <VoidState404 attemptedPath={route} />;

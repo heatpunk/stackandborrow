@@ -226,7 +226,7 @@ export default function AboutPage() {
       </div>
 
       <div style={{ marginTop: 18 }}>
-        <Button href="#calc">{t('common.cta.runCalculator')}</Button>
+        <Button href="/calculator">{t('common.cta.runCalculator')}</Button>
       </div>
 
       <FineFooter />
@@ -424,7 +424,7 @@ function DesktopAboutLayout() {
         <Stamp line1={t('about.verifiedStamp.line1')} line2={t('about.verifiedStamp.line2')} line3={t('about.verifiedStamp.line3')} size={130} rotate={4} />
       </div>
 
-      <Button href="#calculator">{t('common.cta.runCalculator')}</Button>
+      <Button href="/calculator">{t('common.cta.runCalculator')}</Button>
     </div>
   );
 

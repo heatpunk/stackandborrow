@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#0a0a0b" />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+    <meta name="author" content="Stack & Borrow" />
+
+    <title>Bitcoin-Backed Lenders Ranked by Honest Total Cost | Stack & Borrow</title>
+    <meta name="description" content="Compare Bitcoin-backed lenders ranked by adjusted total cost. APR, origination fees, LTV, custody type, and rehypothecation — all in one table. Ledn, Firefish, Debifi, Salt Lending and more." />
+    <meta name="keywords" content="bitcoin lenders comparison, btc backed loan lenders, ledn vs firefish, debifi vs ledn, salt lending review, bitcoin loan rates compared, best bitcoin loan, bitcoin loan APR comparison, multi-collateral lenders, btc only lenders, bitcoin långivare, bitcoin lån jämförelse" />
+
+    <link rel="canonical" href="https://stackandborrow.com/lenders" />
+    <link rel="alternate" hreflang="en" href="https://stackandborrow.com/lenders" />
+    <link rel="alternate" hreflang="sv" href="https://stackandborrow.com/lenders" />
+    <link rel="alternate" hreflang="x-default" href="https://stackandborrow.com/lenders" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Stack & Borrow" />
+    <meta property="og:url" content="https://stackandborrow.com/lenders" />
+    <meta property="og:title" content="Bitcoin Lenders — Ranked by what they actually cost" />
+    <meta property="og:description" content="Honest lender comparison: total cost, custody, rehypothecation. Sats-first ranking." />
+    <meta property="og:image" content="https://stackandborrow.com/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:alt" content="Stack & Borrow lender comparison table" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:locale:alternate" content="sv_SE" />
+
+    <!-- Twitter / X -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content="https://stackandborrow.com/lenders" />
+    <meta name="twitter:title" content="Bitcoin Lenders — Ranked by what they actually cost" />
+    <meta name="twitter:description" content="Honest lender comparison: total cost, custody, rehypothecation. Sats-first ranking." />
+    <meta name="twitter:image" content="https://stackandborrow.com/og-image.png" />
+
+    <!-- Structured data for search engines -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "CollectionPage",
+      "name": "Bitcoin-Backed Lenders Ranked",
+      "url": "https://stackandborrow.com/lenders",
+      "description": "Bitcoin-backed lenders compared by adjusted total cost, APR, origination fees, LTV, custody type, and rehypothecation policy.",
+      "about": {
+        "@type": "Thing",
+        "name": "Bitcoin-backed lending"
+      }
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://stackandborrow.com/" },
+        { "@type": "ListItem", "position": 2, "name": "Lenders", "item": "https://stackandborrow.com/lenders" }
+      ]
+    }
+    </script>
+
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/favicon.svg" />
+
+    <style>
+      :root { --sb-stage: #0a0a0b; }
+      :root[data-theme="carbon"] { --sb-stage: #000000; }
+      :root[data-theme="midnight"] { --sb-stage: #06080d; }
+      :root[data-theme="light"] { --sb-stage: #0a0a0b; }
+      html, body { background: var(--sb-stage); margin: 0; }
+    </style>
+    <script>
+      (function () {
+        try {
+          var pref = localStorage.getItem('sb.theme');
+          var isDesktop = window.matchMedia('(min-width: 1024px)').matches;
+          var sysDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          var theme;
+          if (pref === 'light' || pref === 'carbon' || pref === 'midnight') {
+            theme = pref;
+          } else {
+            theme = !sysDark ? 'light' : (isDesktop ? 'midnight' : 'carbon');
+          }
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) { /* ignore — fallback css :root handles it */ }
+      })();
+    </script>
+  </head>
+  <body style="margin: 0;">
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>

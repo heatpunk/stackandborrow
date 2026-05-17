@@ -171,7 +171,7 @@ export function VoidStateNoRegion({ regionLabel = 'your region', regionCode = 'â
       ]} />
 
       <div style={{ marginTop: 16 }}>
-        <Button href="#lenders">{t('void.noRegion.cta')}</Button>
+        <Button href="/lenders">{t('void.noRegion.cta')}</Button>
       </div>
 
       <FineFooter />
@@ -187,7 +187,7 @@ export function VoidStateNoRegion({ regionLabel = 'your region', regionCode = 'â
 export function VoidState404({ attemptedPath = '' }) {
   const isDesktop = useIsDesktop();
   const t = useT();
-  const path = attemptedPath || (typeof window !== 'undefined' ? window.location.hash : '');
+  const path = attemptedPath || (typeof window !== 'undefined' ? window.location.pathname : '');
   if (isDesktop) {
     return <DesktopVoid404 path={path} />;
   }
@@ -287,7 +287,7 @@ export function VoidState404({ attemptedPath = '' }) {
       </div>
 
       <div style={{ marginTop: 16 }}>
-        <Button href="#">{t('void.notFound.cta')}</Button>
+        <Button href="/">{t('void.notFound.cta')}</Button>
       </div>
 
       <FineFooter />
@@ -686,7 +686,7 @@ function DesktopVoidNoRegion({ regionLabel, regionCode }) {
       ]} />
 
       <div style={{ marginTop: 22 }}>
-        <Button href="#lenders">{t('void.noRegion.cta')}</Button>
+        <Button href="/lenders">{t('void.noRegion.cta')}</Button>
       </div>
     </div>
   );
@@ -807,7 +807,7 @@ function DesktopVoid404({ path }) {
       </div>
 
       <div style={{ marginTop: 22 }}>
-        <Button href="#">{t('void.notFound.cta')}</Button>
+        <Button href="/">{t('void.notFound.cta')}</Button>
       </div>
     </div>
   );

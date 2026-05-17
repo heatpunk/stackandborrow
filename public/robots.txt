@@ -1,4 +1,9 @@
 User-agent: *
 Allow: /
 
+# Block any future admin/internal routes if they appear
+Disallow: /admin/
+Disallow: /api/
+
+# Hint to crawlers for explicit indexing
 Sitemap: https://stackandborrow.com/sitemap.xml
