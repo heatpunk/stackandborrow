@@ -165,8 +165,9 @@ export default {
   'landing.feature.liquidation.subDesktop': "Maths de chute en temps réel. Six baisses de 50 %+ depuis 2013. Pas si, mais quand.",
 
   'landing.quote.eyebrow': 'DU TERRAIN',
-  'landing.quote.body': '"Vendre déclenche l\'impôt. Emprunter non. Ce n\'est pas une faille — c\'est tout le but."',
-  'landing.quote.attribution': '— UN DÉTENTEUR DE LONG TERME · NOM OMIS',
+  // Quote intentionally kept in English on all locales — editorial decision.
+  'landing.quote.body': '"Selling triggers tax. Borrowing doesn\'t. That\'s not a loophole — that\'s the whole point."',
+  'landing.quote.attribution': '— A LONG-TERM HOLDER · NAME WITHHELD',
 
   'landing.saveTip.label': 'ENREGISTRER SCÉNARIO',
   'landing.saveTip.close': 'Fermer le conseil',
@@ -271,7 +272,7 @@ export default {
   'calc.desktop.rightLabel': 'PAGE II · DROITE — OFFRES & ÉCHÉANCE',
 
   // § VII Vue à long terme
-  'calc.longView.toggle': 'JOUER AVEC LA TIMELINE ?',
+  'calc.longView.toggle': 'JOUER AVEC LA TIMELINE',
   'calc.longView.title': 'Vue à long terme',
   'calc.longView.subtitle': '{persona} · cas {case} · {lender}',
   'calc.longView.intro': "Étire le prêt au-delà de l'échéance — que faut-il pour le solder plus tard ?",

@@ -274,7 +274,7 @@ export default {
   'calc.desktop.rightLabel': 'PAGE II · RIGHT — QUOTES & MATURITY',
 
   // § VII Long view — multi-year rollover projection (collapsible).
-  'calc.longView.toggle': 'PLAY WITH THE TIMELINE?',
+  'calc.longView.toggle': 'PLAY WITH THE TIMELINE',
   'calc.longView.title': 'Long view',
   'calc.longView.subtitle': '{persona} · {case} case · {lender}',
   'calc.longView.intro': 'Stretch the loan beyond maturity — what does it take to settle later?',

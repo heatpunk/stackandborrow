@@ -165,8 +165,9 @@ export default {
   'landing.feature.liquidation.subDesktop': 'Echtzeit-Preisfall-Mathematik. Sechs 50 %+-Drawdowns seit 2013. Nicht ob, sondern wann.',
 
   'landing.quote.eyebrow': 'AUS DEM FELD',
-  'landing.quote.body': '"Verkaufen löst Steuer aus. Borgen nicht. Das ist kein Schlupfloch — das ist der ganze Punkt."',
-  'landing.quote.attribution': '— EIN LANGFRISTIGER HALTER · NAME ZURÜCKGEHALTEN',
+  // Quote intentionally kept in English on all locales — editorial decision.
+  'landing.quote.body': '"Selling triggers tax. Borrowing doesn\'t. That\'s not a loophole — that\'s the whole point."',
+  'landing.quote.attribution': '— A LONG-TERM HOLDER · NAME WITHHELD',
 
   'landing.saveTip.label': 'SZENARIO SPEICHERN',
   'landing.saveTip.close': 'Tipp schließen',
@@ -271,7 +272,7 @@ export default {
   'calc.desktop.rightLabel': 'SEITE II · RECHTS — ANGEBOTE & FÄLLIGKEIT',
 
   // § VII Langfristige Sicht
-  'calc.longView.toggle': 'MIT DER ZEITACHSE SPIELEN?',
+  'calc.longView.toggle': 'MIT DER ZEITACHSE SPIELEN',
   'calc.longView.title': 'Langfristige Sicht',
   'calc.longView.subtitle': '{persona} · {case}-Fall · {lender}',
   'calc.longView.intro': 'Verlängere den Kredit über die Fälligkeit hinaus — was braucht es, um später abzulösen?',

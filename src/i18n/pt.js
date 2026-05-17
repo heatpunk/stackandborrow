@@ -165,8 +165,9 @@ export default {
   'landing.feature.liquidation.subDesktop': 'Matemática de queda em tempo real. Seis quedas >50 % desde 2013. Não se, mas quando.',
 
   'landing.quote.eyebrow': 'DO TERRENO',
-  'landing.quote.body': '"Vender desencadeia imposto. Pedir emprestado não. Não é uma brecha — é a essência."',
-  'landing.quote.attribution': '— UM DETENTOR DE LONGO PRAZO · NOME OMITIDO',
+  // Quote intentionally kept in English on all locales — editorial decision.
+  'landing.quote.body': '"Selling triggers tax. Borrowing doesn\'t. That\'s not a loophole — that\'s the whole point."',
+  'landing.quote.attribution': '— A LONG-TERM HOLDER · NAME WITHHELD',
 
   'landing.saveTip.label': 'GUARDAR CENÁRIO',
   'landing.saveTip.close': 'Fechar dica',
@@ -271,7 +272,7 @@ export default {
   'calc.desktop.rightLabel': 'PÁGINA II · DIREITA — OFERTAS E VENCIMENTO',
 
   // § VII Visão de longo prazo
-  'calc.longView.toggle': 'BRINCAR COM A LINHA DO TEMPO?',
+  'calc.longView.toggle': 'BRINCAR COM A LINHA DO TEMPO',
   'calc.longView.title': 'Visão de longo prazo',
   'calc.longView.subtitle': '{persona} · caso {case} · {lender}',
   'calc.longView.intro': 'Estica o empréstimo para além do vencimento — o que é preciso para liquidar mais tarde?',
