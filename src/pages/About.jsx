@@ -31,6 +31,7 @@ function signatureBlend(isDark) {
 }
 import { DesktopSpreadFrame } from '../system/desktop.jsx';
 import { GLOSSARY_ORDER } from '../lib/glossary.js';
+import { glossaryKeyToSlug } from '../lib/seo.js';
 import { useT } from '../i18n/index.jsx';
 
 // Principles & FAQ structure: the array carries the layout-only
@@ -467,10 +468,13 @@ function GlossarySection() {
             padding: '12px 0',
             borderBottom: `1px dotted ${SB.inkLine}`,
           }}>
-            <div style={{
+            <a href={`/glossary/${glossaryKeyToSlug(key)}`} style={{
+              display: 'inline-block',
               fontFamily: SB.serif, fontSize: titleSize, fontWeight: 600,
               color: SB.ink, marginBottom: 6, letterSpacing: '-0.005em',
-            }}>{t(`glossary.${key}.title`)}</div>
+              textDecoration: 'none',
+              borderBottom: `1px dotted ${SB.inkLine}`,
+            }}>{t(`glossary.${key}.title`)}</a>
             <div style={{
               fontFamily: SB.sans, fontSize: bodySize, lineHeight: 1.55,
               color: SB.inkSoft, textWrap: 'pretty',

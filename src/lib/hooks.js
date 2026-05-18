@@ -247,6 +247,22 @@ function normalizePath(pathname, hash) {
     const slug = p.slice('/compare/'.length);
     if (COMPARE_SLUG_RE.test(slug)) return 'compare:' + slug;
   }
+  // Per-lender detail pages — /lenders/{id}. The lenders.json IDs are
+  // all lowercase alphanumeric, so /^[a-z0-9]+$/ catches every legal
+  // id and rejects anything with slashes, dashes, or query junk.
+  // The exact /lenders match above already returned 'lenders' for the
+  // directory page, so this only runs for paths like /lenders/ledn.
+  if (p.startsWith('/lenders/')) {
+    const id = p.slice('/lenders/'.length);
+    if (/^[a-z0-9]+$/.test(id)) return 'lender:' + id;
+  }
+  // Glossary term pages — /glossary/{term}. Slugs are kebab-case
+  // (e.g. "loan-to-value", "tax-event"). The component resolves the
+  // slug to a glossary key and 404s if it's unknown.
+  if (p.startsWith('/glossary/')) {
+    const slug = p.slice('/glossary/'.length);
+    if (/^[a-z0-9-]+$/.test(slug)) return 'glossary:' + slug;
+  }
   // Alias paths (Swedish, legacy).
   const aliased = ROUTE_ALIASES[p] ?? ROUTE_ALIASES[p + '/'];
   if (aliased !== undefined) return aliased;

@@ -17,13 +17,16 @@ import {
 } from './lib/hooks.js';
 import { applyRouteSeo } from './lib/seo.js';
 
-import CalculatorPage from './pages/Calculator.jsx';
-import LendersPage   from './pages/Lenders.jsx';
-import AboutPage     from './pages/About.jsx';
-import LandingPage   from './pages/Landing.jsx';
-import ComparePage   from './pages/Compare.jsx';
-import SwedenTaxPage from './pages/SwedenTax.jsx';
-import { VoidState404 } from './pages/Void.jsx';
+import CalculatorPage    from './pages/Calculator.jsx';
+import LendersPage       from './pages/Lenders.jsx';
+import AboutPage         from './pages/About.jsx';
+import LandingPage       from './pages/Landing.jsx';
+import ComparePage       from './pages/Compare.jsx';
+import LenderDetailPage  from './pages/LenderDetail.jsx';
+import GlossaryPage      from './pages/Glossary.jsx';
+import SwedenTaxPage     from './pages/SwedenTax.jsx';
+import { VoidState404 }  from './pages/Void.jsx';
+import { GLOSSARY }      from './lib/glossary.js';
 import { SB, ensureThemeCss } from './system/tokens.js';
 import { ThemeProvider } from './system/theme.jsx';
 import { MobileThemeToggleCorner } from './system/components.jsx';
@@ -111,7 +114,7 @@ export default function App() {
   // meta), and this keeps them right when users navigate
   // client-side. Compare routes pull lender names from lenders.json
   // at render time, so we pass it in for the per-pair lookup.
-  React.useEffect(() => { applyRouteSeo(route, { lenders }); }, [route, lenders]);
+  React.useEffect(() => { applyRouteSeo(route, { lenders, glossary: GLOSSARY }); }, [route, lenders]);
 
   // Currency defaults from locale (first visit). The Calculator owns the
   // persistent storage; we only seed the initial value.
@@ -184,6 +187,21 @@ export default function App() {
         region={region}
       />
     );
+  } else if (typeof route === 'string' && route.startsWith('lender:')) {
+    const id = route.slice('lender:'.length);
+    page = (
+      <LenderDetailPage
+        id={id}
+        lenders={lenders}
+        lastUpdated={lastUpdated}
+        live={live}
+        currency={readStoredCurrency(initialCurrency)}
+        region={region}
+      />
+    );
+  } else if (typeof route === 'string' && route.startsWith('glossary:')) {
+    const slug = route.slice('glossary:'.length);
+    page = <GlossaryPage slug={slug} live={live} lastUpdated={lastUpdated} />;
   } else {
     page = <VoidState404 attemptedPath={route} />;
   }

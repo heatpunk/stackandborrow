@@ -129,6 +129,104 @@ export const SEO_DATA = {
   },
 };
 
+// Convert between glossary key (camelCase, the keys used in
+// src/lib/glossary.js) and URL slug (kebab-case). URLs avoid camelCase
+// because it's not idiomatic in web addresses and case-folding rules
+// vary across systems.
+export function glossaryKeyToSlug(key) {
+  return key.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
+}
+export function glossarySlugToKey(slug) {
+  return slug.replace(/-([a-z])/g, (_, c) => c.toUpperCase());
+}
+
+// Build SEO for /glossary/{slug}. Pulls title and body from the
+// glossary module so we don't drift from the inline popover copy.
+// Falls back to null when the slug doesn't resolve to a known term —
+// the page component renders 404 in that case.
+export function buildGlossarySeo(slug, glossary) {
+  if (!glossary) return null;
+  const key = glossarySlugToKey(slug);
+  const entry = glossary[key];
+  if (!entry) return null;
+  const canonicalPath = `/glossary/${slug}`;
+  const title = `${entry.title} — Bitcoin Loan Glossary | Stack & Borrow`;
+  // Truncate body to ~160 chars for description, ending on a word.
+  const body = entry.body || '';
+  const description = body.length <= 160
+    ? body
+    : body.slice(0, 157).replace(/\s+\S*$/, '') + '…';
+  return {
+    path: canonicalPath,
+    title,
+    description,
+    keywords: `${entry.title.toLowerCase()}, ${entry.title.toLowerCase()} definition, ${entry.title.toLowerCase()} bitcoin loan, ${entry.title.toLowerCase()} explained, bitcoin glossary`,
+    ogTitle: `${entry.title} — Bitcoin loan glossary`,
+    ogDescription: description,
+    jsonLd: {
+      '@context': 'https://schema.org',
+      '@type': 'DefinedTerm',
+      name: entry.title,
+      description: body,
+      url: ORIGIN + canonicalPath,
+      inDefinedTermSet: {
+        '@type': 'DefinedTermSet',
+        name: 'Stack & Borrow — Bitcoin Loan Glossary',
+        url: ORIGIN + '/about',
+      },
+    },
+  };
+}
+
+// Build the SEO data for a per-lender detail page (/lenders/{id}).
+// Pulls APR, custody, BTC-only and other selling points straight off
+// the lender record so the title and description stay accurate when
+// rates change in lenders.json.
+export function buildLenderSeo(id, lenders) {
+  const l = (lenders || []).find((x) => x.id === id);
+  if (!l) return null;
+
+  const canonicalPath = `/lenders/${id}`;
+  // Headline rate — use the first tier's APR if tiered, otherwise the
+  // single rate. Origination fee folds into the descriptor below.
+  const baseApr = l.rateTiers?.[0]?.aprPct ?? 0;
+  const aprStr = baseApr ? `${baseApr.toFixed(2)}% APR` : '';
+
+  const traits = [];
+  if (l.btcOnly === true) traits.push('BTC-only');
+  if (l.custodyType === 'multisig') traits.push('multisig');
+  if (l.rehypothecation === 'no') traits.push('no rehypothecation');
+  const traitStr = traits.length ? `, ${traits.join(', ')}` : '';
+
+  // Keep the title under ~60 chars so it doesn't truncate in SERPs.
+  // Rate, custody traits, and LTV go in description and og:title where
+  // there's more room.
+  const title = `${l.name} Review — Bitcoin-backed Loan Rates | Stack & Borrow`;
+  const description = `${l.name} bitcoin-backed loan review: ${aprStr ? aprStr + ', ' : ''}${l.maxLtv ?? '—'}% max LTV${traitStr}. Independent ranking among ${lenders.length} BTC lenders. Sats-first methodology, custody-risk weighted.`;
+  const ogTitle = aprStr
+    ? `${l.name} — ${aprStr}${traitStr ? ' ·' + traits.map((s) => ' ' + s).join(' ·') : ''}`
+    : `${l.name} — Bitcoin loan review`;
+
+  return {
+    path: canonicalPath,
+    title,
+    description,
+    keywords: `${l.name.toLowerCase()} review, ${l.name.toLowerCase()} bitcoin loan, ${l.name.toLowerCase()} rates, ${l.name.toLowerCase()} APR, ${l.name.toLowerCase()} vs alternatives, bitcoin-backed lender review, btc loan provider`,
+    ogTitle,
+    ogDescription: description,
+    jsonLd: {
+      '@context': 'https://schema.org',
+      '@type': 'Article',
+      headline: `${l.name} — Bitcoin-backed loan review`,
+      url: ORIGIN + canonicalPath,
+      description,
+      author: { '@type': 'Organization', name: 'Stack & Borrow' },
+      publisher: { '@type': 'Organization', name: 'Stack & Borrow' },
+      about: { '@type': 'Organization', name: l.name },
+    },
+  };
+}
+
 // Build the SEO data for a compare page (/compare/{a}-vs-{b}). Lender
 // data comes from lenders.json at runtime; the lenders array is passed
 // in so we can resolve display names and produce a rich title and
@@ -200,6 +298,14 @@ export function applyRouteSeo(route, ctx = {}) {
     const slug = route.slice('compare:'.length);
     data = buildCompareSeo(slug, ctx.lenders);
     // No lender data yet → leave the static HTML shell's tags alone.
+    if (!data) return;
+  } else if (typeof route === 'string' && route.startsWith('lender:')) {
+    const id = route.slice('lender:'.length);
+    data = buildLenderSeo(id, ctx.lenders);
+    if (!data) return;
+  } else if (typeof route === 'string' && route.startsWith('glossary:')) {
+    const slug = route.slice('glossary:'.length);
+    data = buildGlossarySeo(slug, ctx.glossary);
     if (!data) return;
   } else {
     data = SEO_DATA[route] || SEO_DATA[''];

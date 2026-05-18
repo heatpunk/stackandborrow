@@ -315,9 +315,14 @@ export default function LendersPage({ lenders, lastUpdated, live, currency, regi
               }}>
                 <div style={{ fontFamily: SB.serif, fontStyle: 'italic', fontSize: 14, color: SB.orange, fontWeight: 500 }}>{rn}</div>
                 <div>
-                  <div style={{ fontFamily: SB.serif, fontSize: 18, fontWeight: 600, color: SB.ink, letterSpacing: '-0.01em', lineHeight: 1 }}>
+                  <a href={`/lenders/${l.id}`} style={{
+                    fontFamily: SB.serif, fontSize: 18, fontWeight: 600,
+                    color: SB.ink, letterSpacing: '-0.01em', lineHeight: 1,
+                    textDecoration: 'none',
+                    borderBottom: `1px dotted ${SB.inkLine}`,
+                  }}>
                     {l.name}
-                  </div>
+                  </a>
                   <div style={{ display: 'flex', gap: 4, marginTop: 6, flexWrap: 'wrap' }}>
                     <Pill color={isBest ? SB.forest : SB.ink} filled={isBest}>{badgeFor(l, t)}</Pill>
                     {l.isTiered && <Pill color={SB.orange}>{t('lenders.badge.tiered')}</Pill>}
@@ -598,9 +603,14 @@ function DesktopLendersLayout({
               }}>
                 <div style={{ fontFamily: SB.serif, fontStyle: 'italic', fontSize: 18, color: SB.orange, fontWeight: 500 }}>{rn}</div>
                 <div>
-                  <div style={{ fontFamily: SB.serif, fontSize: 20, fontWeight: 600, color: SB.ink, letterSpacing: '-0.01em', lineHeight: 1 }}>
+                  <a href={`/lenders/${l.id}`} style={{
+                    fontFamily: SB.serif, fontSize: 20, fontWeight: 600,
+                    color: SB.ink, letterSpacing: '-0.01em', lineHeight: 1,
+                    textDecoration: 'none',
+                    borderBottom: `1px dotted ${SB.inkLine}`,
+                  }}>
                     {l.name}
-                  </div>
+                  </a>
                   <div style={{ display: 'flex', gap: 5, marginTop: 8, flexWrap: 'wrap' }}>
                     <Pill color={isBest ? SB.forest : SB.ink} filled={isBest}>{badgeFor(l, t)}</Pill>
                     {l.isTiered && <Pill color={SB.orange}>{t('lenders.badge.tiered')}</Pill>}
