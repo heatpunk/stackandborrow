@@ -232,6 +232,7 @@ export default {
   'calc.quotes.showLess': 'weniger anzeigen ▴',
   'calc.quotes.noMatch': 'Keine passenden Kreditgeber für diese Kreditgröße oder Region. Probiere einen anderen Betrag.',
   'calc.quotes.noMatchDesktop': 'Keine passenden Kreditgeber für diese Kreditgröße oder Region.',
+  'calc.quotes.active': 'AKTIV',
 
   'calc.projection.borrow': 'BORGEN · alle sats behalten',
   'calc.projection.sell': 'VERKAUFEN · nach Steuern',

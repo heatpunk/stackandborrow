@@ -232,6 +232,7 @@ export default {
   'calc.quotes.showLess': 'mostrar menos ▴',
   'calc.quotes.noMatch': 'Sem credores correspondentes para este empréstimo ou região. Tenta outro valor.',
   'calc.quotes.noMatchDesktop': 'Sem credores correspondentes para este empréstimo ou região.',
+  'calc.quotes.active': 'ATIVO',
 
   'calc.projection.borrow': 'PEDIR · manter todos os sats',
   'calc.projection.sell': 'VENDER · restante após impostos',

@@ -235,6 +235,7 @@ export default {
   'calc.quotes.showLess': 'show less ▴',
   'calc.quotes.noMatch': 'No matching lenders for this loan size or region. Try a different amount.',
   'calc.quotes.noMatchDesktop': 'No matching lenders for this loan size or region.',
+  'calc.quotes.active': 'ACTIVE',
 
   'calc.projection.borrow': 'BORROW · keep all sats',
   'calc.projection.sell': 'SELL · post-tax remaining',

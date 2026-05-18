@@ -74,6 +74,7 @@ export default function CalculatorPage({
   const [caseId, setCaseId]                   = usePersistentState('activeCase', 'base');
   const [profiles]                            = usePersistentState('profiles', DEFAULT_PROFILES);
   const [expandedQuoteId, setExpandedQuoteId] = useState(null);
+  const [selectedLenderId, setSelectedLenderId] = usePersistentState('selectedLenderId', null);
 
   const btcSpotUsd = live.btcUsd;
 
@@ -98,8 +99,9 @@ export default function CalculatorPage({
     }),
     [lenders, loanUsd, region]
   );
-  const bestLender = ranked[0];
-  const aprPct = bestLender?.apr ?? 10;
+  const top4 = ranked.slice(0, 4);
+  const activeLender = top4.find(l => l.id === selectedLenderId) || ranked[0];
+  const aprPct = activeLender?.apr ?? 10;
   const interestUsd = computeInterest(loanUsd, aprPct, TERM_MONTHS);
   const totalOwedUsd = loanUsd + interestUsd;
 
@@ -210,7 +212,7 @@ export default function CalculatorPage({
         collateralBtcAfterSell={collateralBtcAfterSell}
         deltaUsd={deltaUsd}
         ranked={ranked}
-        bestLender={bestLender}
+        activeLender={activeLender}
         interestUsd={interestUsd}
         satsToSell={satsToSell}
         grossSaleUsd={grossSaleUsd}
@@ -219,6 +221,8 @@ export default function CalculatorPage({
         lastUpdated={lastUpdated}
         expandedQuoteId={expandedQuoteId}
         setExpandedQuoteId={setExpandedQuoteId}
+        selectedLenderId={selectedLenderId}
+        setSelectedLenderId={setSelectedLenderId}
       />
     );
   }
@@ -504,25 +508,30 @@ export default function CalculatorPage({
         {ranked.slice(0, 4).map((q, i) => {
           const rn = ['I', 'II', 'III', 'IV'][i];
           const isExpanded = expandedQuoteId === q.id;
+          const isActive = q.id === activeLender?.id;
           const truncated = q.notes && q.notes.length > 80;
           const rp = rolloverPillSpec(q.rolloverEase, t);
           return (
             <div
               key={q.id}
-              onClick={() => truncated && setExpandedQuoteId(isExpanded ? null : q.id)}
+              onClick={() => setSelectedLenderId(isActive ? null : q.id)}
               style={{
                 display: 'grid',
                 gridTemplateColumns: '28px 1fr auto',
                 alignItems: 'center', gap: 10,
-                padding: '10px 0',
+                padding: '10px 8px',
+                marginLeft: -8, marginRight: -8,
                 borderBottom: `1px dotted ${SB.inkLine}`,
-                cursor: truncated ? 'pointer' : 'default',
+                background: isActive ? 'rgba(216, 96, 24, 0.05)' : 'transparent',
+                boxShadow: isActive ? `inset 2px 0 0 ${SB.orange}` : 'none',
+                cursor: 'pointer',
               }}>
               <div style={{ fontFamily: SB.serif, fontStyle: 'italic', fontSize: 15, color: SB.orange, fontWeight: 500 }}>{rn}</div>
               <div style={{ minWidth: 0 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
                   <span style={{ fontFamily: SB.serif, fontSize: 16, fontWeight: 600, color: SB.ink, letterSpacing: '-0.005em' }}>{q.name}</span>
                   <Pill color={i === 0 ? SB.forest : SB.ink} filled={i === 0}>{q.badge || '—'}</Pill>
+                  {isActive && <Pill color={SB.orange} filled>{t('calc.quotes.active')}</Pill>}
                   {q.isTiered && <Pill color={SB.orange}>{t('lenders.badge.tiered')}</Pill>}
                   {rp && <Pill color={rp.color}>{rp.label}</Pill>}
                 </div>
@@ -535,10 +544,17 @@ export default function CalculatorPage({
                       {isExpanded || !truncated ? q.notes : q.notes.slice(0, 80) + '…'}
                     </div>
                     {truncated && (
-                      <div style={{
-                        fontFamily: SB.mono, fontSize: 9.5, fontWeight: 700, color: SB.orange,
-                        marginTop: 2, letterSpacing: '0.02em',
-                      }}>
+                      <div
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setExpandedQuoteId(isExpanded ? null : q.id);
+                        }}
+                        style={{
+                          display: 'inline-block',
+                          fontFamily: SB.mono, fontSize: 9.5, fontWeight: 700, color: SB.orange,
+                          marginTop: 2, letterSpacing: '0.02em',
+                          cursor: 'pointer',
+                        }}>
                         {isExpanded ? t('calc.quotes.showLess') : t('calc.quotes.showMore')}
                       </div>
                     )}
@@ -567,9 +583,9 @@ export default function CalculatorPage({
         )}
       </div>
 
-      <Button href={bestLender?.referralUrl || '#lenders'}>
-        {bestLender
-          ? t('common.cta.openWith', { name: bestLender.name.toUpperCase() })
+      <Button href={activeLender?.referralUrl || '#lenders'}>
+        {activeLender
+          ? t('common.cta.openWith', { name: activeLender.name.toUpperCase() })
           : t('common.cta.browseAll')}
       </Button>
       <div style={{
@@ -584,7 +600,7 @@ export default function CalculatorPage({
       </div>
 
       <MaturitySection
-        lender={bestLender}
+        lender={activeLender}
         principalUsd={loanUsd}
         interestUsd={interestUsd}
         totalOwedUsd={totalOwedUsd}
@@ -595,7 +611,7 @@ export default function CalculatorPage({
       />
 
       <LongViewSection
-        lender={bestLender}
+        lender={activeLender}
         loanUsd={loanUsd}
         collateralBtc={collateralBtc}
         btcSpotUsd={btcSpotUsd}
@@ -1314,9 +1330,10 @@ function DesktopCalculatorLayout(props) {
     liqUsd, liqDropPct,
     profileId, setProfileId, caseId, setCaseId, profiles,
     activeCagr, totalOwedUsd, collateralBtcAfterSell, deltaUsd,
-    ranked, bestLender, interestUsd, satsToSell, grossSaleUsd, taxOwedUsd,
+    ranked, activeLender, interestUsd, satsToSell, grossSaleUsd, taxOwedUsd,
     fmt, lastUpdated,
     expandedQuoteId, setExpandedQuoteId,
+    selectedLenderId, setSelectedLenderId,
   } = props;
   const meta = CURRENCY_META[currency];
 
@@ -1594,25 +1611,30 @@ function DesktopCalculatorLayout(props) {
         {ranked.slice(0, 4).map((q, i) => {
           const rn = ['I', 'II', 'III', 'IV'][i];
           const isExpanded = expandedQuoteId === q.id;
+          const isActive = q.id === activeLender?.id;
           const truncated = q.notes && q.notes.length > 100;
           const rp = rolloverPillSpec(q.rolloverEase, t);
           return (
             <div
               key={q.id}
-              onClick={() => truncated && setExpandedQuoteId(isExpanded ? null : q.id)}
+              onClick={() => setSelectedLenderId(isActive ? null : q.id)}
               style={{
                 display: 'grid',
                 gridTemplateColumns: '32px 1fr auto',
                 alignItems: 'center', gap: 12,
-                padding: '12px 0',
+                padding: '12px 10px',
+                marginLeft: -10, marginRight: -10,
                 borderBottom: `1px dotted ${SB.inkLine}`,
-                cursor: truncated ? 'pointer' : 'default',
+                background: isActive ? 'rgba(216, 96, 24, 0.05)' : 'transparent',
+                boxShadow: isActive ? `inset 2px 0 0 ${SB.orange}` : 'none',
+                cursor: 'pointer',
               }}>
               <div style={{ fontFamily: SB.serif, fontStyle: 'italic', fontSize: 18, color: SB.orange, fontWeight: 500 }}>{rn}</div>
               <div style={{ minWidth: 0 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
                   <span style={{ fontFamily: SB.serif, fontSize: 18, fontWeight: 600, color: SB.ink, letterSpacing: '-0.005em' }}>{q.name}</span>
                   <Pill color={i === 0 ? SB.forest : SB.ink} filled={i === 0}>{q.badge || '—'}</Pill>
+                  {isActive && <Pill color={SB.orange} filled>{t('calc.quotes.active')}</Pill>}
                   {q.isTiered && <Pill color={SB.orange}>{t('lenders.badge.tiered')}</Pill>}
                   {rp && <Pill color={rp.color}>{rp.label}</Pill>}
                 </div>
@@ -1625,10 +1647,17 @@ function DesktopCalculatorLayout(props) {
                       {isExpanded || !truncated ? q.notes : q.notes.slice(0, 100) + '…'}
                     </div>
                     {truncated && (
-                      <div style={{
-                        fontFamily: SB.mono, fontSize: 11, fontWeight: 700, color: SB.orange,
-                        marginTop: 2, letterSpacing: '0.02em',
-                      }}>
+                      <div
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setExpandedQuoteId(isExpanded ? null : q.id);
+                        }}
+                        style={{
+                          display: 'inline-block',
+                          fontFamily: SB.mono, fontSize: 11, fontWeight: 700, color: SB.orange,
+                          marginTop: 2, letterSpacing: '0.02em',
+                          cursor: 'pointer',
+                        }}>
                         {isExpanded ? t('calc.quotes.showLess') : t('calc.quotes.showMore')}
                       </div>
                     )}
@@ -1657,9 +1686,9 @@ function DesktopCalculatorLayout(props) {
         )}
       </div>
 
-      <Button href={bestLender?.referralUrl || '#lenders'}>
-        {bestLender
-          ? t('common.cta.openWith', { name: bestLender.name.toUpperCase() })
+      <Button href={activeLender?.referralUrl || '#lenders'}>
+        {activeLender
+          ? t('common.cta.openWith', { name: activeLender.name.toUpperCase() })
           : t('common.cta.browseAll')}
       </Button>
       <div style={{
@@ -1673,7 +1702,7 @@ function DesktopCalculatorLayout(props) {
       </div>
 
       <MaturitySection
-        lender={bestLender}
+        lender={activeLender}
         principalUsd={loanUsd}
         interestUsd={interestUsd}
         totalOwedUsd={totalOwedUsd}
@@ -1684,7 +1713,7 @@ function DesktopCalculatorLayout(props) {
       />
 
       <LongViewSection
-        lender={bestLender}
+        lender={activeLender}
         loanUsd={loanUsd}
         collateralBtc={collateralBtc}
         btcSpotUsd={btcSpotUsd}

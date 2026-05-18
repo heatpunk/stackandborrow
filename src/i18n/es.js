@@ -232,6 +232,7 @@ export default {
   'calc.quotes.showLess': 'mostrar menos ▴',
   'calc.quotes.noMatch': 'No hay prestamistas para este tamaño de préstamo o región. Prueba otra cantidad.',
   'calc.quotes.noMatchDesktop': 'No hay prestamistas para este tamaño de préstamo o región.',
+  'calc.quotes.active': 'ACTIVO',
 
   'calc.projection.borrow': 'PEDIR PRESTADO · conservar todos los sats',
   'calc.projection.sell': 'VENDER · restante tras impuestos',

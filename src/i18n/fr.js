@@ -232,6 +232,7 @@ export default {
   'calc.quotes.showLess': 'voir moins ▴',
   'calc.quotes.noMatch': 'Aucun prêteur correspondant pour ce prêt ou cette région. Essaie un autre montant.',
   'calc.quotes.noMatchDesktop': 'Aucun prêteur correspondant pour ce prêt ou cette région.',
+  'calc.quotes.active': 'ACTIF',
 
   'calc.projection.borrow': 'EMPRUNTER · garder tous les sats',
   'calc.projection.sell': 'VENDRE · restant après impôts',

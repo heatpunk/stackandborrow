@@ -232,6 +232,7 @@ export default {
   'calc.quotes.showLess': 'visa mindre ▴',
   'calc.quotes.noMatch': 'Inga matchande långivare för det här lånet eller området. Prova ett annat belopp.',
   'calc.quotes.noMatchDesktop': 'Inga matchande långivare för det här lånet eller området.',
+  'calc.quotes.active': 'AKTIV',
 
   'calc.projection.borrow': 'LÅNA · behåll alla sats',
   'calc.projection.sell': 'SÄLJA · efter skatt',
