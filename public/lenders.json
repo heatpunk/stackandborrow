@@ -180,7 +180,7 @@
       "repayment": "Interest paid monthly or at maturity (varies by individual loan terms negotiated with the lender on the marketplace). Principal returned as bitcoin to your wallet automatically when loan is repaid in fiat. Repayment accepted in EUR, CHF, CZK, PLN, or USDC.",
       "notes": "Best European option. P2P marketplace means rates vary by individual deal — typical range 8–12%. Self-custody-aligned with multisig escrow. MiCA-registered.",
       "badge": "EU non-custodial",
-      "referralUrl": "https://firefish.io?ref=satoshi2899"
+      "referralUrl": "https://firefish.io/?ref=stackandborrow"
     },
     {
       "id": "debifi",
