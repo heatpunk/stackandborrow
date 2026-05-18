@@ -12,7 +12,6 @@
 import React, { useMemo } from 'react';
 import {
   SB,
-  CURRENCY_META,
   LTV_PCT,
   TERM_MONTHS,
 } from '../system/tokens.js';
@@ -64,7 +63,7 @@ export default function ComparePage({ slug, lenders, lastUpdated, live, currency
   // Read the calculator's persisted loan amount so all pages
   // (Landing, Calculator, Lenders, Compare) show the same quote size.
   const [loanInCurrency] = usePersistentState('desiredLoan', 50000);
-  const loanUsd = toUsd(loanInCurrency, currency, CURRENCY_META, live.btcUsd);
+  const loanUsd = toUsd(loanInCurrency, currency, live.meta, live.btcUsd);
 
   // Parse the slug into two lender IDs. We accept either order; the
   // ranking math + visible "winner" is decided by adjustedTotalCost,
@@ -168,7 +167,7 @@ function MobileCompareLayout({ winner, runner, costDelta, aprDelta, currency, li
           fontFamily: SB.sans, fontSize: 12.5, lineHeight: 1.55,
           color: SB.inkSoft, textWrap: 'pretty',
         }}>
-          On a <b style={{ color: SB.ink }}>{fmtMoney(loanUsd, currency, CURRENCY_META, live.btcUsd)} · {TERM_MONTHS}mo · {LTV_PCT}% LTV</b> Bitcoin-backed loan, ranked by adjusted total cost — interest, origination, custody risk.
+          On a <b style={{ color: SB.ink }}>{fmtMoney(loanUsd, currency, live.meta, live.btcUsd)} · {TERM_MONTHS}mo · {LTV_PCT}% LTV</b> Bitcoin-backed loan, ranked by adjusted total cost — interest, origination, custody risk.
         </p>
       </div>
 
@@ -210,7 +209,7 @@ function MobileCompareLayout({ winner, runner, costDelta, aprDelta, currency, li
         fontFamily: SB.sans, fontSize: 12, lineHeight: 1.6,
         color: SB.inkSoft, textWrap: 'pretty',
       }}>
-        Quotes use a <b style={{ color: SB.ink }}>{fmtMoney(loanUsd, currency, CURRENCY_META, live.btcUsd)}, {TERM_MONTHS}-month, {LTV_PCT}% LTV</b> Bitcoin-backed loan. Adjusted total cost = interest + origination + membership + a custody-risk premium that prices counterparty risk not reflected in nominal APR. Affiliate links never change the ranking. See <a href="/about" style={{ color: SB.orange, textDecoration: 'none', borderBottom: `1px dashed ${SB.orange}` }}>methodology</a> or browse the <a href="/lenders" style={{ color: SB.orange, textDecoration: 'none', borderBottom: `1px dashed ${SB.orange}` }}>full directory</a>.
+        Quotes use a <b style={{ color: SB.ink }}>{fmtMoney(loanUsd, currency, live.meta, live.btcUsd)}, {TERM_MONTHS}-month, {LTV_PCT}% LTV</b> Bitcoin-backed loan. Adjusted total cost = interest + origination + membership + a custody-risk premium that prices counterparty risk not reflected in nominal APR. Affiliate links never change the ranking. See <a href="/about" style={{ color: SB.orange, textDecoration: 'none', borderBottom: `1px dashed ${SB.orange}` }}>methodology</a> or browse the <a href="/lenders" style={{ color: SB.orange, textDecoration: 'none', borderBottom: `1px dashed ${SB.orange}` }}>full directory</a>.
       </p>
 
       <FineFooter source={live.source || 'mempool.space'} updated={lastUpdated} />
@@ -259,7 +258,7 @@ function DesktopCompareLayout({ winner, runner, costDelta, aprDelta, currency, l
             fontFamily: SB.sans, fontSize: 15, lineHeight: 1.55,
             color: SB.inkSoft, textWrap: 'pretty', maxWidth: 460,
           }}>
-            On a <b style={{ color: SB.ink }}>{fmtMoney(loanUsd, currency, CURRENCY_META, live.btcUsd)} · {TERM_MONTHS}-month · {LTV_PCT}% LTV</b> Bitcoin-backed loan, ranked by adjusted total cost — interest, origination, custody risk.
+            On a <b style={{ color: SB.ink }}>{fmtMoney(loanUsd, currency, live.meta, live.btcUsd)} · {TERM_MONTHS}-month · {LTV_PCT}% LTV</b> Bitcoin-backed loan, ranked by adjusted total cost — interest, origination, custody risk.
           </p>
 
           <DashedRule label="VERDICT" />
@@ -278,7 +277,7 @@ function DesktopCompareLayout({ winner, runner, costDelta, aprDelta, currency, l
             fontFamily: SB.sans, fontSize: 13, lineHeight: 1.6,
             color: SB.inkSoft, textWrap: 'pretty', maxWidth: 480,
           }}>
-            Quotes use a <b style={{ color: SB.ink }}>{fmtMoney(loanUsd, currency, CURRENCY_META, live.btcUsd)}, {TERM_MONTHS}-month, {LTV_PCT}% LTV</b> Bitcoin-backed loan. Adjusted total cost = interest + origination + membership + a custody-risk premium that prices counterparty risk not reflected in nominal APR. Affiliate links never change the ranking. See <a href="/about" style={{ color: SB.orange, textDecoration: 'none', borderBottom: `1px dashed ${SB.orange}` }}>methodology</a> or browse the <a href="/lenders" style={{ color: SB.orange, textDecoration: 'none', borderBottom: `1px dashed ${SB.orange}` }}>full directory</a>.
+            Quotes use a <b style={{ color: SB.ink }}>{fmtMoney(loanUsd, currency, live.meta, live.btcUsd)}, {TERM_MONTHS}-month, {LTV_PCT}% LTV</b> Bitcoin-backed loan. Adjusted total cost = interest + origination + membership + a custody-risk premium that prices counterparty risk not reflected in nominal APR. Affiliate links never change the ranking. See <a href="/about" style={{ color: SB.orange, textDecoration: 'none', borderBottom: `1px dashed ${SB.orange}` }}>methodology</a> or browse the <a href="/lenders" style={{ color: SB.orange, textDecoration: 'none', borderBottom: `1px dashed ${SB.orange}` }}>full directory</a>.
           </p>
         </div>
 
@@ -304,7 +303,7 @@ function DesktopCompareLayout({ winner, runner, costDelta, aprDelta, currency, l
             color: SB.inkMute, fontWeight: 700,
             marginTop: 18, marginBottom: 14,
           }}>
-            SIDE-BY-SIDE · {fmtMoney(loanUsd, currency, CURRENCY_META, live.btcUsd)} · {TERM_MONTHS} MO
+            SIDE-BY-SIDE · {fmtMoney(loanUsd, currency, live.meta, live.btcUsd)} · {TERM_MONTHS} MO
           </div>
 
           <CompareTable
@@ -379,19 +378,19 @@ function VerdictBlock({ winner, runner, costDelta, aprDelta, currency, live }) {
       }}>
         <Row
           label="Adjusted total cost"
-          value={fmtMoney(winner.adjustedTotalCost, currency, CURRENCY_META, live.btcUsd)}
+          value={fmtMoney(winner.adjustedTotalCost, currency, live.meta, live.btcUsd)}
           sub={`${winner.adjustedApr.toFixed(2)}% adjusted APR`}
         />
         <Row
           label={`${runner.name}, same loan`}
-          value={fmtMoney(runner.adjustedTotalCost, currency, CURRENCY_META, live.btcUsd)}
+          value={fmtMoney(runner.adjustedTotalCost, currency, live.meta, live.btcUsd)}
           sub={`${runner.adjustedApr.toFixed(2)}% adjusted APR`}
         />
         <Row
           label={tie ? 'Difference (basically a wash)' : `You save with ${winner.name}`}
           value={tie
             ? '— '
-            : fmtMoney(costDelta, currency, CURRENCY_META, live.btcUsd)}
+            : fmtMoney(costDelta, currency, live.meta, live.btcUsd)}
           sub={tie ? '' : `${aprDelta.toFixed(2)}% lower adjusted APR`}
           valueStyle={{ color: tie ? SB.ink : SB.forest, fontWeight: 700 }}
         />
@@ -433,14 +432,14 @@ function CompareTable({ winner, runner, currency, live, desktop = false }) {
       />
       <TR
         label="Total cost (12mo)"
-        a={fmtMoney(winner.totalCost, currency, CURRENCY_META, live.btcUsd)}
-        b={fmtMoney(runner.totalCost, currency, CURRENCY_META, live.btcUsd)}
+        a={fmtMoney(winner.totalCost, currency, live.meta, live.btcUsd)}
+        b={fmtMoney(runner.totalCost, currency, live.meta, live.btcUsd)}
         aHighlight={winner.totalCost <= runner.totalCost}
       />
       <TR
         label="Adjusted total cost"
-        a={fmtMoney(winner.adjustedTotalCost, currency, CURRENCY_META, live.btcUsd)}
-        b={fmtMoney(runner.adjustedTotalCost, currency, CURRENCY_META, live.btcUsd)}
+        a={fmtMoney(winner.adjustedTotalCost, currency, live.meta, live.btcUsd)}
+        b={fmtMoney(runner.adjustedTotalCost, currency, live.meta, live.btcUsd)}
         aHighlight
         sub="custody-risk weighted"
       />

@@ -150,6 +150,10 @@ export const SB = {
 // Currency metadata. `taxRate` is the rough capital-gains rate used
 // for the tax-aware sell path. `position` controls symbol placement.
 // `minLoan` / `maxLoan` bound the input range per currency.
+//
+// `fxToUsd` is a last-resort fallback only — at runtime, useLivePrices
+// overlays fresh values (mempool for most pairs, Riksbanken for SEK)
+// and pages consume `live.meta`, not this table directly.
 export const CURRENCY_META = {
   SAT: { symbol: 'sats', label: 'SAT', position: 'post', region: 'global', taxRate: 0,  fxToUsd: null,  minLoan: 1_000_000, maxLoan: 5_000_000_000 },
   USD: { symbol: '$',    label: 'USD', position: 'pre',  region: 'us',     taxRate: 20, fxToUsd: 1.0,    minLoan: 1000,      maxLoan: 5_000_000 },

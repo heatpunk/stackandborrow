@@ -9,7 +9,6 @@
 import React, { useMemo } from 'react';
 import {
   SB,
-  CURRENCY_META,
   LTV_PCT,
   TERM_MONTHS,
 } from '../system/tokens.js';
@@ -60,7 +59,7 @@ export default function LenderDetailPage({ id, lenders, lastUpdated, live, curre
   // Read the calculator's persisted loan amount so all pages
   // (Landing, Calculator, Lenders, Compare) show the same quote size.
   const [loanInCurrency] = usePersistentState('desiredLoan', 50000);
-  const loanUsd = toUsd(loanInCurrency, currency, CURRENCY_META, live.btcUsd);
+  const loanUsd = toUsd(loanInCurrency, currency, live.meta, live.btcUsd);
 
   // Rank the full directory so we can show this lender's position
   // and pick adjacent neighbors for the "compare with…" block.
@@ -108,7 +107,7 @@ export default function LenderDetailPage({ id, lenders, lastUpdated, live, curre
 // MOBILE
 // ============================================================
 function MobileLayout({ lender, ranked, idx, peers, currency, live, lastUpdated, loanUsd }) {
-  const quoteLabel = `QUOTE · ${fmtMoneyCompact(loanUsd, currency, CURRENCY_META, live.btcUsd)} · 12MO · 50% LTV`;
+  const quoteLabel = `QUOTE · ${fmtMoneyCompact(loanUsd, currency, live.meta, live.btcUsd)} · 12MO · 50% LTV`;
   return (
     <PaperFrame>
       <BrandHeader
@@ -149,7 +148,7 @@ function MobileLayout({ lender, ranked, idx, peers, currency, live, lastUpdated,
 // DESKTOP — open spread.
 // ============================================================
 function DesktopLayout({ lender, ranked, idx, peers, currency, live, lastUpdated, loanUsd }) {
-  const quoteLabel = `QUOTE · ${fmtMoneyCompact(loanUsd, currency, CURRENCY_META, live.btcUsd)} · 12MO · 50% LTV`;
+  const quoteLabel = `QUOTE · ${fmtMoneyCompact(loanUsd, currency, live.meta, live.btcUsd)} · 12MO · 50% LTV`;
   return (
     <PaperFrame maxWidth={1320} sidePad={60} innerPad="0 56px">
       <BrandHeader
@@ -262,7 +261,7 @@ function Hero({ lender, desktop = false, loanUsd, currency, live }) {
         color: SB.inkSoft, textWrap: 'pretty',
         maxWidth: desktop ? 460 : 'none',
       }}>
-        Bitcoin-backed loan review of <b style={{ color: SB.ink }}>{lender.name}</b>. Specs, custody model, ranking, and what differentiates them — measured against the directory at a standard {fmtMoney(loanUsd, currency, CURRENCY_META, live.btcUsd)} · 12-month · 50% LTV loan.
+        Bitcoin-backed loan review of <b style={{ color: SB.ink }}>{lender.name}</b>. Specs, custody model, ranking, and what differentiates them — measured against the directory at a standard {fmtMoney(loanUsd, currency, live.meta, live.btcUsd)} · 12-month · 50% LTV loan.
       </p>
     </div>
   );
@@ -292,17 +291,17 @@ function QuoteBlock({ lender, currency, live, desktop = false }) {
       {lender.membershipFeeUsd > 0 && (
         <Row
           label="Membership"
-          value={fmtMoney(lender.membershipFeeUsd, currency, CURRENCY_META, live.btcUsd)}
+          value={fmtMoney(lender.membershipFeeUsd, currency, live.meta, live.btcUsd)}
           sub="annual · pro-rated into total cost"
         />
       )}
       <Row
         label="Total cost (12mo)"
-        value={fmtMoney(lender.totalCost, currency, CURRENCY_META, live.btcUsd)}
+        value={fmtMoney(lender.totalCost, currency, live.meta, live.btcUsd)}
       />
       <Row
         label="Adjusted total cost"
-        value={fmtMoney(lender.adjustedTotalCost, currency, CURRENCY_META, live.btcUsd)}
+        value={fmtMoney(lender.adjustedTotalCost, currency, live.meta, live.btcUsd)}
         sub={`custody-risk weighted (+${lender.custodyPremiumPct.toFixed(2)} pp)`}
         valueStyle={{ color: SB.orange, fontWeight: 700 }}
       />
@@ -492,7 +491,7 @@ function Methodology({ desktop = false, loanUsd, currency, live }) {
       fontFamily: SB.sans, fontSize: desktop ? 12.5 : 11.5,
       lineHeight: 1.6, color: SB.inkSoft, textWrap: 'pretty',
     }}>
-      Quotes use a <b style={{ color: SB.ink }}>{fmtMoney(loanUsd, currency, CURRENCY_META, live.btcUsd)}, 12-month, 50% LTV</b> loan. Total cost = interest + origination + membership; adjusted cost adds a custody-risk premium for rehypothecation and pooled custody. Affiliate links never change the ranking. See <a href="/about" style={{ color: SB.orange, textDecoration: 'none', borderBottom: `1px dashed ${SB.orange}` }}>methodology</a> or browse the <a href="/lenders" style={{ color: SB.orange, textDecoration: 'none', borderBottom: `1px dashed ${SB.orange}` }}>full directory</a>.
+      Quotes use a <b style={{ color: SB.ink }}>{fmtMoney(loanUsd, currency, live.meta, live.btcUsd)}, 12-month, 50% LTV</b> loan. Total cost = interest + origination + membership; adjusted cost adds a custody-risk premium for rehypothecation and pooled custody. Affiliate links never change the ranking. See <a href="/about" style={{ color: SB.orange, textDecoration: 'none', borderBottom: `1px dashed ${SB.orange}` }}>methodology</a> or browse the <a href="/lenders" style={{ color: SB.orange, textDecoration: 'none', borderBottom: `1px dashed ${SB.orange}` }}>full directory</a>.
     </p>
   );
 }

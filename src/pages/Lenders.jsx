@@ -7,7 +7,6 @@
 import React, { useState, useMemo } from 'react';
 import {
   SB,
-  CURRENCY_META,
   LTV_PCT,
   TERM_MONTHS,
 } from '../system/tokens.js';
@@ -172,7 +171,7 @@ export default function LendersPage({ lenders, lastUpdated, live, currency, regi
   // Read the calculator's persisted loan amount so all pages
   // (Landing, Calculator, Lenders, Compare) show the same quote size.
   const [loanInCurrency] = usePersistentState('desiredLoan', 50000);
-  const loanUsd = toUsd(loanInCurrency, currency, CURRENCY_META, live.btcUsd);
+  const loanUsd = toUsd(loanInCurrency, currency, live.meta, live.btcUsd);
 
   const filtered = useMemo(() => {
     return lenders.filter((l) => {
@@ -272,7 +271,7 @@ export default function LendersPage({ lenders, lastUpdated, live, currency, regi
         color: SB.inkMute, marginTop: 8, letterSpacing: '0.02em',
         textAlign: 'center',
       }}>
-        {t('lenders.quoteSizedBefore')}<b style={{ color: SB.ink }}>{t('lenders.quoteSizedValue', { amount: fmtMoney(loanUsd, currency, CURRENCY_META, live.btcUsd), months: TERM_MONTHS, ltv: LTV_PCT })}</b>.
+        {t('lenders.quoteSizedBefore')}<b style={{ color: SB.ink }}>{t('lenders.quoteSizedValue', { amount: fmtMoney(loanUsd, currency, live.meta, live.btcUsd), months: TERM_MONTHS, ltv: LTV_PCT })}</b>.
       </div>
 
       <DashedRule label={t('lenders.section.ascending')} />
@@ -340,13 +339,13 @@ export default function LendersPage({ lenders, lastUpdated, live, currency, regi
                   <div style={{
                     fontFamily: SB.mono, fontSize: 9.5,
                     color: SB.inkSoft, marginTop: 2,
-                  }}>{fmtMoney(l.totalCost, currency, CURRENCY_META, live.btcUsd)} · 12mo</div>
+                  }}>{fmtMoney(l.totalCost, currency, live.meta, live.btcUsd)} · 12mo</div>
                   {l.membershipFeeUsd > 0 && (
                     <div style={{
                       fontFamily: SB.mono, fontSize: 9,
                       color: SB.inkMute, marginTop: 2, letterSpacing: '0.02em',
                     }}>
-                      {t('lenders.includesMembership', { fee: fmtMoney(l.membershipFeeUsd, currency, CURRENCY_META, live.btcUsd) })}
+                      {t('lenders.includesMembership', { fee: fmtMoney(l.membershipFeeUsd, currency, live.meta, live.btcUsd) })}
                     </div>
                   )}
                 </div>
@@ -522,7 +521,7 @@ function DesktopLendersLayout({
         textAlign: 'center',
       }}>
         {t('lenders.quoteSizedBefore')}<b style={{ color: SB.ink }}>
-          {t('lenders.quoteSizedValue', { amount: fmtMoney(quoteLoanUsd, currency, CURRENCY_META, live.btcUsd), months: TERM_MONTHS, ltv: LTV_PCT })}
+          {t('lenders.quoteSizedValue', { amount: fmtMoney(quoteLoanUsd, currency, live.meta, live.btcUsd), months: TERM_MONTHS, ltv: LTV_PCT })}
         </b>.
       </div>
 
@@ -625,14 +624,14 @@ function DesktopLendersLayout({
                     {l.effectiveApr.toFixed(2)}%
                   </div>
                   <div style={{ fontFamily: SB.mono, fontSize: 10.5, color: SB.inkSoft, marginTop: 2 }}>
-                    {fmtMoney(l.totalCost, currency, CURRENCY_META, live.btcUsd)} · 12mo
+                    {fmtMoney(l.totalCost, currency, live.meta, live.btcUsd)} · 12mo
                   </div>
                   {l.membershipFeeUsd > 0 && (
                     <div style={{
                       fontFamily: SB.mono, fontSize: 10,
                       color: SB.inkMute, marginTop: 3, letterSpacing: '0.02em',
                     }}>
-                      {t('lenders.includesMembership', { fee: fmtMoney(l.membershipFeeUsd, currency, CURRENCY_META, live.btcUsd) })}
+                      {t('lenders.includesMembership', { fee: fmtMoney(l.membershipFeeUsd, currency, live.meta, live.btcUsd) })}
                     </div>
                   )}
                 </div>

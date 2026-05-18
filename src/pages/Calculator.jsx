@@ -79,7 +79,7 @@ export default function CalculatorPage({
   const btcSpotUsd = live.btcUsd;
 
   // ===== DERIVED VALUES =====
-  const loanUsd = toUsd(loanInCurrency, currency, CURRENCY_META, btcSpotUsd);
+  const loanUsd = toUsd(loanInCurrency, currency, live.meta, btcSpotUsd);
   const collateralUsd = loanUsd / (LTV_PCT / 100);
   const collateralBtc = collateralUsd / btcSpotUsd;
   const collateralSats = Math.round(collateralBtc * SATS_PER_BTC);
@@ -141,8 +141,8 @@ export default function CalculatorPage({
   const cycleCurrency = useCallback(() => {
     const keys = Object.keys(CURRENCY_META);
     const next = keys[(keys.indexOf(currency) + 1) % keys.length];
-    const usd = toUsd(loanInCurrency, currency, CURRENCY_META, btcSpotUsd);
-    const newVal = usdTo(usd, next, CURRENCY_META, btcSpotUsd);
+    const usd = toUsd(loanInCurrency, currency, live.meta, btcSpotUsd);
+    const newVal = usdTo(usd, next, live.meta, btcSpotUsd);
     const m = CURRENCY_META[next];
     const s = CURRENCY_STEP[next] || 1000;
     const clamped = Math.max(m.minLoan, Math.min(m.maxLoan, Math.round(newVal / s) * s));
@@ -151,7 +151,7 @@ export default function CalculatorPage({
   }, [currency, loanInCurrency, btcSpotUsd, setCurrency, setLoanInCurrency]);
 
   // Format helpers bound to current currency
-  const fmt = (usd) => fmtMoney(usd, currency, CURRENCY_META, btcSpotUsd);
+  const fmt = (usd) => fmtMoney(usd, currency, live.meta, btcSpotUsd);
 
   // ===== VOID STATES =====
   // First-paint loading splash: live prices haven't resolved yet.
@@ -162,7 +162,7 @@ export default function CalculatorPage({
   if (loanUsd > 0 && loanUsd < 1000) {
     const resetToValid = () => {
       const targetUsd = 1500;
-      const inCurrency = usdTo(targetUsd, currency, CURRENCY_META, btcSpotUsd);
+      const inCurrency = usdTo(targetUsd, currency, live.meta, btcSpotUsd);
       const s = CURRENCY_STEP[currency] || 1000;
       const clamped = Math.max(
         CURRENCY_META[currency].minLoan,
@@ -321,7 +321,7 @@ export default function CalculatorPage({
             letterSpacing: '0.05em',
           }}>
             <span>{rangeLabel(min, currency)}</span>
-            <span>~{fmtMoney(loanUsd, 'USD', CURRENCY_META, btcSpotUsd)} USD</span>
+            <span>~{fmtMoney(loanUsd, 'USD', live.meta, btcSpotUsd)} USD</span>
             <span>{rangeLabel(max, currency)}</span>
           </div>
         </div>
@@ -448,6 +448,7 @@ export default function CalculatorPage({
         totalOwedUsd={totalOwedUsd}
         collateralBtcAfterSell={collateralBtcAfterSell}
         currency={currency}
+        meta={live.meta}
       />
 
       <DashedRule label={t('calc.section.verdict')} />
@@ -489,7 +490,7 @@ export default function CalculatorPage({
               fontVariantNumeric: 'tabular-nums',
             }}>
               {deltaUsd >= 0 ? '+' : ''}
-              <FormattedMoney usd={deltaUsd} currency={currency} spot={btcSpotUsd} />
+              <FormattedMoney usd={deltaUsd} currency={currency} meta={live.meta} spot={btcSpotUsd} />
             </div>
             <div style={{
               fontFamily: SB.mono, fontSize: 9,
@@ -637,8 +638,8 @@ export default function CalculatorPage({
 // symbols ($, €) come back from fmtMoneyCompact as one token and pass
 // through unchanged.
 // ============================================================
-function FormattedMoney({ usd, currency, spot }) {
-  const s = fmtMoneyCompact(usd, currency, CURRENCY_META, spot);
+function FormattedMoney({ usd, currency, meta, spot }) {
+  const s = fmtMoneyCompact(usd, currency, meta, spot);
   const sp = s.lastIndexOf(' ');
   if (sp < 0) return <>{s}</>;
   return (
@@ -652,7 +653,7 @@ function FormattedMoney({ usd, currency, spot }) {
 // ============================================================
 // Projection — small SVG sparkline of borrow vs sell paths.
 // ============================================================
-function Projection({ spot, cagr, collateralBtc, totalOwedUsd, collateralBtcAfterSell, currency }) {
+function Projection({ spot, cagr, collateralBtc, totalOwedUsd, collateralBtcAfterSell, currency, meta }) {
   const t = useT();
   const W = 340, H = 130, P = 12;
   const years = 21;
@@ -751,7 +752,7 @@ function Projection({ spot, cagr, collateralBtc, totalOwedUsd, collateralBtcAfte
               lineHeight: 1,
               fontVariantNumeric: 'tabular-nums',
             }}>
-              <FormattedMoney usd={m.val} currency={currency} spot={spot} />
+              <FormattedMoney usd={m.val} currency={currency} meta={meta} spot={spot} />
             </div>
           </div>
         ))}
@@ -1155,7 +1156,7 @@ function LongViewSection({
               rn="I"
               label={t('calc.longView.btcPrice.label', { years })}
               primary={sane
-                ? <FormattedMoney usd={btcPriceAtN} currency={currency} spot={btcSpotUsd} />
+                ? <FormattedMoney usd={btcPriceAtN} currency={currency} meta={live.meta} spot={btcSpotUsd} />
                 : nA}
               primarySub={t('calc.longView.btcPrice.sub', { persona, case: caseId })}
               right={sane
@@ -1167,7 +1168,7 @@ function LongViewSection({
             <MaturityOption
               rn="II"
               label={t('calc.longView.debt.label', { years })}
-              primary={<FormattedMoney usd={owed} currency={currency} spot={btcSpotUsd} />}
+              primary={<FormattedMoney usd={owed} currency={currency} meta={live.meta} spot={btcSpotUsd} />}
               primarySub={
                 <>
                   {t('calc.longView.debt.subBefore', { easeLabel })}
@@ -1191,7 +1192,7 @@ function LongViewSection({
                 </>
               }
               right={btcToSettle != null
-                ? <FormattedMoney usd={owed} currency={currency} spot={btcSpotUsd} />
+                ? <FormattedMoney usd={owed} currency={currency} meta={live.meta} spot={btcSpotUsd} />
                 : '—'}
               rightSub={t('calc.longView.btcToSettle.fiatValue')}
               tone={SB.ink}
@@ -1271,7 +1272,7 @@ function LongViewSection({
                   color: SB.forest, letterSpacing: '-0.02em', lineHeight: 1,
                   fontVariantNumeric: 'tabular-nums',
                 }}>
-                  <FormattedMoney usd={btcRemaining * btcPriceAtN} currency={currency} spot={btcSpotUsd} />
+                  <FormattedMoney usd={btcRemaining * btcPriceAtN} currency={currency} meta={live.meta} spot={btcSpotUsd} />
                 </div>
                 <div style={{
                   fontFamily: SB.mono, fontSize: 9,
@@ -1431,7 +1432,7 @@ function DesktopCalculatorLayout(props) {
             fontFamily: SB.mono, fontSize: 10, color: SB.inkFaint, letterSpacing: '0.05em',
           }}>
             <span>{rangeLabel(min, currency)}</span>
-            <span>~{fmtMoney(loanUsd, 'USD', CURRENCY_META, btcSpotUsd)} USD</span>
+            <span>~{fmtMoney(loanUsd, 'USD', live.meta, btcSpotUsd)} USD</span>
             <span>{rangeLabel(max, currency)}</span>
           </div>
         </div>
@@ -1547,6 +1548,7 @@ function DesktopCalculatorLayout(props) {
         totalOwedUsd={totalOwedUsd}
         collateralBtcAfterSell={collateralBtcAfterSell}
         currency={currency}
+        meta={live.meta}
       />
 
       <DashedRule label={t('calc.section.verdict')} />

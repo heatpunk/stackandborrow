@@ -4,13 +4,69 @@
 // ============================================================
 
 import { useState, useEffect, useCallback } from 'react';
+import { CURRENCY_META } from '../system/tokens.js';
 
 const FALLBACK_BTC_USD = 104287;
 
-const FALLBACK_FX_TO_USD = {
-  USD: 1.0, EUR: 1.08, GBP: 1.27, CAD: 0.73,
-  AUD: 0.66, JPY: 0.0067, CHF: 1.13, SEK: 0.094,
-};
+// Riksbanken publishes the official SEK/USD fixing once per weekday
+// ~13:00 CET. We cache by date in localStorage — if today's value is
+// already in cache, the page makes zero network calls for it. On API
+// failure we keep using whatever's cached (any age), so the calculator
+// never silently degrades to a years-old hardcoded number while a more
+// recent rate is sitting locally.
+const SEK_CACHE_KEY = 'stackandborrow:sekPerUsd';
+
+const todayUTC = () => new Date().toISOString().slice(0, 10);
+
+function readSekCache() {
+  if (typeof window === 'undefined') return null;
+  try {
+    const raw = window.localStorage.getItem(SEK_CACHE_KEY);
+    const parsed = raw ? JSON.parse(raw) : null;
+    return parsed && parsed.value > 0 ? parsed : null;
+  } catch { return null; }
+}
+
+function writeSekCache(value, date) {
+  if (typeof window === 'undefined') return;
+  try {
+    window.localStorage.setItem(SEK_CACHE_KEY, JSON.stringify({ value, date }));
+  } catch { /* storage full or disabled */ }
+}
+
+async function getSekPerUsd() {
+  const today = todayUTC();
+  const cached = readSekCache();
+  if (cached?.date === today) return cached.value;
+  try {
+    const res = await fetch('/api/sek-usd');
+    const j = await res.json();
+    if (j?.value > 0) {
+      writeSekCache(j.value, j.date || today);
+      return j.value;
+    }
+  } catch { /* fall through to cached */ }
+  return cached?.value ?? null;
+}
+
+// Build CURRENCY_META with live fxToUsd overlaid. Missing currencies
+// keep the static fallback already in CURRENCY_META — same shape, same
+// keys, so pages don't need to know whether values came from the wire.
+function buildLiveMeta(btcByCurrency, sekPerUsd) {
+  const meta = { ...CURRENCY_META };
+  if (btcByCurrency?.USD) {
+    for (const code of ['EUR', 'GBP', 'CAD', 'AUD', 'JPY', 'CHF']) {
+      const px = btcByCurrency[code];
+      if (px > 0) {
+        meta[code] = { ...CURRENCY_META[code], fxToUsd: btcByCurrency.USD / px };
+      }
+    }
+  }
+  if (sekPerUsd > 0) {
+    meta.SEK = { ...CURRENCY_META.SEK, fxToUsd: 1 / sekPerUsd };
+  }
+  return meta;
+}
 
 // Detect a sensible default currency from browser locale on first visit
 // (no saved preference yet). Returns one of our supported currencies.
@@ -63,12 +119,18 @@ export function detectRegionFromCurrency(currency) {
   }
 }
 
-// Live BTC + FX prices from mempool.space, with utxoracle fallback.
-// Polls every 5 minutes; exposes manual refresh.
+// Live BTC + FX prices. BTC and most fiat pairs from mempool.space
+// (with utxoracle as BTC-only fallback). SEK from Riksbanken's daily
+// fixing via the same-origin /api/sek-usd proxy, day-cached locally.
+//
+// Pages consume `meta` — structurally identical to CURRENCY_META with
+// live fxToUsd plugged in. Anything still missing falls back to the
+// static values in tokens.js. Polls every 5 minutes; exposes manual
+// refresh.
 export function useLivePrices() {
   const [data, setData] = useState({
     btcUsd: FALLBACK_BTC_USD,
-    fxToUsd: FALLBACK_FX_TO_USD,
+    meta: CURRENCY_META,
     source: 'fallback',
     loading: true,
     updatedAt: null,
@@ -77,24 +139,15 @@ export function useLivePrices() {
 
   const fetchPrices = useCallback(async () => {
     setData((d) => ({ ...d, loading: true }));
+    const sekPromise = getSekPerUsd();
     try {
       const res = await fetch('https://mempool.space/api/v1/prices');
       if (!res.ok) throw new Error('mempool fetch failed');
       const j = await res.json();
-      const fx = {
-        USD: 1.0,
-        EUR: j.EUR ? j.USD / j.EUR : FALLBACK_FX_TO_USD.EUR,
-        GBP: j.GBP ? j.USD / j.GBP : FALLBACK_FX_TO_USD.GBP,
-        CAD: j.CAD ? j.USD / j.CAD : FALLBACK_FX_TO_USD.CAD,
-        AUD: j.AUD ? j.USD / j.AUD : FALLBACK_FX_TO_USD.AUD,
-        JPY: j.JPY ? j.USD / j.JPY : FALLBACK_FX_TO_USD.JPY,
-        CHF: j.CHF ? j.USD / j.CHF : FALLBACK_FX_TO_USD.CHF,
-        // SEK isn't in mempool's response — derive from EUR cross.
-        SEK: j.EUR ? (j.USD / j.EUR) / 11.3 : FALLBACK_FX_TO_USD.SEK,
-      };
+      const sekPerUsd = await sekPromise;
       setData({
         btcUsd: j.USD,
-        fxToUsd: fx,
+        meta: buildLiveMeta(j, sekPerUsd),
         source: 'mempool.space',
         loading: false,
         updatedAt: new Date(j.time * 1000),
@@ -102,14 +155,18 @@ export function useLivePrices() {
       });
       return;
     } catch (e) {
-      // Fallback: utxoracle (USD-only)
+      // Fallback: utxoracle (USD-only). FX stays on whatever's in
+      // CURRENCY_META, but SEK still gets the Riksbanken overlay if
+      // that fetch succeeded.
       try {
         const res = await fetch('https://api.utxoracle.io/latest.json');
         if (!res.ok) throw new Error('utxoracle failed');
         const j = await res.json();
+        const sekPerUsd = await sekPromise;
         setData((prev) => ({
           ...prev,
           btcUsd: j.price,
+          meta: buildLiveMeta(null, sekPerUsd),
           source: 'utxoracle.io',
           loading: false,
           updatedAt: new Date(j.updated_at),

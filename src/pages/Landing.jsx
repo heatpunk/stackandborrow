@@ -111,7 +111,7 @@ export default function LandingPage({ live, lenders = [], region, initialCurrenc
   const meta = CURRENCY_META[currency];
 
   // ===== DERIVED =====
-  const loanUsd = toUsd(loanInCurrency, currency, CURRENCY_META, btcSpotUsd);
+  const loanUsd = toUsd(loanInCurrency, currency, live.meta, btcSpotUsd);
   const collateralUsd = loanUsd / (LTV_PCT / 100);
   const collateralBtc = collateralUsd / btcSpotUsd;
   const collateralSats = Math.round(collateralBtc * SATS_PER_BTC);
@@ -144,8 +144,8 @@ export default function LandingPage({ live, lenders = [], region, initialCurrenc
   // ===== HANDLERS =====
   const pickCurrency = useCallback((next) => {
     if (next === currency) return;
-    const usd = toUsd(loanInCurrency, currency, CURRENCY_META, btcSpotUsd);
-    const newVal = usdTo(usd, next, CURRENCY_META, btcSpotUsd);
+    const usd = toUsd(loanInCurrency, currency, live.meta, btcSpotUsd);
+    const newVal = usdTo(usd, next, live.meta, btcSpotUsd);
     const m = CURRENCY_META[next];
     const s = CURRENCY_STEP[next] || 1000;
     const clamped = Math.max(m.minLoan, Math.min(m.maxLoan, Math.round(newVal / s) * s));
@@ -406,12 +406,12 @@ export default function LandingPage({ live, lenders = [], region, initialCurrenc
         />
         <Row
           label={t('landing.row.interest', { months: TERM_MONTHS })}
-          value={fmtMoney(interestUsd, currency, CURRENCY_META, btcSpotUsd)}
+          value={fmtMoney(interestUsd, currency, live.meta, btcSpotUsd)}
           sub={t('landing.row.interestSub')}
         />
         <Row
           label={t('landing.row.origination')}
-          value={fmtMoney(origFeeUsd, currency, CURRENCY_META, btcSpotUsd)}
+          value={fmtMoney(origFeeUsd, currency, live.meta, btcSpotUsd)}
           sub={origFeeUsd > 0 ? t('landing.row.origSubOnce') : t('landing.row.origSubWaived')}
         />
         <Row
@@ -431,7 +431,7 @@ export default function LandingPage({ live, lenders = [], region, initialCurrenc
         }}>
           <span style={{ color: SB.inkSoft }}>{t('landing.subtotal.total', { months: TERM_MONTHS })}</span>
           <span style={{ fontFamily: SB.mono, fontWeight: 700, color: SB.ink }}>
-            {fmtMoney(interestUsd + origFeeUsd, currency, CURRENCY_META, btcSpotUsd)}
+            {fmtMoney(interestUsd + origFeeUsd, currency, live.meta, btcSpotUsd)}
           </span>
         </div>
         <div style={{
@@ -821,10 +821,10 @@ function DesktopLandingLayout({
           valueStyle={{ color: SB.orange }}
           sub={t('landing.row.aprSub', { months: TERM_MONTHS })} />
         <Row label={t('landing.row.interest', { months: TERM_MONTHS })}
-          value={fmtMoney(interestUsd, currency, CURRENCY_META, btcSpotUsd)}
+          value={fmtMoney(interestUsd, currency, live.meta, btcSpotUsd)}
           sub={t('landing.row.interestSub')} />
         <Row label={t('landing.row.origination')}
-          value={fmtMoney(origFeeUsd, currency, CURRENCY_META, btcSpotUsd)}
+          value={fmtMoney(origFeeUsd, currency, live.meta, btcSpotUsd)}
           sub={origFeeUsd > 0 ? t('landing.row.origSubOnce') : t('landing.row.origSubWaived')} />
         <Row label={t('landing.row.liquidation')}
           value={'$' + fmtNum(liqUsd)}
@@ -838,7 +838,7 @@ function DesktopLandingLayout({
         <div style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', fontSize: 13 }}>
           <span style={{ color: SB.inkSoft }}>{t('landing.subtotal.total', { months: TERM_MONTHS })}</span>
           <span style={{ fontFamily: SB.mono, fontWeight: 700, color: SB.ink }}>
-            {fmtMoney(interestUsd + origFeeUsd, currency, CURRENCY_META, btcSpotUsd)}
+            {fmtMoney(interestUsd + origFeeUsd, currency, live.meta, btcSpotUsd)}
           </span>
         </div>
         <div style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', fontSize: 13 }}>
@@ -1003,7 +1003,7 @@ function DesktopLandingLayout({
                   {q.effectiveApr.toFixed(2)}%
                 </div>
                 <div style={{ fontFamily: SB.mono, fontSize: 10, color: SB.inkSoft, marginTop: 2 }}>
-                  {fmtMoney(q.totalCost, currency, CURRENCY_META, btcSpotUsd)} · {TERM_MONTHS}mo
+                  {fmtMoney(q.totalCost, currency, live.meta, btcSpotUsd)} · {TERM_MONTHS}mo
                 </div>
               </div>
             </div>
