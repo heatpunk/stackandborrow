@@ -21,7 +21,7 @@ export const THEMES = {
     cream:      '#f6f1e8',
     creamWarm:  '#efe8da',
     ink:        '#1a1612',
-    inkFill:    'rgba(26, 22, 18, 0.95)',
+    inkFill:    'rgba(26, 22, 18, 0.85)',
     inkSoft:    'rgba(26,22,18,0.78)',
     inkMute:    'rgba(26,22,18,0.55)',
     inkFaint:   'rgba(26,22,18,0.32)',
