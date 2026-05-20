@@ -258,9 +258,9 @@ export default {
   'calc.maturity.rollover.newContract.rightSub': 'SE APROVADO',
   'calc.maturity.liquidate.label': 'DEIXAR O CREDOR LIQUIDAR',
   'calc.maturity.liquidate.primary': '{btc} BTC vendidos',
-  'calc.maturity.liquidate.subBefore': '@ ${spot} para cobrir {owed} · tributável na maioria das jurisdições ',
+  'calc.maturity.liquidate.subBefore': '@ ${price} (projetado) para cobrir {owed} · tributável na maioria das jurisdições ',
   'calc.maturity.liquidate.rightSub': 'STACK REDUZIDO',
-  'calc.maturity.fineprint': 'Os números assumem BTC ao preço spot de hoje. A prolongação está sujeita à política do credor no vencimento e pode envolver uma nova comissão de abertura. Alguns credores também cobram taxa de liquidação — verifica os teus termos.',
+  'calc.maturity.fineprint': 'Os números de liquidação usam o preço de BTC projetado no vencimento conforme o teu cenário do § III, não o preço spot de hoje. A prolongação está sujeita à política do credor no vencimento e pode envolver uma nova comissão de abertura. Alguns credores também cobram taxa de liquidação — verifica os teus termos.',
 
   'calc.rollPill.revolving': '↻ ROTATIVO',
   'calc.rollPill.refinance': '↻ REFINANCIAR',

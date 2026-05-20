@@ -261,9 +261,9 @@ export default {
   'calc.maturity.rollover.newContract.rightSub': 'IF APPROVED',
   'calc.maturity.liquidate.label': 'LET LENDER LIQUIDATE',
   'calc.maturity.liquidate.primary': '{btc} BTC sold',
-  'calc.maturity.liquidate.subBefore': '@ ${spot} to cover {owed} · taxable in most jurisdictions ',
+  'calc.maturity.liquidate.subBefore': '@ ${price} (projected) to cover {owed} · taxable in most jurisdictions ',
   'calc.maturity.liquidate.rightSub': 'STACK REDUCED',
-  'calc.maturity.fineprint': "Numbers assume BTC at today's spot price. Rollover is subject to the lender's policy at maturity and may carry a fresh origination fee. Some lenders also charge a liquidation fee — check your terms.",
+  'calc.maturity.fineprint': "Liquidation figures use the BTC price projected at maturity under your § III scenario, not today's spot. Rollover is subject to the lender's policy at maturity and may carry a fresh origination fee. Some lenders also charge a liquidation fee — check your terms.",
 
   'calc.rollPill.revolving': '↻ REVOLVING',
   'calc.rollPill.refinance': '↻ REFINANCE',

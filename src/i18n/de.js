@@ -258,9 +258,9 @@ export default {
   'calc.maturity.rollover.newContract.rightSub': 'BEI GENEHMIGUNG',
   'calc.maturity.liquidate.label': 'KREDITGEBER LIQUIDIEREN LASSEN',
   'calc.maturity.liquidate.primary': '{btc} BTC verkauft',
-  'calc.maturity.liquidate.subBefore': '@ ${spot}, um {owed} zu decken · in den meisten Jurisdiktionen steuerpflichtig ',
+  'calc.maturity.liquidate.subBefore': '@ ${price} (projiziert), um {owed} zu decken · in den meisten Jurisdiktionen steuerpflichtig ',
   'calc.maturity.liquidate.rightSub': 'STACK REDUZIERT',
-  'calc.maturity.fineprint': 'Zahlen gehen vom heutigen BTC-Spotpreis aus. Verlängerung unterliegt der Politik des Kreditgebers bei Fälligkeit und kann eine neue Bearbeitungsgebühr beinhalten. Manche Kreditgeber erheben auch eine Liquidationsgebühr — prüfe deine Bedingungen.',
+  'calc.maturity.fineprint': 'Die Liquidationszahlen verwenden den zur Fälligkeit projizierten BTC-Preis gemäß deinem § III-Szenario, nicht den heutigen Spotpreis. Verlängerung unterliegt der Politik des Kreditgebers bei Fälligkeit und kann eine neue Bearbeitungsgebühr beinhalten. Manche Kreditgeber erheben auch eine Liquidationsgebühr — prüfe deine Bedingungen.',
 
   'calc.rollPill.revolving': '↻ REVOLVIEREND',
   'calc.rollPill.refinance': '↻ REFINANZIEREN',

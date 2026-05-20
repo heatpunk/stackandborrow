@@ -258,9 +258,9 @@ export default {
   'calc.maturity.rollover.newContract.rightSub': 'OM GODKÄND',
   'calc.maturity.liquidate.label': 'LÅT LÅNGIVAREN LIKVIDERA',
   'calc.maturity.liquidate.primary': '{btc} BTC sålda',
-  'calc.maturity.liquidate.subBefore': '@ ${spot} för att täcka {owed} · skattepliktig i de flesta jurisdiktioner ',
+  'calc.maturity.liquidate.subBefore': '@ ${price} (projicerat) för att täcka {owed} · skattepliktig i de flesta jurisdiktioner ',
   'calc.maturity.liquidate.rightSub': 'STACK MINSKAD',
-  'calc.maturity.fineprint': 'Siffrorna utgår från dagens spotpris på BTC. Förlängning är beroende av långivarens policy vid förfallodagen och kan innebära ny uppläggningsavgift. Vissa långivare tar även en likvidationsavgift — kolla dina villkor.',
+  'calc.maturity.fineprint': 'Likvidationssiffrorna utgår från BTC-priset projicerat vid förfallodagen enligt ditt § III-scenario, inte dagens spotpris. Förlängning är beroende av långivarens policy vid förfallodagen och kan innebära ny uppläggningsavgift. Vissa långivare tar även en likvidationsavgift — kolla dina villkor.',
 
   'calc.rollPill.revolving': '↻ REVOLVERANDE',
   'calc.rollPill.refinance': '↻ REFINANSIERA',
