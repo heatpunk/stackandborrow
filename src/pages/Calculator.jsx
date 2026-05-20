@@ -4,7 +4,7 @@
 // lender ranking + projection re-compute on every input change.
 // ============================================================
 
-import React, { useMemo, useCallback, useEffect, useState } from 'react';
+import React, { useMemo, useCallback, useEffect, useRef, useState } from 'react';
 import {
   SB,
   CURRENCY_META,
@@ -600,6 +600,16 @@ export default function CalculatorPage({
         <span>{t('common.leave.line2')}</span>
       </div>
 
+      <SellBorrowMixSection
+        lender={activeLender}
+        loanUsd={loanUsd}
+        collateralBtc={collateralBtc}
+        collateralSats={collateralSats}
+        btcSpotUsd={btcSpotUsd}
+        currency={currency}
+        fmt={fmt}
+      />
+
       <MaturitySection
         lender={activeLender}
         principalUsd={loanUsd}
@@ -798,7 +808,7 @@ function rolloverPillSpec(ease, t) {
 }
 
 // ============================================================
-// MaturitySection — § VI · what happens 12 months from now.
+// MaturitySection — § VII · what happens 12 months from now.
 // ============================================================
 function MaturitySection({
   lender, principalUsd, interestUsd, totalOwedUsd,
@@ -808,7 +818,7 @@ function MaturitySection({
   const [open, setOpen] = useState(false);
   if (!lender) return null;
 
-  // § VI · III "let lender liquidate" settles at maturity, so the lender
+  // § VII · III "let lender liquidate" settles at maturity, so the lender
   // sells at the BTC price projected TERM_MONTHS out under the § III
   // scenario — not today's spot.
   const btcPriceAtMaturity = projectBtcPrice(btcSpotUsd, activeCagr, TERM_MONTHS / 12);
@@ -865,7 +875,7 @@ function MaturitySection({
       {open && (
         <>
           <SectionHead
-            no="§ VI"
+            no="§ VII"
             title={t('calc.section.atMaturity')}
             subtitle={t('calc.section.atMaturitySub', { months: TERM_MONTHS, lender: lender.name })}
           />
@@ -972,12 +982,12 @@ function MaturityOption({ rn, label, primary, primarySub, right, rightSub, tone,
 }
 
 // ============================================================
-// LongViewSection — § VII · stretch the loan beyond maturity.
+// LongViewSection — § VIII · stretch the loan beyond maturity.
 // A bonus calc for users who want to see what happens if they
 // keep rolling the loan year by year (and, optionally, draw a
 // fresh loan every year to live off BTC). Inherits the BTC
 // price profile from § III and the top-ranked lender from § V.
-// Collapsed by default — mirrors § VI's disclosure pattern.
+// Collapsed by default — mirrors § VII's disclosure pattern.
 // ============================================================
 function LongViewSection({
   lender, loanUsd, collateralBtc, btcSpotUsd,
@@ -1063,7 +1073,7 @@ function LongViewSection({
       {open && (
         <>
           <SectionHead
-            no="§ VII"
+            no="§ VIII"
             title={t('calc.longView.title')}
             subtitle={t('calc.longView.subtitle', { persona, case: caseId, lender: lender.name })}
           />
@@ -1319,6 +1329,404 @@ function LongViewSection({
       )}
     </div>
   );
+}
+
+// ============================================================
+// SellBorrowMixSection — § VI · the sliding scale between
+// borrowing the whole need and selling for the whole need.
+//
+// A vertical slider doubles as a stacked bar of the split; three
+// receipt blocks show the fiat / sats / cost consequences of any
+// position. The panel makes no recommendation — it only lays out
+// what each mix costs along three independent axes (fiat outlay,
+// sats kept, counterparty exposure). Collapsed by default —
+// mirrors § VII's disclosure pattern.
+//
+// Reference frame for the SATS block: every position partitions
+// the SAME stack — the collateral a 0%-sold loan would post — into
+// sold / pledged / free. Selling reaches the need with less BTC
+// than collateralising it (50% LTV ties up 2×; a sale is ~1× plus
+// tax), so at higher sell shares part of that stack is never
+// touched at all. That residual is the "free cold storage" line.
+// ============================================================
+function SellBorrowMixSection({
+  lender, loanUsd, collateralBtc, collateralSats,
+  btcSpotUsd, currency, fmt,
+}) {
+  const t = useT();
+  const [open, setOpen] = useState(false);
+  const [sellPct, setSellPct] = useState(0);
+
+  if (!lender) return null;
+  if (!loanUsd || loanUsd <= 0) return null;
+
+  const aprPct = lender.apr ?? 10;
+  const taxRatePct = CURRENCY_META[currency]?.taxRate ?? 0;
+  const taxMul = 1 - taxRatePct / 100;
+  const s = Math.min(100, Math.max(0, sellPct)) / 100;
+
+  // SPLIT — how the need is met. loanPart + netFromSale === loanUsd.
+  const loanPart = loanUsd * (1 - s);
+  const netFromSale = loanUsd * s;
+  const grossSaleUsd = taxMul > 0 ? netFromSale / taxMul : netFromSale;
+  const taxUsd = grossSaleUsd - netFromSale;
+
+  // SATS — the reference collateral partitioned three ways. soldSats +
+  // pledgedSats + freeSats === collateralSats; keptSats === pledged + free.
+  const soldBtc = btcSpotUsd > 0 ? grossSaleUsd / btcSpotUsd : 0;
+  const pledgedBtc = collateralBtc * (1 - s);
+  const soldSats = Math.round(soldBtc * SATS_PER_BTC);
+  const pledgedSats = Math.round(pledgedBtc * SATS_PER_BTC);
+  const freeSats = Math.max(0, collateralSats - soldSats - pledgedSats);
+  const keptSats = pledgedSats + freeSats;
+
+  // FIAT COSTS — interest is linear in the (reduced) principal.
+  const interestUsd = computeInterest(loanPart, aprPct, TERM_MONTHS);
+  const totalCostUsd = interestUsd + taxUsd;
+
+  const satsValue = (n) => fmtNum(n) + ' sats';
+
+  return (
+    <div style={{ marginTop: 16 }}>
+      <button
+        onClick={() => setOpen(!open)}
+        style={mixToggleStyle}
+        aria-expanded={open}
+      >
+        <span>{t('calc.mix.toggle')}</span>
+        <span style={{ color: SB.orange, letterSpacing: '0.08em' }}>
+          {open ? t('calc.maturity.hide') : t('calc.maturity.show')}
+        </span>
+      </button>
+
+      {open && (
+        <>
+          <style>{`
+            .mix-slider:focus { outline: none; }
+            .mix-slider:focus-visible {
+              outline: 2px solid ${SB.orange};
+              outline-offset: 3px;
+            }
+          `}</style>
+
+          <SectionHead
+            no="§ VI"
+            title={t('calc.section.sellBorrowMix')}
+            subtitle={t('calc.section.sellBorrowMixSub')}
+          />
+          <div style={{
+            marginTop: -2, marginBottom: 12,
+            fontFamily: SB.mono, fontSize: 10, color: SB.inkSoft,
+            letterSpacing: '0.04em', lineHeight: 1.55,
+          }}>
+            {t('calc.mix.intro', { need: fmt(loanUsd) })}
+          </div>
+
+          <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
+            <MixSlider
+              sellPct={sellPct}
+              setSellPct={setSellPct}
+              fmt={fmt}
+              needUsd={loanUsd}
+            />
+
+            <div style={{ flex: 1, minWidth: 0 }}>
+              {/* Block 1 — SPLIT */}
+              <MixBlockHead label={t('calc.mix.block.split')} first />
+              <Row label={t('calc.mix.loanAmount')} value={fmt(loanPart)} />
+              <Row
+                label={t('calc.mix.saleAmount')}
+                value={fmt(grossSaleUsd)}
+                sub={t('calc.mix.saleAmountSub', {
+                  net: fmt(netFromSale), rate: taxRatePct,
+                })}
+              />
+
+              {/* Block 2 — SATS OUTCOME */}
+              <MixBlockHead label={t('calc.mix.block.sats')} />
+              <div style={mixFrameStyle}>
+                {t('calc.mix.satsFrame', { sats: fmtNum(collateralSats) })}
+              </div>
+              <Row label={t('calc.mix.satsSold')} value={fmtNum(soldSats)}
+                   sub={t('calc.mix.satsSoldSub')} />
+              <Row label={t('calc.mix.satsPledged')} value={fmtNum(pledgedSats)}
+                   sub={t('calc.mix.satsPledgedSub')} />
+              <Row label={t('calc.mix.satsFree')} value={fmtNum(freeSats)}
+                   sub={t('calc.mix.satsFreeSub')} />
+              <MixTotalRow
+                label={t('calc.mix.satsKept')}
+                value={fmtNum(keptSats)}
+                sub={t('calc.mix.satsKeptSub', { free: satsValue(freeSats) })}
+              />
+
+              {/* Block 3 — FIAT COSTS */}
+              <MixBlockHead label={t('calc.mix.block.fiat')} />
+              <Row label={t('calc.mix.interest')} value={fmt(interestUsd)}
+                   sub={t('calc.mix.interestSub', {
+                     apr: aprPct.toFixed(1), months: TERM_MONTHS,
+                   })} />
+              <Row label={t('calc.mix.tax')} value={fmt(taxUsd)}
+                   sub={t('calc.mix.taxSub', { rate: taxRatePct })} />
+              <MixTotalRow
+                label={t('calc.mix.totalCost')}
+                value={fmt(totalCostUsd)}
+              />
+            </div>
+          </div>
+
+          <div style={{
+            marginTop: 12, padding: '8px 2px 0',
+            fontFamily: SB.mono, fontSize: 9.5, color: SB.inkMute,
+            lineHeight: 1.5, letterSpacing: '0.02em',
+          }}>
+            {t('calc.mix.footnote', { lender: lender.name })}
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
+// Vertical sell/borrow slider. The track doubles as a stacked bar:
+// the ink region above the thumb is the borrow share, the orange
+// region below it is the sell share. Drag the thumb up to sell more.
+// A custom role="slider" element — pointer drag for mouse/touch,
+// arrow / page / home / end keys for keyboard.
+function MixSlider({ sellPct, setSellPct, fmt, needUsd }) {
+  const t = useT();
+  const trackRef = useRef(null);
+  const TRACK_H = 264;
+
+  const setFromClientY = useCallback((clientY) => {
+    const el = trackRef.current;
+    if (!el) return;
+    const r = el.getBoundingClientRect();
+    if (r.height <= 0) return;
+    const ratioFromTop = Math.min(1, Math.max(0, (clientY - r.top) / r.height));
+    setSellPct(Math.round((1 - ratioFromTop) * 100));
+  }, [setSellPct]);
+
+  const onPointerDown = useCallback((e) => {
+    e.currentTarget.focus();
+    // Capture is best-effort — keep dragging working even if the
+    // browser rejects it (e.g. the pointer is already released).
+    try { e.currentTarget.setPointerCapture(e.pointerId); } catch { /* noop */ }
+    setFromClientY(e.clientY);
+  }, [setFromClientY]);
+
+  const onPointerMove = useCallback((e) => {
+    if (e.buttons === 0) return;
+    setFromClientY(e.clientY);
+  }, [setFromClientY]);
+
+  const onKeyDown = useCallback((e) => {
+    let delta = 0;
+    let absolute = null;
+    switch (e.key) {
+      case 'ArrowUp': case 'ArrowRight':   delta = 1;       break;
+      case 'ArrowDown': case 'ArrowLeft':  delta = -1;      break;
+      case 'PageUp':                       delta = 10;      break;
+      case 'PageDown':                     delta = -10;     break;
+      case 'Home':                         absolute = 0;    break;
+      case 'End':                          absolute = 100;  break;
+      default: return;
+    }
+    e.preventDefault();
+    setSellPct((prev) => {
+      const next = absolute != null ? absolute : prev + delta;
+      return Math.min(100, Math.max(0, next));
+    });
+  }, [setSellPct]);
+
+  const sell = Math.min(100, Math.max(0, sellPct));
+  const borrow = 100 - sell;
+
+  return (
+    <div style={{
+      width: 84, flexShrink: 0,
+      display: 'flex', flexDirection: 'column', alignItems: 'center',
+    }}>
+      <div style={mixEndpointStyle}>{t('calc.mix.slider.sellEnd')}</div>
+
+      <div
+        ref={trackRef}
+        className="mix-slider"
+        role="slider"
+        tabIndex={0}
+        aria-orientation="vertical"
+        aria-label={t('calc.mix.slider.ariaLabel')}
+        aria-valuemin={0}
+        aria-valuemax={100}
+        aria-valuenow={sell}
+        aria-valuetext={t('calc.mix.slider.ariaValueText', { sell, borrow })}
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onKeyDown={onKeyDown}
+        style={{
+          position: 'relative',
+          width: 46, height: TRACK_H,
+          margin: '10px 0',
+          border: `1.5px solid ${SB.ink}`,
+          background: SB.cream,
+          cursor: 'pointer',
+          touchAction: 'none',
+          userSelect: 'none',
+        }}
+      >
+        {/* borrow region — top, shrinks as you sell more */}
+        <div style={{
+          position: 'absolute', left: 0, right: 0, top: 0,
+          height: borrow + '%',
+          background: SB.inkFill,
+          transition: 'height 0.05s linear',
+          display: 'flex', flexDirection: 'column',
+          alignItems: 'center', justifyContent: 'center', gap: 1,
+          overflow: 'hidden',
+        }}>
+          {borrow >= 30 && (
+            <span style={mixRegionTagStyle(SB.cream)}>
+              {t('calc.mix.slider.borrowRegion')}
+            </span>
+          )}
+          {borrow >= 14 && (
+            <span style={mixRegionPctStyle(SB.cream)}>{borrow}%</span>
+          )}
+        </div>
+
+        {/* sell region — bottom, grows up as you sell more */}
+        <div style={{
+          position: 'absolute', left: 0, right: 0, bottom: 0,
+          height: sell + '%',
+          background: SB.orangeWash,
+          transition: 'height 0.05s linear',
+          display: 'flex', flexDirection: 'column',
+          alignItems: 'center', justifyContent: 'center', gap: 1,
+          overflow: 'hidden',
+        }}>
+          {sell >= 30 && (
+            <span style={mixRegionTagStyle(SB.orange)}>
+              {t('calc.mix.slider.sellRegion')}
+            </span>
+          )}
+          {sell >= 14 && (
+            <span style={mixRegionPctStyle(SB.orange)}>{sell}%</span>
+          )}
+        </div>
+
+        {/* thumb — rides the boundary between the two regions */}
+        <div style={{
+          position: 'absolute', left: '50%', bottom: sell + '%',
+          transform: 'translate(-50%, 50%)',
+          width: 58, height: 16,
+          background: SB.cream,
+          border: `2px solid ${SB.orange}`,
+          borderRadius: 8,
+          boxShadow: `0 0 0 2px ${SB.cream}, 0 1px 4px rgba(0,0,0,0.2)`,
+          transition: 'bottom 0.05s linear',
+          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 3,
+          pointerEvents: 'none',
+        }}>
+          {[0, 1, 2].map((i) => (
+            <span key={i} style={{
+              width: 2, height: 6,
+              background: SB.orangeSoft, borderRadius: 1,
+            }} />
+          ))}
+        </div>
+      </div>
+
+      <div style={mixEndpointStyle}>{t('calc.mix.slider.borrowEnd')}</div>
+
+      <div style={{ marginTop: 9, textAlign: 'center' }}>
+        <div style={{
+          fontFamily: SB.mono, fontSize: 8, fontWeight: 700,
+          letterSpacing: '0.18em', color: SB.inkMute,
+        }}>{t('calc.mix.needLabel')}</div>
+        <div style={{
+          fontFamily: SB.mono, fontSize: 11, fontWeight: 700,
+          color: SB.ink, marginTop: 2,
+        }}>{fmt(needUsd)}</div>
+      </div>
+    </div>
+  );
+}
+
+// Block heading inside the mix panel — orange mono-caps label with a
+// dotted leader running to the right edge. `first` drops the top margin
+// so the opening block aligns with the slider.
+function MixBlockHead({ label, first }) {
+  return (
+    <div style={{
+      display: 'flex', alignItems: 'center', gap: 8,
+      marginTop: first ? 0 : 16, marginBottom: 6,
+    }}>
+      <span style={{
+        fontFamily: SB.mono, fontSize: 9, fontWeight: 700,
+        letterSpacing: '0.2em', color: SB.orange,
+      }}>{label}</span>
+      <div style={{ flex: 1, borderTop: `1px dotted ${SB.inkLine}` }} />
+    </div>
+  );
+}
+
+// A block's summary line — same Row, marked with the orange accent
+// and a thin rule above so the eye lands on the total.
+function MixTotalRow({ label, value, sub }) {
+  return (
+    <div style={{ borderTop: `1px solid ${SB.inkLine}`, marginTop: 3 }}>
+      <Row
+        label={label}
+        value={value}
+        sub={sub}
+        labelStyle={{ color: SB.orange, fontWeight: 700 }}
+        valueStyle={{ color: SB.orange, fontWeight: 700 }}
+      />
+    </div>
+  );
+}
+
+const mixToggleStyle = {
+  width: '100%',
+  background: 'transparent',
+  border: `1px dashed ${SB.inkLine}`,
+  padding: '10px 14px',
+  textAlign: 'left',
+  cursor: 'pointer',
+  fontFamily: SB.mono,
+  fontSize: 10.5, fontWeight: 700,
+  letterSpacing: '0.14em',
+  color: SB.inkSoft,
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  gap: 10,
+};
+
+const mixEndpointStyle = {
+  fontFamily: SB.mono, fontSize: 8, fontWeight: 700,
+  letterSpacing: '0.1em', color: SB.inkMute,
+  whiteSpace: 'nowrap',
+};
+
+const mixFrameStyle = {
+  fontFamily: SB.mono, fontSize: 9, color: SB.inkMute,
+  letterSpacing: '0.02em', lineHeight: 1.5,
+  marginBottom: 4,
+};
+
+function mixRegionTagStyle(color) {
+  return {
+    fontFamily: SB.mono, fontSize: 6.5, fontWeight: 700,
+    letterSpacing: '0.16em', color,
+  };
+}
+
+function mixRegionPctStyle(color) {
+  return {
+    fontFamily: SB.serif, fontSize: 15, fontWeight: 600,
+    color, lineHeight: 1, letterSpacing: '-0.01em',
+    fontVariantNumeric: 'tabular-nums',
+  };
 }
 
 // ============================================================
@@ -1707,6 +2115,16 @@ function DesktopCalculatorLayout(props) {
         <span>{t('common.leave.line1')}</span>
         <span>{t('common.leave.line2')}</span>
       </div>
+
+      <SellBorrowMixSection
+        lender={activeLender}
+        loanUsd={loanUsd}
+        collateralBtc={collateralBtc}
+        collateralSats={collateralSats}
+        btcSpotUsd={btcSpotUsd}
+        currency={currency}
+        fmt={fmt}
+      />
 
       <MaturitySection
         lender={activeLender}
