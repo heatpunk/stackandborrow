@@ -39,6 +39,7 @@ export default {
   'common.glossary.label': 'GLOSSARY',
   'common.glossary.link': '↗ FULL GLOSSARY',
   'common.glossary.iconLabel': 'What is {term}?',
+  'common.glossary.infoLabel': 'More information',
 
   'common.theme.dark': '★ DARK · NIGHT MODE · TAP TO SWITCH ',
   'common.theme.light': '★ LIGHT · DAY MODE · TAP TO SWITCH ',
@@ -319,8 +320,8 @@ export default {
   'calc.section.sellBorrowMixSub': 'borrow it, sell for it, or both',
   'calc.mix.intro': 'Split {need} between a loan and a sale. Every position has its own mix of fiat cost, tax, and counterparty risk — no position wins on all three.',
   'calc.mix.needLabel': 'NEED',
-  'calc.mix.slider.sellEnd': '↑ SELL IT ALL',
-  'calc.mix.slider.borrowEnd': '↓ BORROW IT ALL',
+  'calc.mix.slider.sellEnd': 'SELL ALL',
+  'calc.mix.slider.borrowEnd': 'BORROW ALL',
   'calc.mix.slider.sellRegion': 'SELL',
   'calc.mix.slider.borrowRegion': 'BORROW',
   'calc.mix.slider.ariaLabel': 'Share of the need covered by selling bitcoin',

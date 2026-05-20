@@ -527,7 +527,9 @@ export function InfoIcon({ term, def, glossaryHref = '#about' }) {
         onClick={handleClick}
         onFocus={isDesktop ? cancelClose : undefined}
         onBlur={isDesktop ? scheduleClose : undefined}
-        aria-label={t('common.glossary.iconLabel', { term: resolved.title })}
+        aria-label={resolved.title
+          ? t('common.glossary.iconLabel', { term: resolved.title })
+          : t('common.glossary.infoLabel')}
         aria-expanded={open}
         style={{
           width: 11, height: 11,
@@ -560,26 +562,30 @@ export function InfoIcon({ term, def, glossaryHref = '#about' }) {
           textAlign: 'left',
           verticalAlign: 'baseline',
         }}>
-          <div style={{
-            fontFamily: SB.serif, fontSize: 14, fontWeight: 600,
-            color: SB.ink, letterSpacing: '-0.005em',
-            marginBottom: 6,
-          }}>{resolved.title}</div>
+          {resolved.title && (
+            <div style={{
+              fontFamily: SB.serif, fontSize: 14, fontWeight: 600,
+              color: SB.ink, letterSpacing: '-0.005em',
+              marginBottom: 6,
+            }}>{resolved.title}</div>
+          )}
           <div style={{
             fontFamily: SB.mono, fontSize: 10.5, color: SB.inkSoft,
             lineHeight: 1.55, letterSpacing: '0.01em',
           }}>{resolved.body}</div>
-          <a
-            href={glossaryHref}
-            onClick={() => setOpen(false)}
-            style={{
-              display: 'inline-block',
-              marginTop: 10,
-              fontFamily: SB.mono, fontSize: 9, fontWeight: 700,
-              letterSpacing: '0.14em', color: SB.orange,
-              textDecoration: 'none',
-            }}
-          >{t('common.glossary.link')}</a>
+          {term && (
+            <a
+              href={glossaryHref}
+              onClick={() => setOpen(false)}
+              style={{
+                display: 'inline-block',
+                marginTop: 10,
+                fontFamily: SB.mono, fontSize: 9, fontWeight: 700,
+                letterSpacing: '0.14em', color: SB.orange,
+                textDecoration: 'none',
+              }}
+            >{t('common.glossary.link')}</a>
+          )}
         </div>
       )}
     </span>

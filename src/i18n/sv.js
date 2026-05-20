@@ -36,6 +36,7 @@ export default {
   'common.glossary.label': 'ORDLISTA',
   'common.glossary.link': '↗ HELA ORDLISTAN',
   'common.glossary.iconLabel': 'Vad är {term}?',
+  'common.glossary.infoLabel': 'Mer information',
 
   'common.theme.dark': '★ MÖRKT · NATTLÄGE · TRYCK FÖR ATT BYTA ',
   'common.theme.light': '★ LJUST · DAGLÄGE · TRYCK FÖR ATT BYTA ',
@@ -316,8 +317,8 @@ export default {
   'calc.section.sellBorrowMixSub': 'låna till det, sälj för det, eller både och',
   'calc.mix.intro': 'Fördela {need} mellan ett lån och en försäljning. Varje läge har sin egen blandning av fiatkostnad, skatt och motpartsrisk — inget läge vinner på alla tre.',
   'calc.mix.needLabel': 'BEHOV',
-  'calc.mix.slider.sellEnd': '↑ SÄLJ ALLT',
-  'calc.mix.slider.borrowEnd': '↓ LÅNA ALLT',
+  'calc.mix.slider.sellEnd': 'SÄLJ ALLT',
+  'calc.mix.slider.borrowEnd': 'LÅNA ALLT',
   'calc.mix.slider.sellRegion': 'SÄLJ',
   'calc.mix.slider.borrowRegion': 'LÅNA',
   'calc.mix.slider.ariaLabel': 'Andel av behovet som täcks genom att sälja bitcoin',

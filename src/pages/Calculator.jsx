@@ -1422,7 +1422,7 @@ function SellBorrowMixSection({
             {t('calc.mix.intro', { need: fmt(loanUsd) })}
           </div>
 
-          <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
+          <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
             <MixSlider
               sellPct={sellPct}
               setSellPct={setSellPct}
@@ -1431,45 +1431,47 @@ function SellBorrowMixSection({
             />
 
             <div style={{ flex: 1, minWidth: 0 }}>
-              {/* Block 1 — SPLIT */}
-              <MixBlockHead label={t('calc.mix.block.split')} first />
-              <Row label={t('calc.mix.loanAmount')} value={fmt(loanPart)} />
-              <Row
-                label={t('calc.mix.saleAmount')}
-                value={fmt(grossSaleUsd)}
-                sub={t('calc.mix.saleAmountSub', {
-                  net: fmt(netFromSale), rate: taxRatePct,
-                })}
+              {/* Block 1 — FIAT COSTS */}
+              <MixBlockHead label={t('calc.mix.block.fiat')} first />
+              <Row label={t('calc.mix.interest')} value={fmt(interestUsd)}
+                   info={{ def: { body: t('calc.mix.interestSub', {
+                     apr: aprPct.toFixed(1), months: TERM_MONTHS,
+                   }) } }} />
+              <Row label={t('calc.mix.tax')} value={fmt(taxUsd)}
+                   info={{ def: { body: t('calc.mix.taxSub', { rate: taxRatePct }) } }} />
+              <MixTotalRow
+                label={t('calc.mix.totalCost')}
+                value={fmt(totalCostUsd)}
               />
 
-              {/* Block 2 — SATS OUTCOME */}
+              {/* Block 2 — SPLIT (boxed) */}
+              <div style={mixSplitBoxStyle}>
+                <MixBlockHead label={t('calc.mix.block.split')} first />
+                <Row label={t('calc.mix.loanAmount')} value={fmt(loanPart)} />
+                <Row
+                  label={t('calc.mix.saleAmount')}
+                  value={fmt(grossSaleUsd)}
+                  info={{ def: { body: t('calc.mix.saleAmountSub', {
+                    net: fmt(netFromSale), rate: taxRatePct,
+                  }) } }}
+                />
+              </div>
+
+              {/* Block 3 — SATS OUTCOME */}
               <MixBlockHead label={t('calc.mix.block.sats')} />
               <div style={mixFrameStyle}>
                 {t('calc.mix.satsFrame', { sats: fmtNum(collateralSats) })}
               </div>
               <Row label={t('calc.mix.satsSold')} value={fmtNum(soldSats)}
-                   sub={t('calc.mix.satsSoldSub')} />
+                   info={{ def: { body: t('calc.mix.satsSoldSub') } }} />
               <Row label={t('calc.mix.satsPledged')} value={fmtNum(pledgedSats)}
-                   sub={t('calc.mix.satsPledgedSub')} />
+                   info={{ def: { body: t('calc.mix.satsPledgedSub') } }} />
               <Row label={t('calc.mix.satsFree')} value={fmtNum(freeSats)}
-                   sub={t('calc.mix.satsFreeSub')} />
+                   info={{ def: { body: t('calc.mix.satsFreeSub') } }} />
               <MixTotalRow
                 label={t('calc.mix.satsKept')}
                 value={fmtNum(keptSats)}
-                sub={t('calc.mix.satsKeptSub', { free: satsValue(freeSats) })}
-              />
-
-              {/* Block 3 — FIAT COSTS */}
-              <MixBlockHead label={t('calc.mix.block.fiat')} />
-              <Row label={t('calc.mix.interest')} value={fmt(interestUsd)}
-                   sub={t('calc.mix.interestSub', {
-                     apr: aprPct.toFixed(1), months: TERM_MONTHS,
-                   })} />
-              <Row label={t('calc.mix.tax')} value={fmt(taxUsd)}
-                   sub={t('calc.mix.taxSub', { rate: taxRatePct })} />
-              <MixTotalRow
-                label={t('calc.mix.totalCost')}
-                value={fmt(totalCostUsd)}
+                info={{ def: { body: t('calc.mix.satsKeptSub', { free: satsValue(freeSats) }) } }}
               />
             </div>
           </div>
@@ -1671,13 +1673,13 @@ function MixBlockHead({ label, first }) {
 
 // A block's summary line — same Row, marked with the orange accent
 // and a thin rule above so the eye lands on the total.
-function MixTotalRow({ label, value, sub }) {
+function MixTotalRow({ label, value, info }) {
   return (
     <div style={{ borderTop: `1px solid ${SB.inkLine}`, marginTop: 3 }}>
       <Row
         label={label}
         value={value}
-        sub={sub}
+        info={info}
         labelStyle={{ color: SB.orange, fontWeight: 700 }}
         valueStyle={{ color: SB.orange, fontWeight: 700 }}
       />
@@ -1712,6 +1714,15 @@ const mixFrameStyle = {
   fontFamily: SB.mono, fontSize: 9, color: SB.inkMute,
   letterSpacing: '0.02em', lineHeight: 1.5,
   marginBottom: 4,
+};
+
+// The SPLIT block sits boxed between FIAT COSTS and SATS OUTCOME —
+// a framed inset so the loan/sale split reads as the panel's anchor.
+const mixSplitBoxStyle = {
+  marginTop: 16,
+  border: `1px dashed ${SB.inkLine}`,
+  background: SB.creamWarm,
+  padding: '6px 12px 8px',
 };
 
 function mixRegionTagStyle(color) {
