@@ -803,11 +803,11 @@ export function LivePriceBadge({ btcUsd, loading, error, onRefresh }) {
   const dotColor = loading ? SB.orange : error ? SB.rust : SB.forest;
   return (
     <div style={{
-      display: 'flex', flexDirection: 'column', alignItems: 'flex-end',
+      display: 'flex', flexDirection: 'row', alignItems: 'center',
       fontFamily: SB.mono,
       fontSize: 9, letterSpacing: '0.12em',
       color: SB.inkMute,
-      gap: 4,
+      gap: 6,
     }}>
       <div style={{
         display: 'flex', alignItems: 'center', gap: 5,
