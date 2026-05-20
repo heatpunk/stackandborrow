@@ -258,9 +258,9 @@ export default {
   'calc.maturity.rollover.newContract.rightSub': 'SI ES APROBADO',
   'calc.maturity.liquidate.label': 'DEJAR QUE EL PRESTAMISTA LIQUIDE',
   'calc.maturity.liquidate.primary': '{btc} BTC vendidos',
-  'calc.maturity.liquidate.subBefore': '@ ${spot} para cubrir {owed} · sujeto a impuestos en la mayoría de jurisdicciones ',
+  'calc.maturity.liquidate.subBefore': '@ ${price} (proyectado) para cubrir {owed} · sujeto a impuestos en la mayoría de jurisdicciones ',
   'calc.maturity.liquidate.rightSub': 'STACK REDUCIDO',
-  'calc.maturity.fineprint': 'Los números asumen BTC al precio spot de hoy. La renovación está sujeta a la política del prestamista al vencimiento y puede llevar una nueva comisión de apertura. Algunos prestamistas también cobran una tarifa de liquidación — revisa tus términos.',
+  'calc.maturity.fineprint': 'Las cifras de liquidación usan el precio de BTC proyectado al vencimiento según tu escenario del § III, no el precio spot de hoy. La renovación está sujeta a la política del prestamista al vencimiento y puede llevar una nueva comisión de apertura. Algunos prestamistas también cobran una tarifa de liquidación — revisa tus términos.',
 
   'calc.rollPill.revolving': '↻ REVOLVENTE',
   'calc.rollPill.refinance': '↻ REFINANCIAR',

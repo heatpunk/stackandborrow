@@ -608,6 +608,7 @@ export default function CalculatorPage({
         collateralBtc={collateralBtc}
         collateralSats={collateralSats}
         btcSpotUsd={btcSpotUsd}
+        activeCagr={activeCagr}
         fmt={fmt}
       />
 
@@ -801,14 +802,17 @@ function rolloverPillSpec(ease, t) {
 // ============================================================
 function MaturitySection({
   lender, principalUsd, interestUsd, totalOwedUsd,
-  collateralBtc, collateralSats, btcSpotUsd, fmt,
+  collateralBtc, collateralSats, btcSpotUsd, activeCagr, fmt,
 }) {
   const t = useT();
   const [open, setOpen] = useState(false);
   if (!lender) return null;
 
-  const btcToCoverDebt = totalOwedUsd / btcSpotUsd;
-  const satsToCoverDebt = Math.round(btcToCoverDebt * SATS_PER_BTC);
+  // § VI · III "let lender liquidate" settles at maturity, so the lender
+  // sells at the BTC price projected TERM_MONTHS out under the § III
+  // scenario — not today's spot.
+  const btcPriceAtMaturity = projectBtcPrice(btcSpotUsd, activeCagr, TERM_MONTHS / 12);
+  const btcToCoverDebt = totalOwedUsd / btcPriceAtMaturity;
   const btcKeptAfterLiq = Math.max(0, collateralBtc - btcToCoverDebt);
 
   const ease = lender.rolloverEase;
@@ -902,7 +906,7 @@ function MaturitySection({
             primary={t('calc.maturity.liquidate.primary', { btc: btcToCoverDebt.toFixed(5) })}
             primarySub={
               <>
-                {t('calc.maturity.liquidate.subBefore', { spot: fmtNum(Math.round(btcSpotUsd)), owed: fmt(totalOwedUsd) })}
+                {t('calc.maturity.liquidate.subBefore', { price: fmtNum(Math.round(btcPriceAtMaturity)), owed: fmt(totalOwedUsd) })}
                 <InfoIcon term="taxEvent" />
               </>
             }
@@ -1712,6 +1716,7 @@ function DesktopCalculatorLayout(props) {
         collateralBtc={collateralBtc}
         collateralSats={collateralSats}
         btcSpotUsd={btcSpotUsd}
+        activeCagr={activeCagr}
         fmt={fmt}
       />
 
