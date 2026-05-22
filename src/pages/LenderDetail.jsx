@@ -275,18 +275,14 @@ function QuoteBlock({ lender, currency, live, desktop = false }) {
       background: SB.creamWarm,
     }}>
       <Row
-        label="Base APR"
-        value={`${lender.apr.toFixed(2)}%`}
-        sub={lender.isTiered ? 'first tier · scales with loan size' : 'fixed rate'}
-      />
-      <Row
         label="Origination fee"
         value={lender.originationFeePctEffective > 0 ? `${lender.originationFeePctEffective}%` : 'none'}
         sub={lender.originationFeePctEffective > 0 ? 'one-time, paid up front' : ''}
       />
       <Row
-        label="Effective APR (rate + fee)"
+        label="APR"
         value={`${lender.effectiveApr.toFixed(2)}%`}
+        sub={lender.isTiered ? 'first tier · scales with loan size' : 'fixed rate'}
       />
       {lender.membershipFeeUsd > 0 && (
         <Row

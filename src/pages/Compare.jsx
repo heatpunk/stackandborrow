@@ -413,19 +413,13 @@ function CompareTable({ winner, runner, currency, live, desktop = false }) {
       <TH label={runner.name} />
 
       <TR
-        label="Interest rate (APR)"
-        a={`${winner.apr.toFixed(2)}%`}
-        b={`${runner.apr.toFixed(2)}%`}
-        aHighlight={winner.apr <= runner.apr}
-      />
-      <TR
         label="Origination fee"
         a={winner.originationFeePctEffective > 0 ? `${winner.originationFeePctEffective}%` : 'none'}
         b={runner.originationFeePctEffective > 0 ? `${runner.originationFeePctEffective}%` : 'none'}
         aHighlight={winner.originationFeePctEffective <= runner.originationFeePctEffective}
       />
       <TR
-        label="Effective APR"
+        label="APR"
         a={`${winner.effectiveApr.toFixed(2)}%`}
         b={`${runner.effectiveApr.toFixed(2)}%`}
         aHighlight={winner.effectiveApr <= runner.effectiveApr}

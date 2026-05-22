@@ -131,8 +131,11 @@ export default function LandingPage({ live, lenders = [], region, initialCurrenc
     [lenders, loanUsd, region]
   );
   const bestLender = ranked[0];
-  const aprPct = bestLender?.apr ?? 10;
-  const interestUsd = computeInterest(loanUsd, aprPct, TERM_MONTHS);
+  // aprPct is the all-in APR (rate + fee) shown to users; interest itself
+  // accrues on the bare rate, so the dollar figure uses nominalRatePct.
+  const nominalRatePct = bestLender?.apr ?? 10;
+  const aprPct = bestLender?.effectiveApr ?? nominalRatePct;
+  const interestUsd = computeInterest(loanUsd, nominalRatePct, TERM_MONTHS);
   const origFeeUsd = bestLender?.origFeeUsd ?? 0;
 
   // ===== TAX-AWARE SELL PATH =====
