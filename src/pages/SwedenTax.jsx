@@ -468,7 +468,7 @@ function SectionTools({ desktop = false }) {
         Svenskt verktyg byggt specifikt för krypto-deklaration enligt Skatteverket. Importerar från börser och plånböcker, räknar omkostnadsbelopp enligt genomsnittsmetoden, och genererar K4-filen du laddar upp direkt. Värt det om du har transaktioner från fler än ett konto eller flera år bakåt.
       </p>
       <a
-        href="https://divly.com/?ref=otq1ztc"
+        href="https://divly.com/?ref=stackandborrow"
         target="_blank"
         rel="noopener noreferrer sponsored"
         style={{
