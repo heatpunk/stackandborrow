@@ -64,6 +64,9 @@ function MobileLayout({ live, lastUpdated }) {
       <DashedRule label="DEKLARATION" />
       <SectionDeclaration />
 
+      <DashedRule label="HJÄLPMEDEL" />
+      <SectionTools />
+
       <DashedRule label="VANLIGA MISSFÖRSTÅND" />
       <SectionMisconceptions />
 
@@ -132,6 +135,9 @@ function DesktopLayout({ live, lastUpdated }) {
 
           <DashedRule label="DEKLARATION" />
           <SectionDeclaration desktop />
+
+          <DashedRule label="HJÄLPMEDEL" />
+          <SectionTools desktop />
 
           <DashedRule label="VANLIGA MISSFÖRSTÅND" />
           <SectionMisconceptions desktop />
@@ -428,6 +434,65 @@ function SectionDeclaration({ desktop = false }) {
           <Bold>Spara underlag.</Bold> Avtalet med långivaren, transaktionshistorik, och bevis på vad lånets pengar användes till — Skatteverket frågar inte ofta, men kan göra det.
         </li>
       </ol>
+    </div>
+  );
+}
+
+// SectionTools — single curated recommendation for users who need help
+// with the actual K4 filing. Affiliate disclosed openly so the link
+// is transparent. `rel="sponsored"` tells Google this is a paid link
+// (per Google's link-attribute guidelines).
+function SectionTools({ desktop = false }) {
+  return (
+    <div style={{
+      padding: '14px 14px 12px',
+      border: `1px dashed ${SB.inkLine}`,
+    }}>
+      <div style={{
+        fontFamily: SB.mono, fontSize: 9, letterSpacing: '0.22em',
+        color: SB.orange, fontWeight: 700, marginBottom: 8,
+      }}>
+        ★ DEKLARATIONSVERKTYG
+      </div>
+      <div style={{
+        fontFamily: SB.serif, fontSize: desktop ? 18 : 16, fontWeight: 600,
+        color: SB.ink, letterSpacing: '-0.005em', marginBottom: 6,
+      }}>
+        Divly
+      </div>
+      <p style={{
+        margin: '0 0 12px',
+        fontFamily: SB.sans, fontSize: desktop ? 13 : 12.5,
+        lineHeight: 1.6, color: SB.inkSoft, textWrap: 'pretty',
+      }}>
+        Svenskt verktyg byggt specifikt för krypto-deklaration enligt Skatteverket. Importerar från börser och plånböcker, räknar omkostnadsbelopp enligt genomsnittsmetoden, och genererar K4-filen du laddar upp direkt. Värt det om du har transaktioner från fler än ett konto eller flera år bakåt.
+      </p>
+      <a
+        href="https://divly.com/?ref=otq1ztc"
+        target="_blank"
+        rel="noopener noreferrer sponsored"
+        style={{
+          display: 'inline-block',
+          padding: '9px 14px',
+          border: `1.5px solid ${SB.ink}`,
+          background: 'transparent',
+          fontFamily: SB.mono,
+          fontSize: 11, fontWeight: 700,
+          letterSpacing: '0.18em',
+          color: SB.ink,
+          textDecoration: 'none',
+          textTransform: 'uppercase',
+        }}
+      >
+        Pröva Divly →
+      </a>
+      <div style={{
+        marginTop: 10,
+        fontFamily: SB.mono, fontSize: 9, letterSpacing: '0.04em',
+        color: SB.inkMute, lineHeight: 1.55,
+      }}>
+        ※ Affiliate-länk — Divly betalar oss en hänvisningsavgift om du registrerar dig. Det finansierar hosting och påverkar inte rekommendationen.
+      </div>
     </div>
   );
 }
