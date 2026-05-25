@@ -86,8 +86,10 @@ export function rankLenders(allLenders, { loanUsd, region, ltvPct, termMonths, e
   if (eligibleOnly) {
     list = allLenders
       .filter((l) => {
+        // Each lender's `country` field must list explicit regions — there is
+        // no `"global"` shortcut. A genuinely worldwide lender is expected
+        // to enumerate every supported region (us, ca, eu, uk, ch, au, jp).
         if (!l.country) return true;
-        if (l.country.includes('global')) return true;
         if (region === 'us' && l.country.includes('us')) return true;
         if (region === 'ca' && l.country.includes('ca')) return true;
         if (region === 'eu' && l.country.includes('eu')) return true;
@@ -141,7 +143,16 @@ export function rankLenders(allLenders, { loanUsd, region, ltvPct, termMonths, e
       };
     })
     .sort((a, b) => {
-      // Hard tier: BTC-only lenders always rank above multi-collateral.
+      // Hard tier 1: lenders that pay out in real fiat rank above those that
+      // only pay out in stablecoins (USDC/USDT/etc). Stablecoins are crypto
+      // tokens, not bank-deliverable cash — for most borrowers needing money
+      // in their bank account they require an extra off-ramp step, so we
+      // demote them in the default ranking. Anyone who genuinely wants
+      // stablecoin output can still see them lower in the list.
+      const aFiat = a.payoutType !== 'stablecoin';
+      const bFiat = b.payoutType !== 'stablecoin';
+      if (aFiat !== bFiat) return aFiat ? -1 : 1;
+      // Hard tier 2: BTC-only lenders always rank above multi-collateral.
       const aBtc = a.btcOnly === true;
       const bBtc = b.btcOnly === true;
       if (aBtc !== bBtc) return aBtc ? -1 : 1;

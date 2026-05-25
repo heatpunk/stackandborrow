@@ -1,11 +1,12 @@
 {
-  "lastUpdated": "2026-05-15",
+  "lastUpdated": "2026-05-25",
   "lenders": [
     {
       "id": "ledn",
       "name": "Ledn",
-      "country": ["us", "ca", "global"],
+      "country": ["us", "ca", "eu", "uk", "ch", "au", "jp"],
       "excluded": [],
+      "payoutType": "fiat",
       "minLoanUsd": 1000,
       "maxLtv": 50,
       "rateTiers": [
@@ -24,15 +25,16 @@
       "rollover": "Yes, subject to approval",
       "rolloverEase": "approval",
       "repayment": "Balloon at maturity. No monthly payments. Repay anytime in USD, USDC, or local currency. Interest accrues daily but only owed when loan closes. No early-repayment penalty.",
-      "notes": "Longest-running BTC lender. $10B+ funded with no client losses. Tiered rates kick in automatically at $250K, $1M, and $2M.",
+      "notes": "Longest-running BTC lender. $10B+ funded with no client losses. Tiered rates kick in automatically at $250K, $1M, and $2M. US states excluded: CA, CT, HI, LA, NV, ND, SD, TN, VT, WA, DC. Canadian provinces excluded: NB, NS, SK, QC.",
       "badge": "Established",
       "referralUrl": "https://ledn.io"
     },
     {
       "id": "strike",
       "name": "Strike",
-      "country": ["us", "eu", "ca", "uk", "au", "ch", "global"],
+      "country": ["us", "eu", "au"],
       "excluded": [],
+      "payoutType": "fiat",
       "minLoanUsd": 10000,
       "maxLtv": 50,
       "rateTiers": [
@@ -48,19 +50,20 @@
       "custodyType": "custodial",
       "rehypothecation": "no",
       "btcOnly": true,
-      "term": "12 months. Available globally as of July 2025.",
+      "term": "12 months. Available in 10 countries per Strike's published list; in the EU and AU it is offered via Zap Solutions Cayman Limited on a reverse-enquiry basis. AU is business-only.",
       "rollover": "Yes — multiple loans (up to 3) and refinance supported",
       "rolloverEase": "approval",
       "repayment": "Two options: (1) Payment at Maturity — principal + interest in single balloon payment, or (2) Monthly Payments — interest paid monthly, principal at maturity. No origination fee, no early repayment fee, no liquidation fee. Daily interest accrual. Loans payable in USD or USDC. EUR/GBP supported in many countries.",
-      "notes": "Aggressive tier discounts at $250K, $1M, and $5M. US rates start 1% lower than global. Lending Proof-of-Reserves launched 2026. Volatility-proof loan structure (no forced liquidation on price drops) being rolled out.",
+      "notes": "Aggressive tier discounts at $250K, $1M, and $5M. US rates start 1% lower than other regions. Per Strike's own FAQ the consumer product is currently live in 22 US states + DC + PR plus 8 LatAm/Asia countries; EU and AU access is via a Cayman-based affiliate and not consumer-regulated credit in your jurisdiction.",
       "badge": "Best rates at scale",
-      "referralUrl": "https://strike.me"
+      "referralUrl": "https://invite.strike.me/JTV9X9"
     },
     {
       "id": "arch",
       "name": "Arch Lending",
       "country": ["us"],
       "excluded": ["CA","DE","HI","MS","MT","NV","ND","RI","SC","TX","VT"],
+      "payoutType": "fiat",
       "minLoanUsd": 5000,
       "maxLtv": 60,
       "rateTiers": [
@@ -89,6 +92,7 @@
       "name": "Figure",
       "country": ["us"],
       "excluded": [],
+      "payoutType": "fiat",
       "minLoanUsd": 10000,
       "maxLtv": 75,
       "rateTiers": [
@@ -106,13 +110,14 @@
       "repayment": "Interest-only payments during loan, principal due at maturity. Repayment in USD via bank account. No prepayment penalty. Liquidation buffer between 75% and 80% LTV.",
       "notes": "Rate quoted at 50% LTV (8.91% / 9.999% APR with 1% origination fee). Figure prices by LTV, not by loan size — rates rise to ~11.50% at 75% LTV. Up to 75% LTV is the most aggressive available but carries high liquidation risk. Rehypothecates collateral, which subsidizes the rate but increases counterparty risk.",
       "badge": "Highest LTV",
-      "referralUrl": "https://democratizedprime.pxf.io/aNe7dW"
+      "referralUrl": "https://democratizedprime.pxf.io/stackandborrow"
     },
     {
       "id": "milo",
       "name": "Milo",
       "country": ["us"],
       "excluded": [],
+      "payoutType": "fiat",
       "minLoanUsd": 5000,
       "maxLtv": 50,
       "rateTiers": [
@@ -137,6 +142,7 @@
       "name": "Unchained",
       "country": ["us"],
       "excluded": ["ID","MA","NM","ND","SD","VT"],
+      "payoutType": "fiat",
       "minLoanUsd": 150000,
       "maxLtv": 50,
       "rateTiers": [
@@ -160,8 +166,9 @@
     {
       "id": "firefish",
       "name": "Firefish",
-      "country": ["eu", "ch", "global"],
+      "country": ["us", "ca", "eu", "uk", "ch", "au", "jp"],
       "excluded": [],
+      "payoutType": "fiat",
       "minLoanUsd": 1000,
       "maxLtv": 50,
       "rateTiers": [
@@ -178,15 +185,16 @@
       "rollover": "New loan required at maturity",
       "rolloverEase": "new-contract",
       "repayment": "Interest paid monthly or at maturity (varies by individual loan terms negotiated with the lender on the marketplace). Principal returned as bitcoin to your wallet automatically when loan is repaid in fiat. Repayment accepted in EUR, CHF, CZK, PLN, or USDC.",
-      "notes": "Best European option. P2P marketplace means rates vary by individual deal — typical range 8–12%. Self-custody-aligned with multisig escrow. MiCA-registered.",
-      "badge": "EU non-custodial",
+      "notes": "Non-custodial P2P marketplace — rates vary by individual deal (typical range 8–12%). Self-custody-aligned with multisig escrow. MiCA-registered. Fiat loans (EUR/CZK/CHF/PLN) available in EU member states, UK, Switzerland and a handful of other EEA jurisdictions; USDC loans available in the rest of the world except their published ineligible-countries list. Borrowers who sign up via the stackandborrow.com referral link get 30% off the origination fee on their first loan (1.5% → 1.05%).",
+      "badge": "Non-custodial P2P",
       "referralUrl": "https://firefish.io/?ref=stackandborrow"
     },
     {
       "id": "debifi",
       "name": "Debifi",
-      "country": ["eu", "ch", "global"],
+      "country": ["us", "ca", "eu", "uk", "ch", "au", "jp"],
       "excluded": [],
+      "payoutType": "fiat",
       "minLoanUsd": 10000,
       "maxLtv": 70,
       "rateTiers": [
@@ -212,8 +220,9 @@
     {
       "id": "xapo",
       "name": "Xapo Bank",
-      "country": ["us", "eu", "ca", "ch", "global"],
+      "country": ["ca", "eu", "ch"],
       "excluded": ["GB", "AU"],
+      "payoutType": "fiat",
       "minLoanUsd": 1000,
       "maxLtv": 40,
       "rateTiers": [
@@ -237,8 +246,9 @@
     {
       "id": "hodlhodl",
       "name": "Hodl Hodl",
-      "country": ["global"],
+      "country": ["ca", "eu", "uk", "ch", "au", "jp"],
       "excluded": [],
+      "payoutType": "stablecoin",
       "minLoanUsd": 50,
       "maxLtv": 80,
       "rateTiers": [
@@ -262,8 +272,9 @@
     {
       "id": "lygos",
       "name": "Lygos",
-      "country": ["global"],
+      "country": ["us", "ca", "eu", "uk", "ch", "au", "jp"],
       "excluded": [],
+      "payoutType": "stablecoin",
       "minLoanUsd": 25000,
       "maxLtv": 70,
       "rateTiers": [
@@ -287,8 +298,9 @@
     {
       "id": "surge",
       "name": "Surge",
-      "country": ["global"],
+      "country": ["us", "ca", "eu", "uk", "ch", "au", "jp"],
       "excluded": [],
+      "payoutType": "stablecoin",
       "minLoanUsd": 1000,
       "maxLtv": 50,
       "rateTiers": [
@@ -314,6 +326,7 @@
       "name": "Wirex",
       "country": ["eu", "uk"],
       "excluded": [],
+      "payoutType": "stablecoin",
       "minLoanUsd": 50,
       "maxLtv": 70,
       "rateTiers": [
@@ -336,8 +349,9 @@
     {
       "id": "nexo",
       "name": "Nexo",
-      "country": ["us", "eu", "ca", "global"],
+      "country": ["us", "eu", "uk", "ch", "au", "jp"],
       "excluded": [],
+      "payoutType": "fiat",
       "minLoanUsd": 50,
       "maxLtv": 50,
       "rateTiers": [
@@ -353,9 +367,9 @@
       "rollover": "Revolving credit line",
       "rolloverEase": "revolving",
       "repayment": "Crypto or stablecoin (USDT, USDC) repayment; partial or full repayment any time. Bank transfers available for fiat withdrawal. Interest accrued daily; charged only on amount actually borrowed.",
-      "notes": "Base-tier (no NEXO token) APR is 18.9% — drops to 10.9% at Gold and 2.9% at Platinum, which requires holding 10%+ of portfolio in NEXO tokens (itself a real cost). 50% LTV for BTC/ETH; varies by asset (up to 90% for USDC, down to 15% for NEXO). 150+ jurisdictions; US service rolling out via Bakkt partnership in 2026. Multi-collateral CeFi, fully custodial with rehypothecation.",
+      "notes": "Base-tier (no NEXO token) APR is 18.9% — drops to 10.9% at Gold and 2.9% at Platinum, which requires holding 10%+ of portfolio in NEXO tokens (itself a real cost). 50% LTV for BTC/ETH; varies by asset (up to 90% for USDC, down to 15% for NEXO). Per Nexo's own jurisdictions FAQ, accounts cannot be opened in: Canada, Bulgaria, New York (US), American Samoa, and a handful of sanctioned jurisdictions. Multi-collateral CeFi, fully custodial with rehypothecation.",
       "badge": "150+ countries",
-      "referralUrl": "https://nexo.sjv.io/Agjr3N"
+      "referralUrl": "https://nexo.sjv.io/stackandborrow"
     }
   ]
 }

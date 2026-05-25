@@ -79,7 +79,7 @@ function custodyShort(l, t) {
   return l.custodyType?.toUpperCase() || t('lenders.custody.custodial');
 }
 
-const FILTER_IDS = ['all', 'us', 'eu', 'btcOnly', 'noRehypo', 'multisig'];
+const FILTER_IDS = ['all', 'us', 'eu', 'fiat', 'btcOnly', 'noRehypo', 'multisig'];
 
 // Curated head-to-head pairs that get prime placement on /lenders.
 // All 91 pairs are reachable via /compare/{a}-vs-{b} and listed in the
@@ -173,10 +173,22 @@ export default function LendersPage({ lenders, lastUpdated, live, currency, regi
   const [loanInCurrency] = usePersistentState('desiredLoan', 50000);
   const loanUsd = toUsd(loanInCurrency, currency, live.meta, live.btcUsd);
 
+  // Region chip semantics MUST match math.js#rankLenders eligibility:
+  // a lender with country `["global"]` is usable from every region, so it
+  // belongs in both the US and EU chips. Without this, lenders like Surge
+  // appear in the calculator's EU ranking but get hidden by the EU chip
+  // on /lenders — the same answer, two different filters.
+  const matchesRegion = (l, region) =>
+    l.country?.includes(region) || l.country?.includes('global');
+
   const filtered = useMemo(() => {
     return lenders.filter((l) => {
-      if (filter === 'us') return l.country?.includes('us');
-      if (filter === 'eu') return l.country?.includes('eu');
+      if (filter === 'us') return matchesRegion(l, 'us');
+      if (filter === 'eu') return matchesRegion(l, 'eu');
+      // Fiat filter hides lenders that only pay out in stablecoins
+      // (USDC/USDT/etc) — useful when the borrower needs money in their
+      // bank account rather than on-chain.
+      if (filter === 'fiat') return l.payoutType !== 'stablecoin';
       if (filter === 'btcOnly') return l.btcOnly === true;
       if (filter === 'noRehypo') return l.rehypothecation === 'no' || l.rehypothecation === false;
       if (filter === 'multisig') return l.custodyType === 'multisig';
@@ -198,8 +210,9 @@ export default function LendersPage({ lenders, lastUpdated, live, currency, regi
   // Per-filter count for chip labels (compute over the full list).
   const counts = useMemo(() => ({
     all:      lenders.length,
-    us:       lenders.filter((l) => l.country?.includes('us')).length,
-    eu:       lenders.filter((l) => l.country?.includes('eu')).length,
+    us:       lenders.filter((l) => matchesRegion(l, 'us')).length,
+    eu:       lenders.filter((l) => matchesRegion(l, 'eu')).length,
+    fiat:     lenders.filter((l) => l.payoutType !== 'stablecoin').length,
     btcOnly:  lenders.filter((l) => l.btcOnly === true).length,
     noRehypo: lenders.filter((l) => l.rehypothecation === 'no' || l.rehypothecation === false).length,
     multisig: lenders.filter((l) => l.custodyType === 'multisig').length,
@@ -373,6 +386,9 @@ export default function LendersPage({ lenders, lastUpdated, live, currency, regi
 
               {/* Flags */}
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 10 }}>
+                {l.payoutType === 'stablecoin' && (
+                  <span style={flagStyle(SB.rust)}>{t('lenders.flag.stablecoin')}</span>
+                )}
                 {l.originationFeePctEffective > 0 && (
                   <span style={flagStyle(SB.orange)}>{t('lenders.flag.origFee', { pct: l.originationFeePctEffective })}</span>
                 )}
@@ -653,6 +669,9 @@ function DesktopLendersLayout({
                 }}>{l.notes}</div>
               )}
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 10 }}>
+                {l.payoutType === 'stablecoin' && (
+                  <span style={flagStyle(SB.rust)}>{t('lenders.flag.stablecoin')}</span>
+                )}
                 {l.originationFeePctEffective > 0 && (
                   <span style={flagStyle(SB.orange)}>{t('lenders.flag.origFee', { pct: l.originationFeePctEffective })}</span>
                 )}

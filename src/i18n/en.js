@@ -368,6 +368,7 @@ export default {
   'lenders.filter.all': 'ALL',
   'lenders.filter.us': 'US',
   'lenders.filter.eu': 'EU',
+  'lenders.filter.fiat': 'FIAT ONLY',
   'lenders.filter.btcOnly': 'BTC ONLY',
   'lenders.filter.noRehypo': 'NO REHYPO',
   'lenders.filter.multisig': 'MULTISIG',
@@ -402,6 +403,7 @@ export default {
   'lenders.flag.multiCollateral': 'MULTI-COLLATERAL',
   'lenders.flag.noRehypo': 'NO REHYPO',
   'lenders.flag.rehypo': '⚠ REHYPO',
+  'lenders.flag.stablecoin': '⚠ STABLECOIN ONLY',
 
   'lenders.glossary.rehypo.label': 'Rehypothecation',
   'lenders.glossary.rehypo.value': 'lender lends out your collateral',

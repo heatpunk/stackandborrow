@@ -365,6 +365,7 @@ export default {
   'lenders.filter.all': 'ALLA',
   'lenders.filter.us': 'USA',
   'lenders.filter.eu': 'EU',
+  'lenders.filter.fiat': 'ENDAST FIAT',
   'lenders.filter.btcOnly': 'BTC ONLY',
   'lenders.filter.noRehypo': 'INGEN REHYPO',
   'lenders.filter.multisig': 'MULTISIG',
@@ -399,6 +400,7 @@ export default {
   'lenders.flag.multiCollateral': 'MULTI-COLLATERAL',
   'lenders.flag.noRehypo': 'INGEN REHYPO',
   'lenders.flag.rehypo': '⚠ REHYPO',
+  'lenders.flag.stablecoin': '⚠ ENDAST STABLECOIN',
 
   'lenders.glossary.rehypo.label': 'Återpantsättning',
   'lenders.glossary.rehypo.value': 'långivaren lånar ut din säkerhet',

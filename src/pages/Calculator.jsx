@@ -532,6 +532,7 @@ export default function CalculatorPage({
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
                   <span style={{ fontFamily: SB.serif, fontSize: 16, fontWeight: 600, color: SB.ink, letterSpacing: '-0.005em' }}>{q.name}</span>
                   <Pill color={i === 0 ? SB.forest : SB.ink} filled={i === 0}>{q.badge || '—'}</Pill>
+                  {q.payoutType === 'stablecoin' && <Pill color={SB.rust}>STABLECOIN</Pill>}
                   {isActive && <Pill color={SB.orange} filled>{t('calc.quotes.active')}</Pill>}
                   {q.isTiered && <Pill color={SB.orange}>{t('lenders.badge.tiered')}</Pill>}
                   {rp && <Pill color={rp.color}>{rp.label}</Pill>}
@@ -2060,6 +2061,7 @@ function DesktopCalculatorLayout(props) {
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
                   <span style={{ fontFamily: SB.serif, fontSize: 18, fontWeight: 600, color: SB.ink, letterSpacing: '-0.005em' }}>{q.name}</span>
                   <Pill color={i === 0 ? SB.forest : SB.ink} filled={i === 0}>{q.badge || '—'}</Pill>
+                  {q.payoutType === 'stablecoin' && <Pill color={SB.rust}>STABLECOIN</Pill>}
                   {isActive && <Pill color={SB.orange} filled>{t('calc.quotes.active')}</Pill>}
                   {q.isTiered && <Pill color={SB.orange}>{t('lenders.badge.tiered')}</Pill>}
                   {rp && <Pill color={rp.color}>{rp.label}</Pill>}

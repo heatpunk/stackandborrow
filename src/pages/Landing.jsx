@@ -994,6 +994,7 @@ function DesktopLandingLayout({
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
                   <span style={{ fontFamily: SB.serif, fontSize: 18, fontWeight: 600, color: SB.ink, letterSpacing: '-0.005em' }}>{q.name}</span>
                   <Pill color={i === 0 ? SB.forest : SB.ink} filled={i === 0}>{q.badge || '—'}</Pill>
+                  {q.payoutType === 'stablecoin' && <Pill color={SB.rust}>STABLECOIN</Pill>}
                 </div>
                 {q.notes && (
                   <div style={{ fontFamily: SB.mono, fontSize: 11, color: SB.inkMute, marginTop: 4 }}>
