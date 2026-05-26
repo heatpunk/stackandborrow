@@ -79,6 +79,14 @@ function custodyShort(l, t) {
   return l.custodyType?.toUpperCase() || t('lenders.custody.custodial');
 }
 
+// Mirror of calc.rolloverPillSpec — kept local to avoid a cross-page import.
+function rolloverPillSpec(ease, t) {
+  if (ease === 'revolving')    return { color: SB.forest,  label: t('calc.rollPill.revolving') };
+  if (ease === 'approval')     return { color: SB.inkMute, label: t('calc.rollPill.refinance') };
+  if (ease === 'new-contract') return { color: SB.inkMute, label: t('calc.rollPill.newContract') };
+  return null;
+}
+
 const FILTER_IDS = ['all', 'us', 'eu', 'fiat', 'btcOnly', 'noRehypo', 'multisig'];
 
 // Curated head-to-head pairs that get prime placement on /lenders.
@@ -167,6 +175,7 @@ export default function LendersPage({ lenders, lastUpdated, live, currency, regi
   const isDesktop = useIsDesktop();
   const t = useT();
   const [filter, setFilter] = useState('all');
+  const [expandedId, setExpandedId] = useState(null);
 
   // Read the calculator's persisted loan amount so all pages
   // (Landing, Calculator, Lenders, Compare) show the same quote size.
@@ -230,6 +239,8 @@ export default function LendersPage({ lenders, lastUpdated, live, currency, regi
         live={live}
         lastUpdated={lastUpdated}
         quoteLoanUsd={loanUsd}
+        expandedId={expandedId}
+        setExpandedId={setExpandedId}
       />
     );
   }
@@ -305,6 +316,8 @@ export default function LendersPage({ lenders, lastUpdated, live, currency, regi
           const rn = ['I','II','III','IV','V','VI','VII','VIII','IX','X'][i] || (i + 1);
           const isBest = i === 0;
           const rehypoBad = l.rehypothecation === true || l.rehypothecation === 'yes';
+          const rp = rolloverPillSpec(l.rolloverEase, t);
+          const isExpanded = expandedId === l.id;
           return (
             <div key={l.id} style={{
               padding: '14px 12px',
@@ -342,6 +355,7 @@ export default function LendersPage({ lenders, lastUpdated, live, currency, regi
                   <div style={{ display: 'flex', gap: 4, marginTop: 6, flexWrap: 'wrap' }}>
                     <Pill color={isBest ? SB.forest : SB.ink} filled={isBest}>{badgeFor(l, t)}</Pill>
                     {l.isTiered && <Pill color={SB.orange}>{t('lenders.badge.tiered')}</Pill>}
+                    {rp && <Pill color={rp.color}>{rp.label}</Pill>}
                   </div>
                 </div>
                 <div style={{ textAlign: 'right' }}>
@@ -364,24 +378,26 @@ export default function LendersPage({ lenders, lastUpdated, live, currency, regi
                 </div>
               </div>
 
-              {/* Terms grid */}
-              <div style={{
-                display: 'grid', gridTemplateColumns: '1fr 1fr 1fr',
-                marginTop: 10, paddingTop: 10,
-                borderTop: `1px dotted ${SB.inkLine}`,
-              }}>
-                <Term k={t('lenders.term.min')} v={'$' + fmtNum(l.minLoanUsd || 0)} />
-                <Term k={t('lenders.term.term')} v={fmtTerm(l.term)} />
-                <Term k={t('lenders.term.custody')} v={custodyShort(l, t)} />
-              </div>
-
-              {/* Note */}
-              {l.notes && (
-                <div style={{
-                  marginTop: 10,
-                  fontFamily: SB.sans, fontSize: 11.5, lineHeight: 1.5,
-                  color: SB.inkSoft, textWrap: 'pretty',
-                }}>{l.notes}</div>
+              {/* Collapsible details: terms grid + notes */}
+              {isExpanded && (
+                <>
+                  <div style={{
+                    display: 'grid', gridTemplateColumns: '1fr 1fr 1fr',
+                    marginTop: 10, paddingTop: 10,
+                    borderTop: `1px dotted ${SB.inkLine}`,
+                  }}>
+                    <Term k={t('lenders.term.min')} v={'$' + fmtNum(l.minLoanUsd || 0)} />
+                    <Term k={t('lenders.term.term')} v={fmtTerm(l.term)} />
+                    <Term k={t('lenders.term.custody')} v={custodyShort(l, t)} />
+                  </div>
+                  {l.notes && (
+                    <div style={{
+                      marginTop: 10,
+                      fontFamily: SB.sans, fontSize: 11.5, lineHeight: 1.5,
+                      color: SB.inkSoft, textWrap: 'pretty',
+                    }}>{l.notes}</div>
+                  )}
+                </>
               )}
 
               {/* Flags */}
@@ -411,11 +427,14 @@ export default function LendersPage({ lenders, lastUpdated, live, currency, regi
                 marginTop: 12, paddingTop: 10,
                 borderTop: `1px dashed ${SB.inkLine}`,
               }}>
-                <div style={{
-                  fontFamily: SB.mono, fontSize: 9,
-                  color: SB.inkMute, letterSpacing: '0.05em',
-                }}>
-                  {isBest ? t('lenders.recommend') : t('lenders.compare')}
+                <div
+                  onClick={() => setExpandedId(isExpanded ? null : l.id)}
+                  style={{
+                    fontFamily: SB.mono, fontSize: 9.5, fontWeight: 700, color: SB.orange,
+                    letterSpacing: '0.02em',
+                    cursor: 'pointer',
+                  }}>
+                  {isExpanded ? t('calc.quotes.showLess') : t('calc.quotes.showMore')}
                 </div>
                 <a
                   href={l.referralUrl || '#'}
@@ -476,6 +495,7 @@ function flagStyle(color) {
 function DesktopLendersLayout({
   lenders, ranked, filter, setFilter, counts,
   currency, live, lastUpdated, quoteLoanUsd,
+  expandedId, setExpandedId,
 }) {
   const t = useT();
   const rightSlot = (
@@ -598,6 +618,8 @@ function DesktopLendersLayout({
           const rn = ['I','II','III','IV','V','VI','VII','VIII','IX','X'][i] || (i + 1);
           const isBest = i === 0;
           const rehypoBad = l.rehypothecation === true || l.rehypothecation === 'yes';
+          const rp = rolloverPillSpec(l.rolloverEase, t);
+          const isExpanded = expandedId === l.id;
           return (
             <div key={l.id} style={{
               padding: '14px 14px',
@@ -633,6 +655,7 @@ function DesktopLendersLayout({
                   <div style={{ display: 'flex', gap: 5, marginTop: 8, flexWrap: 'wrap' }}>
                     <Pill color={isBest ? SB.forest : SB.ink} filled={isBest}>{badgeFor(l, t)}</Pill>
                     {l.isTiered && <Pill color={SB.orange}>{t('lenders.badge.tiered')}</Pill>}
+                    {rp && <Pill color={rp.color}>{rp.label}</Pill>}
                   </div>
                 </div>
                 <div style={{ textAlign: 'right' }}>
@@ -652,21 +675,26 @@ function DesktopLendersLayout({
                   )}
                 </div>
               </div>
-              <div style={{
-                display: 'grid', gridTemplateColumns: '1fr 1fr 1fr',
-                marginTop: 12, paddingTop: 12,
-                borderTop: `1px dotted ${SB.inkLine}`,
-              }}>
-                <Term k={t('lenders.term.min')} v={'$' + fmtNum(l.minLoanUsd || 0)} />
-                <Term k={t('lenders.term.term')} v={fmtTerm(l.term)} />
-                <Term k={t('lenders.term.custody')} v={custodyShort(l, t)} />
-              </div>
-              {l.notes && (
-                <div style={{
-                  marginTop: 10,
-                  fontFamily: SB.sans, fontSize: 12, lineHeight: 1.5,
-                  color: SB.inkSoft, textWrap: 'pretty',
-                }}>{l.notes}</div>
+              {/* Collapsible details: terms grid + notes */}
+              {isExpanded && (
+                <>
+                  <div style={{
+                    display: 'grid', gridTemplateColumns: '1fr 1fr 1fr',
+                    marginTop: 12, paddingTop: 12,
+                    borderTop: `1px dotted ${SB.inkLine}`,
+                  }}>
+                    <Term k={t('lenders.term.min')} v={'$' + fmtNum(l.minLoanUsd || 0)} />
+                    <Term k={t('lenders.term.term')} v={fmtTerm(l.term)} />
+                    <Term k={t('lenders.term.custody')} v={custodyShort(l, t)} />
+                  </div>
+                  {l.notes && (
+                    <div style={{
+                      marginTop: 10,
+                      fontFamily: SB.sans, fontSize: 12, lineHeight: 1.5,
+                      color: SB.inkSoft, textWrap: 'pretty',
+                    }}>{l.notes}</div>
+                  )}
+                </>
               )}
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 10 }}>
                 {l.payoutType === 'stablecoin' && (
@@ -692,11 +720,14 @@ function DesktopLendersLayout({
                 marginTop: 14, paddingTop: 12,
                 borderTop: `1px dashed ${SB.inkLine}`,
               }}>
-                <div style={{
-                  fontFamily: SB.mono, fontSize: 10,
-                  color: SB.inkMute, letterSpacing: '0.05em',
-                }}>
-                  {isBest ? t('lenders.recommend') : t('lenders.compare')}
+                <div
+                  onClick={() => setExpandedId(isExpanded ? null : l.id)}
+                  style={{
+                    fontFamily: SB.mono, fontSize: 10, fontWeight: 700, color: SB.orange,
+                    letterSpacing: '0.02em',
+                    cursor: 'pointer',
+                  }}>
+                  {isExpanded ? t('calc.quotes.showLess') : t('calc.quotes.showMore')}
                 </div>
                 <a
                   href={l.referralUrl || '#'}
