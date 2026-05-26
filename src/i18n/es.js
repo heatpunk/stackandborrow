@@ -234,8 +234,8 @@ export default {
   'calc.quotes.noMatchDesktop': 'No hay prestamistas para este tamaño de préstamo o región.',
   'calc.quotes.active': 'ACTIVO',
 
-  'calc.projection.borrow': 'PEDIR PRESTADO · conservar todos los sats',
-  'calc.projection.sell': 'VENDER · restante tras impuestos',
+  'calc.projection.borrow': 'PEDIR PRESTADO',
+  'calc.projection.sell': 'VENDER',
   'calc.projection.year': 'A{n}',
 
   'calc.maturity.toggle': '¿QUÉ PASA AL VENCIMIENTO?',

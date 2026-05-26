@@ -234,8 +234,8 @@ export default {
   'calc.quotes.noMatchDesktop': 'Sem credores correspondentes para este empréstimo ou região.',
   'calc.quotes.active': 'ATIVO',
 
-  'calc.projection.borrow': 'PEDIR · manter todos os sats',
-  'calc.projection.sell': 'VENDER · restante após impostos',
+  'calc.projection.borrow': 'PEDIR',
+  'calc.projection.sell': 'VENDER',
   'calc.projection.year': 'A{n}',
 
   'calc.maturity.toggle': 'O QUE ACONTECE NO VENCIMENTO?',

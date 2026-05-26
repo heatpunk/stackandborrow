@@ -235,8 +235,8 @@ export default {
   'calc.quotes.noMatchDesktop': 'Inga matchande långivare för det här lånet eller området.',
   'calc.quotes.active': 'AKTIV',
 
-  'calc.projection.borrow': 'LÅNA · behåll alla sats',
-  'calc.projection.sell': 'SÄLJA · efter skatt',
+  'calc.projection.borrow': 'LÅNA',
+  'calc.projection.sell': 'SÄLJA',
   'calc.projection.year': 'Å{n}',
 
   'calc.maturity.toggle': 'VAD HÄNDER VID FÖRFALLODAGEN?',

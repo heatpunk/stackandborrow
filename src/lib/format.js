@@ -39,8 +39,9 @@ export function fmtMoney(usd, currency, currencyMeta, btcSpotUsd) {
 }
 
 // Compact money formatter in the chosen currency: $1.42M, €1.31M, 14.2M kr,
-// 1.42 BTC. Falls back to USD when no currency is supplied.
-export function fmtMoneyCompact(usd, currency, currencyMeta, btcSpotUsd) {
+// 1.42 BTC. Falls back to USD when no currency is supplied. Pass `dp` to
+// override the default decimal precision (default: 2 for B/M, 1 for K).
+export function fmtMoneyCompact(usd, currency, currencyMeta, btcSpotUsd, dp) {
   if (usd == null || isNaN(usd)) return '—';
 
   if (currency === 'SAT' && btcSpotUsd) {
@@ -56,9 +57,9 @@ export function fmtMoneyCompact(usd, currency, currencyMeta, btcSpotUsd) {
   const sign = val < 0 ? '−' : '';
   const abs = Math.abs(val);
   let body;
-  if (abs >= 1e9)      body = (abs / 1e9).toFixed(2) + 'B';
-  else if (abs >= 1e6) body = (abs / 1e6).toFixed(2) + 'M';
-  else if (abs >= 1e3) body = (abs / 1e3).toFixed(1) + 'K';
+  if (abs >= 1e9)      body = (abs / 1e9).toFixed(dp != null ? dp : 2) + 'B';
+  else if (abs >= 1e6) body = (abs / 1e6).toFixed(dp != null ? dp : 2) + 'M';
+  else if (abs >= 1e3) body = (abs / 1e3).toFixed(dp != null ? dp : 1) + 'K';
   else                 body = abs.toFixed(0);
 
   return position === 'post' ? sign + body + ' ' + symbol : sign + symbol + body;

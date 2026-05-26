@@ -234,8 +234,8 @@ export default {
   'calc.quotes.noMatchDesktop': 'Aucun prêteur correspondant pour ce prêt ou cette région.',
   'calc.quotes.active': 'ACTIF',
 
-  'calc.projection.borrow': 'EMPRUNTER · garder tous les sats',
-  'calc.projection.sell': 'VENDRE · restant après impôts',
+  'calc.projection.borrow': 'EMPRUNTER',
+  'calc.projection.sell': 'VENDRE',
   'calc.projection.year': 'A{n}',
 
   'calc.maturity.toggle': "QUE SE PASSE-T-IL À L'ÉCHÉANCE ?",

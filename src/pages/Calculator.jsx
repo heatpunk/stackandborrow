@@ -446,7 +446,7 @@ export default function CalculatorPage({
         cagr={activeCagr}
         collateralBtc={collateralBtc}
         totalOwedUsd={totalOwedUsd}
-        collateralBtcAfterSell={collateralBtcAfterSell}
+        loanUsd={loanUsd}
         currency={currency}
         meta={live.meta}
       />
@@ -651,8 +651,8 @@ export default function CalculatorPage({
 // symbols ($, €) come back from fmtMoneyCompact as one token and pass
 // through unchanged.
 // ============================================================
-function FormattedMoney({ usd, currency, meta, spot }) {
-  const s = fmtMoneyCompact(usd, currency, meta, spot);
+function FormattedMoney({ usd, currency, meta, spot, dp }) {
+  const s = fmtMoneyCompact(usd, currency, meta, spot, dp);
   const sp = s.lastIndexOf(' ');
   if (sp < 0) return <>{s}</>;
   return (
@@ -665,40 +665,75 @@ function FormattedMoney({ usd, currency, meta, spot }) {
 
 // ============================================================
 // Projection — small SVG sparkline of borrow vs sell paths.
+// Borrow line: full collateral × futureBtc − debt, with a CAGR-scaled
+// halving-cycle wobble.  Sell line: the cash you would have received,
+// decaying at ~6.7%/yr (purchasing power halves every ~10 yrs).
+// Y-axis uses a power scale (^0.55) — between log and linear — so the
+// exponential curve is visibly curved without becoming a hockey stick.
 // ============================================================
-function Projection({ spot, cagr, collateralBtc, totalOwedUsd, collateralBtcAfterSell, currency, meta }) {
+const INFLATION_DECAY_PER_YEAR = 0.0670;  // 1 - 0.5^(1/10) — purchasing power halves every 10 yrs
+const POWER_SCALE_EXPONENT = 0.35;        // 0=flat-then-spike, 1=linear. Lower = more bottom-room
+                                          // for the slow-decaying sell line; still curvy for borrow.
+
+// Volatility scales with optimism: bullish profiles get bigger swings,
+// permabear (negative CAGR) stays flat. Period = 4 yrs (BTC halving cycle).
+function cycleAmplitudeFor(cagr) {
+  if (cagr <= 0) return 0.04;
+  return Math.min(0.22, 0.07 + cagr / 380);
+}
+
+function Projection({ spot, cagr, collateralBtc, totalOwedUsd, loanUsd, currency, meta }) {
   const t = useT();
   const W = 340, H = 130, P = 12;
-  const years = 21;
+  const yearSpan = 20;
+  // Sub-yearly sampling — keeps the 4-yr cycle smooth instead of angular.
+  const samples = 121;  // 6 samples per year + endpoint
 
   const { borrowPath, sellPath, marks } = useMemo(() => {
+    const amp = cycleAmplitudeFor(cagr);
+    // Phase the sine so y=0 sits on a mid-rise, not at the peak — looks
+    // like we're emerging from a cycle low rather than starting at a top.
+    const phase = -Math.PI / 2;
+    // Wobble shared by the chart line and the milestone dots so they
+    // anchor exactly to the curve.
+    const wobbleAt = (y) => {
+      const damping = 1 / (1 + y * 0.04);
+      return 1 + Math.sin((y / 4) * Math.PI * 2 + phase) * amp * damping;
+    };
     const bP = [], sP = [];
-    for (let y = 0; y < years; y++) {
+    for (let i = 0; i < samples; i++) {
+      const y = (i / (samples - 1)) * yearSpan;
       const futureBtc = projectBtcPrice(spot, cagr, y);
-      const wobble = 1 + Math.sin((y / 4) * Math.PI * 2) * 0.05;
-      bP.push(Math.max(1, (collateralBtc * futureBtc - totalOwedUsd) * wobble));
-      sP.push(Math.max(1, collateralBtcAfterSell * futureBtc * wobble));
+      const borrowRaw = (collateralBtc * futureBtc - totalOwedUsd) * wobbleAt(y);
+      bP.push({ y, v: Math.max(0, borrowRaw) });
+      // Cash you got from selling, eroded by inflation. No BTC exposure.
+      sP.push({ y, v: loanUsd * Math.pow(1 - INFLATION_DECAY_PER_YEAR, y) });
     }
     const milestoneYears = [2, 5, 10, 20];
     const marks = milestoneYears.map((y) => {
       const futureBtc = projectBtcPrice(spot, cagr, y);
       const v = collateralBtc * futureBtc - totalOwedUsd;
-      return { y, val: v };
+      const wobbledV = Math.max(0, v * wobbleAt(y));
+      return { y, val: v, wobbledV };
     });
     return { borrowPath: bP, sellPath: sP, marks };
-  }, [spot, cagr, collateralBtc, totalOwedUsd, collateralBtcAfterSell]);
+  }, [spot, cagr, collateralBtc, totalOwedUsd, loanUsd]);
 
-  const allVals = [...borrowPath, ...sellPath].filter((v) => v > 0);
+  const allVals = [...borrowPath, ...sellPath].map((p) => p.v);
   const maxV = Math.max(...allVals, 100);
-  const minV = Math.max(0.1, Math.min(...allVals));
-  const xOf = (i) => P + (i / (years - 1)) * (W - P * 2);
+  const xForYear = (year) => P + (year / yearSpan) * (W - P * 2);
   const yOf = (v) => {
-    if (v <= 0) return H - P;
-    const logRatio = Math.log(v / minV) / Math.log(maxV / minV);
-    return H - P - logRatio * (H - P * 2);
+    const clamped = Math.max(0, v);
+    const ratio = Math.pow(clamped / maxV, POWER_SCALE_EXPONENT);
+    return H - P - ratio * (H - P * 2);
   };
   const toPath = (arr) =>
-    arr.map((v, i) => (i === 0 ? 'M' : 'L') + xOf(i).toFixed(1) + ',' + yOf(v).toFixed(1)).join(' ');
+    arr.map((p, i) => (i === 0 ? 'M' : 'L') + xForYear(p.y).toFixed(1) + ',' + yOf(p.v).toFixed(1)).join(' ');
+
+  // Log-character gridlines: positioned at value-ratios of maxV, so the
+  // resulting screen spacing bunches toward the bottom on a power-scale
+  // axis — telegraphs the exponential nature of the chart.
+  const gridRatios = [0.5, 0.1, 0.01, 0.001];
 
   return (
     <div>
@@ -709,8 +744,8 @@ function Projection({ spot, cagr, collateralBtc, totalOwedUsd, collateralBtcAfte
         padding: '10px 12px 12px',
       }}>
         <svg width="100%" viewBox={`0 0 ${W} ${H}`} style={{ display: 'block' }}>
-          {[0.25, 0.5, 0.75].map((f, i) => (
-            <line key={i} x1={P} x2={W - P} y1={H * f} y2={H * f}
+          {gridRatios.map((r, i) => (
+            <line key={i} x1={P} x2={W - P} y1={yOf(maxV * r)} y2={yOf(maxV * r)}
               stroke={SB.inkLine} strokeDasharray="2 4" />
           ))}
           <path d={toPath(borrowPath)} fill="none" stroke={SB.orange} strokeWidth="2"
@@ -719,17 +754,20 @@ function Projection({ spot, cagr, collateralBtc, totalOwedUsd, collateralBtcAfte
             strokeDasharray="3 3" strokeLinecap="round" />
           {marks.map((m) => (
             <g key={m.y}>
-              <circle cx={xOf(m.y)} cy={yOf(borrowPath[m.y])} r="3"
+              <circle cx={xForYear(m.y)} cy={yOf(m.wobbledV)} r="3"
                 fill={SB.cream} stroke={SB.orange} strokeWidth="1.5" />
-              <line x1={xOf(m.y)} x2={xOf(m.y)} y1={yOf(borrowPath[m.y])} y2={H - P}
+              <line x1={xForYear(m.y)} x2={xForYear(m.y)} y1={yOf(m.wobbledV)} y2={H - P}
                 stroke={SB.inkLine} strokeDasharray="2 3" />
             </g>
           ))}
         </svg>
+        {/* Legend — overlaid on the top-left of the chart, not below it. */}
         <div style={{
-          display: 'flex', gap: 14, marginTop: 6,
+          position: 'absolute', top: 14, left: 18,
+          display: 'flex', flexDirection: 'column', gap: 4,
           fontFamily: SB.mono, fontSize: 9,
           color: SB.inkSoft, letterSpacing: '0.05em',
+          pointerEvents: 'none',
         }}>
           <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
             <span style={{ width: 16, height: 2, background: SB.orange, display: 'inline-block' }} />
@@ -765,7 +803,7 @@ function Projection({ spot, cagr, collateralBtc, totalOwedUsd, collateralBtcAfte
               lineHeight: 1,
               fontVariantNumeric: 'tabular-nums',
             }}>
-              <FormattedMoney usd={m.val} currency={currency} meta={meta} spot={spot} />
+              <FormattedMoney usd={m.val} currency={currency} meta={meta} spot={spot} dp={1} />
             </div>
           </div>
         ))}
@@ -1971,7 +2009,7 @@ function DesktopCalculatorLayout(props) {
         cagr={activeCagr}
         collateralBtc={collateralBtc}
         totalOwedUsd={totalOwedUsd}
-        collateralBtcAfterSell={collateralBtcAfterSell}
+        loanUsd={loanUsd}
         currency={currency}
         meta={live.meta}
       />

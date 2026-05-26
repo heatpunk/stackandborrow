@@ -234,8 +234,8 @@ export default {
   'calc.quotes.noMatchDesktop': 'Keine passenden Kreditgeber für diese Kreditgröße oder Region.',
   'calc.quotes.active': 'AKTIV',
 
-  'calc.projection.borrow': 'BORGEN · alle sats behalten',
-  'calc.projection.sell': 'VERKAUFEN · nach Steuern',
+  'calc.projection.borrow': 'BORGEN',
+  'calc.projection.sell': 'VERKAUFEN',
   'calc.projection.year': 'J{n}',
 
   'calc.maturity.toggle': 'WAS PASSIERT BEI FÄLLIGKEIT?',

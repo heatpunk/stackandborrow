@@ -238,8 +238,8 @@ export default {
   'calc.quotes.noMatchDesktop': 'No matching lenders for this loan size or region.',
   'calc.quotes.active': 'ACTIVE',
 
-  'calc.projection.borrow': 'BORROW · keep all sats',
-  'calc.projection.sell': 'SELL · post-tax remaining',
+  'calc.projection.borrow': 'BORROW',
+  'calc.projection.sell': 'SELL',
   'calc.projection.year': 'Y{n}',
 
   'calc.maturity.toggle': 'WHAT HAPPENS AT MATURITY?',
