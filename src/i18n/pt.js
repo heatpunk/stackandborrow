@@ -401,7 +401,7 @@ export default {
   'void.loanTooSmall.section.numbers': 'OS NÚMEROS',
   'void.loanTooSmall.row.requested': 'Valor solicitado',
   'void.loanTooSmall.row.minimum': 'Mínimo entre todos os credores',
-  'void.loanTooSmall.row.minimumSub': 'Ledn · Firefish · Xapo',
+  'void.loanTooSmall.row.minimumSub': 'Firefish · Xapo · Surge',
   'void.loanTooSmall.row.origination': 'A abertura seria',
   'void.loanTooSmall.row.originationValue': '~$50',
   'void.loanTooSmall.row.originationSub': 'empequena o capital',

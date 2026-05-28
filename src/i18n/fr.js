@@ -401,7 +401,7 @@ export default {
   'void.loanTooSmall.section.numbers': 'LES CHIFFRES',
   'void.loanTooSmall.row.requested': 'Montant demandé',
   'void.loanTooSmall.row.minimum': 'Minimum chez tous les prêteurs',
-  'void.loanTooSmall.row.minimumSub': 'Ledn · Firefish · Xapo',
+  'void.loanTooSmall.row.minimumSub': 'Firefish · Xapo · Surge',
   'void.loanTooSmall.row.origination': 'Les frais de dossier seraient',
   'void.loanTooSmall.row.originationValue': '~$50',
   'void.loanTooSmall.row.originationSub': 'dépasse le principal',

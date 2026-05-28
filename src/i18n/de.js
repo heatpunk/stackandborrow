@@ -401,7 +401,7 @@ export default {
   'void.loanTooSmall.section.numbers': 'DIE ZAHLEN',
   'void.loanTooSmall.row.requested': 'Beantragter Betrag',
   'void.loanTooSmall.row.minimum': 'Minimum aller Kreditgeber',
-  'void.loanTooSmall.row.minimumSub': 'Ledn · Firefish · Xapo',
+  'void.loanTooSmall.row.minimumSub': 'Firefish · Xapo · Surge',
   'void.loanTooSmall.row.origination': 'Bearbeitung wäre',
   'void.loanTooSmall.row.originationValue': '~$50',
   'void.loanTooSmall.row.originationSub': 'überragt den Hauptbetrag',

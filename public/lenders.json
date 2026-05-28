@@ -1,10 +1,10 @@
 {
-  "lastUpdated": "2026-05-25",
+  "lastUpdated": "2026-05-28",
   "lenders": [
     {
       "id": "ledn",
       "name": "Ledn",
-      "country": ["us", "ca", "eu", "uk", "ch", "au", "jp"],
+      "country": ["us", "ca", "uk", "ch", "au", "jp"],
       "excluded": [],
       "payoutType": "fiat",
       "minLoanUsd": 1000,
@@ -25,7 +25,7 @@
       "rollover": "Yes, subject to approval",
       "rolloverEase": "approval",
       "repayment": "Balloon at maturity. No monthly payments. Repay anytime in USD, USDC, or local currency. Interest accrues daily but only owed when loan closes. No early-repayment penalty.",
-      "notes": "Longest-running BTC lender. $10B+ funded with no client losses. Tiered rates kick in automatically at $250K, $1M, and $2M. US states excluded: CA, CT, HI, LA, NV, ND, SD, TN, VT, WA, DC. Canadian provinces excluded: NB, NS, SK, QC.",
+      "notes": "Longest-running BTC lender. $10B+ funded with no client losses. Tiered rates kick in automatically at $250K, $1M, and $2M. EU NOT served: since 1 April 2025 Ledn no longer offers personal/consumer loans anywhere in the EU — business-purpose loans only across most EU countries (incl. Sweden), and no new loans at all in France, Germany, or Italy. Switzerland: personal loans still available but $100K minimum and no B2X. US states excluded: CA, CT, HI, LA, NV, ND, SD, TN, VT, WA, DC. Canadian provinces excluded: NB, NS, SK, QC.",
       "badge": "Established",
       "referralUrl": "https://ledn.io"
     },

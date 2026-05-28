@@ -441,7 +441,7 @@ export default {
   'void.loanTooSmall.section.numbers': 'THE NUMBERS',
   'void.loanTooSmall.row.requested': 'Amount requested',
   'void.loanTooSmall.row.minimum': 'Minimum across all lenders',
-  'void.loanTooSmall.row.minimumSub': 'Ledn · Firefish · Xapo',
+  'void.loanTooSmall.row.minimumSub': 'Firefish · Xapo · Surge',
   'void.loanTooSmall.row.origination': 'Origination would be',
   'void.loanTooSmall.row.originationValue': '~$50',
   'void.loanTooSmall.row.originationSub': 'dwarfs the principal',

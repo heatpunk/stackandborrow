@@ -438,7 +438,7 @@ export default {
   'void.loanTooSmall.section.numbers': 'SIFFRORNA',
   'void.loanTooSmall.row.requested': 'Begärt belopp',
   'void.loanTooSmall.row.minimum': 'Minimum hos alla långivare',
-  'void.loanTooSmall.row.minimumSub': 'Ledn · Firefish · Xapo',
+  'void.loanTooSmall.row.minimumSub': 'Firefish · Xapo · Surge',
   'void.loanTooSmall.row.origination': 'Uppläggning skulle bli',
   'void.loanTooSmall.row.originationValue': '~$50',
   'void.loanTooSmall.row.originationSub': 'större än huvudbeloppet',
