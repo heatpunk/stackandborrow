@@ -27,7 +27,6 @@ export default {
   'common.cta.compareLenders': 'JÄMFÖR LÅNGIVARE',
   'common.cta.browseAll': 'SE ALLA LÅNGIVARE',
   'common.cta.openWith': 'ÖPPNA HOS {name}',
-  'common.cta.openWithBest': 'ÖPPNA HOS {name} — BÄSTA RÄNTAN',
   'common.leave.line1': '· du lämnar Stack & Borrow ·',
   'common.leave.line2': 'inte dina uppgifter',
 

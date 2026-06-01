@@ -30,7 +30,6 @@ export default {
   'common.cta.compareLenders': 'COMPARE LENDERS',
   'common.cta.browseAll': 'BROWSE ALL LENDERS',
   'common.cta.openWith': 'OPEN WITH {name}',
-  'common.cta.openWithBest': 'OPEN WITH {name} — BEST RATE',
   'common.leave.line1': "· you'll leave Stack & Borrow ·",
   'common.leave.line2': 'not your details',
 

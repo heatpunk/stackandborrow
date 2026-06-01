@@ -1027,7 +1027,7 @@ function DesktopLandingLayout({
 
       <Button href={bestLender?.referralUrl || '#lenders'}>
         {bestLender
-          ? t('common.cta.openWithBest', { name: bestLender.name.toUpperCase() })
+          ? t('common.cta.openWith', { name: bestLender.name.toUpperCase() })
           : t('common.cta.browseAll')}
       </Button>
       <div style={{
