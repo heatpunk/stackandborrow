@@ -427,15 +427,17 @@ export default function LendersPage({ lenders, lastUpdated, live, currency, regi
                 marginTop: 12, paddingTop: 10,
                 borderTop: `1px dashed ${SB.inkLine}`,
               }}>
-                <div
+                <button
                   onClick={() => setExpandedId(isExpanded ? null : l.id)}
+                  aria-expanded={isExpanded}
                   style={{
+                    background: 'transparent', border: 'none', padding: 0,
                     fontFamily: SB.mono, fontSize: 9.5, fontWeight: 700, color: SB.orange,
                     letterSpacing: '0.02em',
                     cursor: 'pointer',
                   }}>
                   {isExpanded ? t('calc.quotes.showLess') : t('calc.quotes.showMore')}
-                </div>
+                </button>
                 <a
                   href={l.referralUrl || '#'}
                   target="_blank"
@@ -720,15 +722,17 @@ function DesktopLendersLayout({
                 marginTop: 14, paddingTop: 12,
                 borderTop: `1px dashed ${SB.inkLine}`,
               }}>
-                <div
+                <button
                   onClick={() => setExpandedId(isExpanded ? null : l.id)}
+                  aria-expanded={isExpanded}
                   style={{
+                    background: 'transparent', border: 'none', padding: 0,
                     fontFamily: SB.mono, fontSize: 10, fontWeight: 700, color: SB.orange,
                     letterSpacing: '0.02em',
                     cursor: 'pointer',
                   }}>
                   {isExpanded ? t('calc.quotes.showLess') : t('calc.quotes.showMore')}
-                </div>
+                </button>
                 <a
                   href={l.referralUrl || '#'}
                   target="_blank"
