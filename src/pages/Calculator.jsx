@@ -546,19 +546,21 @@ export default function CalculatorPage({
                       {isExpanded || !truncated ? q.notes : q.notes.slice(0, 80) + '…'}
                     </div>
                     {truncated && (
-                      <div
+                      <button
                         onClick={(e) => {
                           e.stopPropagation();
                           setExpandedQuoteId(isExpanded ? null : q.id);
                         }}
+                        aria-expanded={isExpanded}
                         style={{
+                          background: 'transparent', border: 'none', padding: 0,
                           display: 'inline-block',
                           fontFamily: SB.mono, fontSize: 9.5, fontWeight: 700, color: SB.orange,
                           marginTop: 2, letterSpacing: '0.02em',
                           cursor: 'pointer',
                         }}>
                         {isExpanded ? t('calc.quotes.showLess') : t('calc.quotes.showMore')}
-                      </div>
+                      </button>
                     )}
                   </div>
                 )}
