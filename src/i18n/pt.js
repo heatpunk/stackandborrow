@@ -27,7 +27,6 @@ export default {
   'common.cta.compareLenders': 'COMPARAR CREDORES',
   'common.cta.browseAll': 'VER TODOS OS CREDORES',
   'common.cta.openWith': 'ABRIR COM {name}',
-  'common.cta.openWithBest': 'ABRIR COM {name} — MELHOR TAXA',
   'common.leave.line1': '· sais do Stack & Borrow ·',
   'common.leave.line2': 'não os teus dados',
 

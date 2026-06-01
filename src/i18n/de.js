@@ -27,7 +27,6 @@ export default {
   'common.cta.compareLenders': 'KREDITGEBER VERGLEICHEN',
   'common.cta.browseAll': 'ALLE KREDITGEBER ANSEHEN',
   'common.cta.openWith': 'BEI {name} ERÖFFNEN',
-  'common.cta.openWithBest': 'BEI {name} ERÖFFNEN — BESTE RATE',
   'common.leave.line1': '· du verlässt Stack & Borrow ·',
   'common.leave.line2': 'nicht deine Daten',
 

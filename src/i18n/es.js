@@ -27,7 +27,6 @@ export default {
   'common.cta.compareLenders': 'COMPARAR PRESTAMISTAS',
   'common.cta.browseAll': 'VER TODOS LOS PRESTAMISTAS',
   'common.cta.openWith': 'ABRIR CON {name}',
-  'common.cta.openWithBest': 'ABRIR CON {name} — MEJOR TASA',
   'common.leave.line1': '· dejas Stack & Borrow ·',
   'common.leave.line2': 'no tus datos',
 
