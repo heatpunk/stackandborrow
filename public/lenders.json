@@ -85,7 +85,7 @@
       "repayment": "Two options: (1) Monthly Payment (interest paid monthly, principal balloon at maturity) at the published rate, or (2) Deferred Interest (no monthly payments, all interest accrues to maturity) at ~0.5% higher APR. Payments in USD or USDC. No early repayment penalty. 2.5% liquidation fee if collateral has to be sold.",
       "notes": "NMLS #2637200, licensed in 39 US states (excluded: CA, DE, HI, MS, MT, NV, ND, RI, SC, TX, VT). Tiered origination fee drops to 0% at $5M+. Multi-collateral support is unique among regulated US lenders.",
       "badge": "Best for big loans",
-      "referralUrl": "https://app.archlending.com/signup?referral=THSKF"
+      "referralUrl": "https://app.archlending.com/affiliate/stackandborrow"
     },
     {
       "id": "figure",
