@@ -19,10 +19,10 @@ const ORIGIN = 'https://stackandborrow.com';
 export const SEO_DATA = {
   '': {
     path: '/',
-    title: 'Stack & Borrow — Bitcoin-backed loan calculator. Keep your sats. Free your cash.',
+    title: 'Stack & Borrow — Bitcoin-backed loan calculator. Keep your sats. Free some cash.',
     description: 'Bitcoin-backed loan calculator. Compare borrowing vs selling across multiple BTC price scenarios with tax-aware math. Honest lender rankings, sats-first. Bitcoin lån / bitcoin som säkerhet.',
     keywords: 'bitcoin loan calculator, btc backed loan, bitcoin collateral loan, btc loan vs sell, bitcoin tax calculator, bitcoin loan rates, ledn calculator, firefish calculator, debifi calculator, stack and borrow strategy, bitcoin wealth strategy, buy borrow live, btc lending strategy, multi-year bitcoin loan, bitcoin lån, bitcoin som säkerhet, btc lån',
-    ogTitle: 'Stack & Borrow — Keep your sats. Free your cash.',
+    ogTitle: 'Stack & Borrow — Keep your sats. Free some cash.',
     ogDescription: 'Bitcoin-backed loan calculator. Sats-first, tax-aware, honest lender rankings.',
     jsonLd: {
       '@context': 'https://schema.org',
