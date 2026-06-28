@@ -1,7 +1,7 @@
 {
   "name": "Stack & Borrow",
   "short_name": "Stack & Borrow",
-  "description": "Bitcoin-backed loan calculator. Keep your sats. Free your cash.",
+  "description": "Bitcoin-backed loan calculator. Keep your sats. Free some cash.",
   "start_url": "/",
   "display": "browser",
   "background_color": "#0a0a0b",
