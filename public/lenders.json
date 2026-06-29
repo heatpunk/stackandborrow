@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-05-28",
+  "lastUpdated": "2026-06-29",
   "lenders": [
     {
       "id": "ledn",
@@ -7,7 +7,7 @@
       "country": ["us", "ca", "uk", "ch", "au", "jp"],
       "excluded": [],
       "payoutType": "fiat",
-      "minLoanUsd": 1000,
+      "minLoanUsd": 500,
       "maxLtv": 50,
       "rateTiers": [
         { "maxLoanUsd": 250000, "aprPct": 11.49 },
@@ -51,7 +51,7 @@
       "rehypothecation": "no",
       "btcOnly": true,
       "term": "12 months. Available in 10 countries per Strike's published list; in the EU and AU it is offered via Zap Solutions Cayman Limited on a reverse-enquiry basis. AU is business-only.",
-      "rollover": "Yes — multiple loans (up to 3) and refinance supported",
+      "rollover": "Yes — multiple loans (up to 5) and refinance supported",
       "rolloverEase": "approval",
       "repayment": "Two options: (1) Payment at Maturity — principal + interest in single balloon payment, or (2) Monthly Payments — interest paid monthly, principal at maturity. No origination fee, no early repayment fee, no liquidation fee. Daily interest accrual. Loans payable in USD or USDC. EUR/GBP supported in many countries.",
       "notes": "Aggressive tier discounts at $250K, $1M, and $5M. US rates start 1% lower than other regions. Per Strike's own FAQ the consumer product is currently live in 22 US states + DC + PR plus 8 LatAm/Asia countries; EU and AU access is via a Cayman-based affiliate and not consumer-regulated credit in your jurisdiction.",
@@ -100,15 +100,15 @@
       ],
       "originationFeePct": 1,
       "feeWaivedFor": [],
-      "custody": "Custodial. Highest LTV in market.",
+      "custody": "MPC custody on native L1 chain — private keys sharded across node providers. Segregated wallet per borrower, verifiable on-chain. No rehypothecation.",
       "custodyType": "custodial",
-      "rehypothecation": "yes",
+      "rehypothecation": "no",
       "btcOnly": false,
       "term": "12-month interest-only",
       "rollover": "Yes",
       "rolloverEase": "approval",
       "repayment": "Interest-only payments during loan, principal due at maturity. Repayment in USD via bank account. No prepayment penalty. Liquidation buffer between 75% and 80% LTV.",
-      "notes": "Rate quoted at 50% LTV (8.91% / 9.999% APR with 1% origination fee). Figure prices by LTV, not by loan size — rates rise to ~11.50% at 75% LTV. Up to 75% LTV is the most aggressive available but carries high liquidation risk. Rehypothecates collateral, which subsidizes the rate but increases counterparty risk.",
+      "notes": "Rate quoted at 50% LTV (8.91% / 9.999% APR with 1% origination fee). Figure prices by LTV, not by loan size — rates rise to ~11.50% at 75% LTV. Up to 75% LTV is the most aggressive available but carries high liquidation risk. BTC held in MPC custody with no rehypothecation — Figure does not lend out or stake your collateral.",
       "badge": "Highest LTV",
       "referralUrl": "https://democratizedprime.pxf.io/stackandborrow"
     },
