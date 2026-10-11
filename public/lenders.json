@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-06-29",
+  "lastUpdated": "2026-10-11",
   "lenders": [
     {
       "id": "ledn",
@@ -111,6 +111,32 @@
       "notes": "Rate quoted at 50% LTV (8.91% / 9.999% APR with 1% origination fee). Figure prices by LTV, not by loan size — rates rise to ~11.50% at 75% LTV. Up to 75% LTV is the most aggressive available but carries high liquidation risk. BTC held in MPC custody with no rehypothecation — Figure does not lend out or stake your collateral.",
       "badge": "Highest LTV",
       "referralUrl": "https://democratizedprime.pxf.io/stackandborrow"
+    },
+    {
+      "id": "aven",
+      "name": "Aven",
+      "country": ["us"],
+      "excluded": [],
+      "payoutType": "fiat",
+      "minLoanUsd": 1000,
+      "maxLtv": 70,
+      "rateTiers": [
+        { "maxLoanUsd": null, "aprPct": 10.24 }
+      ],
+      "originationFeePct": 1,
+      "feeWaivedFor": [],
+      "custody": "Custodial. BTC held with BitGo Bank & Trust (OCC-regulated digital asset trust bank). No rehypothecation — collateral is never lent out; 1:1 proof-of-reserves.",
+      "custodyType": "custodial",
+      "rehypothecation": "no",
+      "btcOnly": true,
+      "rateType": "variable",
+      "term": "Revolving credit line with no fixed maturity; optional fixed-rate plans up to 10 years or interest-only up to 5 years",
+      "rollover": "Revolving — repay and re-draw",
+      "rolloverEase": "revolving",
+      "repayment": "Visa credit card with minimum monthly payments on the revolving balance. Cash-outs and balance transfers carry a 1% fee but can be converted into fixed-term (fully amortizing) or interest-only plans. Direct deposit to your bank. No prepayment penalty.",
+      "notes": "US only: requires US residency, SSN, and a 620+ credit score. APR is set by the LTV tier chosen at signup: 9.24% at 30% LTV, 10.24% at 50% (used here, matching this site's standard 50% quote), 12.24% at 70%. Rates are variable (WSJ Prime + margin, Prime 7.00% as of Sep 2026) with a 14.99% lifetime cap; the quoted rate also applies as fixed APR to cash-out/balance-transfer plans. Card issued by Coastal Community Bank (NMLS #462289); Aven NMLS #2042345. No annual fee, no minimum draw; unlimited 2% cash back on purchases. Partial liquidation if LTV exceeds 80% for 72h; full liquidation at 85% with a 2% fee.",
+      "badge": "Visa credit line",
+      "referralUrl": "https://www.aven.com/bitcoin-visa-card"
     },
     {
       "id": "milo",
