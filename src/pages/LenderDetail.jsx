@@ -282,7 +282,7 @@ function QuoteBlock({ lender, currency, live, desktop = false }) {
       <Row
         label="APR"
         value={`${lender.effectiveApr.toFixed(2)}%`}
-        sub={lender.isTiered ? 'first tier · scales with loan size' : 'fixed rate'}
+        sub={lender.isTiered ? 'first tier · scales with loan size' : lender.rateType === 'variable' ? 'variable rate · may change monthly' : 'fixed rate'}
       />
       {lender.membershipFeeUsd > 0 && (
         <Row
