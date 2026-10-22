@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-10-11",
+  "lastUpdated": "2026-10-21",
   "lenders": [
     {
       "id": "ledn",
@@ -10,10 +10,11 @@
       "minLoanUsd": 500,
       "maxLtv": 50,
       "rateTiers": [
-        { "maxLoanUsd": 250000, "aprPct": 11.49 },
-        { "maxLoanUsd": 1000000, "aprPct": 10.99 },
-        { "maxLoanUsd": 2000000, "aprPct": 10.49 },
-        { "maxLoanUsd": null, "aprPct": 9.99 }
+        { "maxLoanUsd": 250000, "aprPct": 10.99 },
+        { "maxLoanUsd": 500000, "aprPct": 10.49 },
+        { "maxLoanUsd": 1000000, "aprPct": 9.99 },
+        { "maxLoanUsd": 2000000, "aprPct": 9.75 },
+        { "maxLoanUsd": null, "aprPct": 9.25 }
       ],
       "originationFeePct": 2,
       "feeWaivedFor": ["us", "ca"],
@@ -71,7 +72,8 @@
         { "maxLoanUsd": 750000, "aprPct": 8.5, "originationFeePct": 1.49 },
         { "maxLoanUsd": 2000000, "aprPct": 8.0, "originationFeePct": 0.99 },
         { "maxLoanUsd": 5000000, "aprPct": 7.75, "originationFeePct": 0.49 },
-        { "maxLoanUsd": null, "aprPct": 7.25, "originationFeePct": 0.0 }
+        { "maxLoanUsd": 10000000, "aprPct": 7.25, "originationFeePct": 0.49 },
+        { "maxLoanUsd": null, "aprPct": 7.0, "originationFeePct": 0.25 }
       ],
       "originationFeePct": 1.49,
       "feeWaivedFor": [],
@@ -221,7 +223,7 @@
       "country": ["us", "ca", "eu", "uk", "ch", "au", "jp"],
       "excluded": [],
       "payoutType": "fiat",
-      "minLoanUsd": 10000,
+      "minLoanUsd": 20000,
       "maxLtv": 70,
       "rateTiers": [
         { "maxLoanUsd": 300000, "aprPct": 11.0, "originationFeePct": 1.5 },
@@ -364,13 +366,13 @@
       "custodyType": "custodial",
       "rehypothecation": "yes",
       "btcOnly": false,
-      "term": "Open-ended credit line; revolving",
+      "term": "6 months, repay any time before maturity",
       "rollover": "Revolving credit line",
       "rolloverEase": "revolving",
       "repayment": "Borrow up to 70% of collateral value in NXUSD, USDC, USDT, or DAI. Interest accrues daily and is charged to the outstanding balance monthly, repayable in stablecoin. BTC and ETH accepted as collateral.",
       "notes": "EU/UK-focused; not available to US residents. APR typically 12–17% with occasional 0% promotional offers. Linked to the Wirex card so the credit line can be spent directly at merchants. Multi-crypto collateral (BTC + ETH). Custodial CeFi model — origination fee and rehypothecation policy are not transparent.",
       "badge": "Card-linked credit",
-      "referralUrl": "https://wirexapp.com/crypto-credit"
+      "referralUrl": "https://www.wirexapp.com/borrow"
     },
     {
       "id": "nexo",
