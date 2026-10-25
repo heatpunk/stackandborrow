@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-10-21",
+  "lastUpdated": "2026-10-25",
   "lenders": [
     {
       "id": "ledn",
@@ -244,6 +244,31 @@
       "notes": "Institutional-grade multisig. P2P marketplace connecting borrowers with vetted lenders — rates vary 9–13% depending on loan. Origination fee is tiered by loan size: 1.5% up to $300K, 1.2% to $1M, 1.0% above (plus a fixed 0.0001 BTC transaction fee, and an additional 0.3%/yr after the first year on multi-year loans). Strong custody model — no single party can move funds unilaterally.",
       "badge": "Institutional multisig",
       "referralUrl": "https://debifi.com"
+    },
+    {
+      "id": "invity",
+      "name": "Invity",
+      "country": ["eu"],
+      "excluded": [],
+      "payoutType": "fiat",
+      "minLoanUsd": 4400,
+      "maxLtv": 50,
+      "rateTiers": [
+        { "maxLoanUsd": null, "aprPct": 10.5 }
+      ],
+      "originationFeePct": 0,
+      "feeWaivedFor": [],
+      "custody": "Custodial. Segregated institutional custody via BitGo Europe GmbH (BaFin-regulated in Germany) under Invity's CNB MiCA license. No rehypothecation — collateral is never lent out, traded, or mixed with operational funds.",
+      "custodyType": "custodial",
+      "rehypothecation": "no",
+      "btcOnly": true,
+      "term": "1 to 36 months, fixed rate for the full term",
+      "rollover": "New contract at maturity",
+      "rolloverEase": "new-contract",
+      "repayment": "Business Loan: repay principal + fixed interest (from 10.5% p.a.) to reclaim BTC; non-recourse (risk limited to collateral), automatic partial liquidation only at 85% LTV after two warning thresholds. Personal Loan (Cash Out): regulated sale with a fixed upfront buyback price and the right (not obligation) to buy back anytime within 1–36 months with no monthly payments and no debt. Direct bank payout in EUR, CZK, or PLN.",
+      "notes": "Czech National Bank MiCA-licensed CASP (Invity Finance s.r.o., Prague; part of the SatoshiLabs / Trezor group). Available to EEA residents and EU-registered companies. Two structures from €4,000 (~$4,400) at up to 50% LTV: (1) Business Loan for EU legal entities — fixed rate from 10.5% p.a., non-recourse, verified origin-of-funds certificate for accounting, liquidation at 85% LTV; (2) Personal Loan (Cash Out) for individuals — sale of BTC with a fixed upfront buyback right over 1–36 months, no credit check, no debt, reserve only liquidated around 95% drop. Custody segregated via BitGo Europe GmbH with no rehypothecation.",
+      "badge": "MiCA EU lender",
+      "referralUrl": "https://www.invity.io/loans/"
     },
     {
       "id": "xapo",
