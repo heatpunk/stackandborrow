@@ -40,7 +40,7 @@ export default function SwedenTaxPage({ live, lastUpdated }) {
 // ============================================================
 function MobileLayout({ live, lastUpdated }) {
   return (
-    <PaperFrame>
+    <PaperFrame main>
       <BrandHeader
         rightSlot={<LivePriceBadge btcUsd={live.btcUsd} loading={live.loading} error={live.error} onRefresh={live.refresh} />}
       />
@@ -87,13 +87,13 @@ function MobileLayout({ live, lastUpdated }) {
 // ============================================================
 function DesktopLayout({ live, lastUpdated }) {
   return (
-    <PaperFrame maxWidth={1320} sidePad={60} innerPad="0 56px">
+    <PaperFrame maxWidth={1320} sidePad={60} innerPad="0 56px" main>
       <BrandHeader
         size="desktop"
         rightSlot={<LivePriceBadge btcUsd={live.btcUsd} loading={live.loading} error={live.error} onRefresh={live.refresh} />}
       />
 
-      <main style={{ display: 'grid', gridTemplateColumns: '1fr 60px 1fr', marginTop: 8 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 60px 1fr', marginTop: 8 }}>
         {/* LEFT */}
         <div style={{ padding: '0 32px 0 0', minWidth: 0 }}>
           <Eyebrow desktop />
@@ -147,7 +147,7 @@ function DesktopLayout({ live, lastUpdated }) {
 
           <Disclaimer desktop />
         </div>
-      </main>
+      </div>
 
       <FineFooter source={live.source || 'mempool.space'} updated={lastUpdated} />
       <PageNav active="about" />

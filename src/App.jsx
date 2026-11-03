@@ -16,17 +16,7 @@ import {
   detectRegionFromCurrency,
 } from './lib/hooks.js';
 import { applyRouteSeo } from './lib/seo.js';
-
-import CalculatorPage    from './pages/Calculator.jsx';
-import LendersPage       from './pages/Lenders.jsx';
-import AboutPage         from './pages/About.jsx';
-import LandingPage       from './pages/Landing.jsx';
-import ComparePage       from './pages/Compare.jsx';
-import LenderDetailPage  from './pages/LenderDetail.jsx';
-import GlossaryPage      from './pages/Glossary.jsx';
-import SwedenTaxPage     from './pages/SwedenTax.jsx';
-import { VoidState404 }  from './pages/Void.jsx';
-import { GLOSSARY }      from './lib/glossary.js';
+import { GLOSSARY } from './lib/glossary.js';
 import { SB, ensureThemeCss } from './system/tokens.js';
 import { ThemeProvider } from './system/theme.jsx';
 import { MobileThemeToggleCorner } from './system/components.jsx';
@@ -91,6 +81,26 @@ export default function App() {
   const route = useRoute();
   const live = useLivePrices();
   const { lenders, lastUpdated } = useLenders();
+  const [activePage, setActivePage] = React.useState(null);
+
+  React.useEffect(() => {
+    let cancelled = false;
+    const load = async () => {
+      let Page;
+      if (route === '') Page = (await import('./pages/Landing.jsx')).default;
+      else if (route === 'calculator') Page = (await import('./pages/Calculator.jsx')).default;
+      else if (route === 'lenders') Page = (await import('./pages/Lenders.jsx')).default;
+      else if (route === 'about') Page = (await import('./pages/About.jsx')).default;
+      else if (route === 'sweden-tax') Page = (await import('./pages/SwedenTax.jsx')).default;
+      else if (typeof route === 'string' && route.startsWith('compare:')) Page = (await import('./pages/Compare.jsx')).default;
+      else if (typeof route === 'string' && route.startsWith('lender:')) Page = (await import('./pages/LenderDetail.jsx')).default;
+      else if (typeof route === 'string' && route.startsWith('glossary:')) Page = (await import('./pages/Glossary.jsx')).default;
+      else Page = (await import('./pages/Void.jsx')).VoidState404;
+      if (!cancelled) setActivePage(() => Page);
+    };
+    load();
+    return () => { cancelled = true; };
+  }, [route]);
 
   // Keep <title>, meta description, canonical, OG, and JSON-LD in
   // sync with the active route. Static HTML files set the initial
@@ -125,70 +135,24 @@ export default function App() {
   //   'sweden-tax' → Swedish tax guide (/skatt-bitcoin-lan)
   //   'compare:X-vs-Y' → Head-to-head (/compare/X-vs-Y)
   //   anything else → 404
-  let page;
-  if (route === '') {
-    page = (
-      <LandingPage
-        live={live}
-        lenders={lenders}
-        region={region}
-        initialCurrency={initialCurrency}
-      />
-    );
-  } else if (route === 'calculator') {
-    page = (
-      <CalculatorPage
-        live={live}
-        lenders={lenders}
-        lastUpdated={lastUpdated}
-        region={region}
-        initialCurrency={initialCurrency}
-      />
-    );
-  } else if (route === 'lenders') {
-    page = (
-      <LendersPage
-        lenders={lenders}
-        lastUpdated={lastUpdated}
-        live={live}
-        currency={readStoredCurrency(initialCurrency)}
-        region={region}
-      />
-    );
-  } else if (route === 'about') {
-    page = <AboutPage />;
-  } else if (route === 'sweden-tax') {
-    page = <SwedenTaxPage live={live} lastUpdated={lastUpdated} />;
-  } else if (typeof route === 'string' && route.startsWith('compare:')) {
-    const slug = route.slice('compare:'.length);
-    page = (
-      <ComparePage
-        slug={slug}
-        lenders={lenders}
-        lastUpdated={lastUpdated}
-        live={live}
-        currency={readStoredCurrency(initialCurrency)}
-        region={region}
-      />
-    );
-  } else if (typeof route === 'string' && route.startsWith('lender:')) {
-    const id = route.slice('lender:'.length);
-    page = (
-      <LenderDetailPage
-        id={id}
-        lenders={lenders}
-        lastUpdated={lastUpdated}
-        live={live}
-        currency={readStoredCurrency(initialCurrency)}
-        region={region}
-      />
-    );
-  } else if (typeof route === 'string' && route.startsWith('glossary:')) {
-    const slug = route.slice('glossary:'.length);
-    page = <GlossaryPage slug={slug} live={live} lastUpdated={lastUpdated} />;
-  } else {
-    page = <VoidState404 attemptedPath={route} />;
-  }
+  const pageProps = route === ''
+    ? { live, lenders, region, initialCurrency }
+    : route === 'calculator'
+      ? { live, lenders, lastUpdated, region, initialCurrency }
+      : route === 'lenders'
+        ? { lenders, lastUpdated, live, currency: readStoredCurrency(initialCurrency), region }
+        : route === 'about'
+          ? {}
+          : route === 'sweden-tax'
+            ? { live, lastUpdated }
+            : typeof route === 'string' && route.startsWith('compare:')
+              ? { slug: route.slice('compare:'.length), lenders, lastUpdated, live, currency: readStoredCurrency(initialCurrency), region }
+              : typeof route === 'string' && route.startsWith('lender:')
+                ? { id: route.slice('lender:'.length), lenders, lastUpdated, live, currency: readStoredCurrency(initialCurrency), region }
+                : typeof route === 'string' && route.startsWith('glossary:')
+                  ? { slug: route.slice('glossary:'.length), live, lastUpdated }
+                  : { attemptedPath: route };
+  const page = activePage ? React.createElement(activePage, pageProps) : <div aria-busy="true" />;
 
   return (
     <LanguageProvider>

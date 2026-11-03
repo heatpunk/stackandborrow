@@ -1,6 +1,6 @@
 # Stack & Borrow
 
-Bitcoin-backed loan calculator and lender comparison. Compare borrowing against selling bitcoin with tax-aware scenarios, transparent lender terms, and independent cost rankings.
+Bitcoin-backed loan calculator and lender comparison. Compare borrowing against selling bitcoin with tax-aware scenarios, transparent lender terms, and independent cost rankings. This educational tool is not an offer or solicitation to borrow; lender terms and eligibility can change, so users must confirm current details directly with the lender. Rankings use published terms and do not determine personal suitability.
 
 ## Core pages
 - [Overview](https://stackandborrow.com/): Product summary and calculator preview.

@@ -228,7 +228,7 @@ export default function CalculatorPage({
   }
 
   return (
-    <PaperFrame>
+    <PaperFrame main>
       <style>{`
         .cp-amount-input {
           background: transparent;

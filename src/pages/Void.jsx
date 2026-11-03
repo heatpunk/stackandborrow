@@ -36,7 +36,7 @@ export function VoidStateLoanTooSmall({ amountLabel = '—', minLabel = '$1,000'
     return <DesktopVoidLoanTooSmall amountLabel={amountLabel} minLabel={minLabel} onReturn={onReturn} />;
   }
   return (
-    <PaperFrame>
+    <PaperFrame main>
       <BrandHeader
         currentPage="—"
         pageOf="—"
@@ -106,7 +106,7 @@ export function VoidStateNoRegion({ regionLabel = 'your region', regionCode = '�
   }
   const code = regionCode.toUpperCase();
   return (
-    <PaperFrame>
+    <PaperFrame main>
       <BrandHeader
         currentPage="—"
         pageOf="—"
@@ -192,7 +192,7 @@ export function VoidState404({ attemptedPath = '' }) {
     return <DesktopVoid404 path={path} />;
   }
   return (
-    <PaperFrame>
+    <PaperFrame main>
       <BrandHeader
         currentPage="—"
         pageOf="—"
@@ -307,7 +307,7 @@ export function VoidStateLoading({ source = 'mempool.space' }) {
     return <DesktopVoidLoading source={source} />;
   }
   return (
-    <PaperFrame>
+    <PaperFrame main>
       <BrandHeader
         currentPage="II"
         pageOf="IV"

@@ -44,13 +44,14 @@ export function BitcoinLogo({ size = 32, color = SB.orange }) {
 // Wraps every routable page. All visual values resolve to CSS
 // variables so dark themes (carbon / midnight) flip automatically.
 // ------------------------------------------------------------
-export function PaperFrame({ children, maxWidth = 440, sidePad = 12, innerPad = '0 22px' }) {
+export function PaperFrame({ children, maxWidth = 440, sidePad = 12, innerPad = '0 22px', main = false }) {
+  const Content = main ? 'main' : 'div';
   return (
     <div style={{ ...paperStyles.stage, padding: `0 ${sidePad}px` }}>
       <div style={paperStyles.slot} />
       <div style={{ ...paperStyles.paper, maxWidth }}>
         <Perf side="top" />
-        <div style={{ padding: innerPad }}>{children}</div>
+        <Content style={{ padding: innerPad }}>{children}</Content>
         <Perf side="bottom" />
       </div>
       <div style={{ height: 10 }} />

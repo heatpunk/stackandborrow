@@ -15,7 +15,6 @@ import React, {
   useState,
   useCallback,
 } from 'react';
-import en from './en.js';
 import { detectLanguageFromLocale } from '../lib/hooks.js';
 
 // Static map of locale loaders — Vite needs to see each candidate
@@ -23,7 +22,8 @@ import { detectLanguageFromLocale } from '../lib/hooks.js';
 // `import(\`./${lang}.js\`)` works in dev but Rollup can't analyze
 // the template literal and silently ships *no* locale chunks in
 // production. import.meta.glob fixes that.
-const LOCALE_LOADERS = import.meta.glob('./*.js');
+const LOCALE_LOADERS = import.meta.glob('./*.js', { eager: false, import: 'default' });
+const loadEnglish = LOCALE_LOADERS['./en.js'];
 
 export const SUPPORTED_LANGUAGES = ['en', 'sv', 'de', 'es', 'fr', 'pt'];
 
@@ -68,7 +68,7 @@ function resolveInitialLanguage() {
 const LanguageContext = createContext({
   lang: 'en',
   detectedLang: 'en',
-  strings: en,
+  strings: {},
   setLanguage: () => {},
 });
 
@@ -88,31 +88,18 @@ export function LanguageProvider({ children }) {
   );
 
   const [lang, setLangState] = useState(resolveInitialLanguage);
-  const [strings, setStrings] = useState(en);
+  const [strings, setStrings] = useState({});
 
-  // Load the active language's strings. English is already imported
-  // statically so 'en' resolves synchronously; other locales lazy-load.
+  // Load only the active language strings.
   useEffect(() => {
     let cancelled = false;
-    if (lang === 'en') {
-      setStrings(en);
-      return () => { cancelled = true; };
-    }
-    const loader = LOCALE_LOADERS[`./${lang}.js`];
-    if (!loader) {
-      // Unknown language — stay on English.
-      setStrings(en);
-      return () => { cancelled = true; };
-    }
+    const loader = LOCALE_LOADERS[`./${lang}.js`] || loadEnglish;
     loader()
-      .then((mod) => {
-        if (cancelled) return;
-        // Fall through to English for any missing keys.
-        setStrings({ ...en, ...mod.default });
+      .then((strings) => {
+        if (!cancelled) setStrings(strings);
       })
       .catch(() => {
-        if (cancelled) return;
-        setStrings(en);
+        if (!cancelled) setStrings({});
       });
     return () => { cancelled = true; };
   }, [lang]);
@@ -156,7 +143,7 @@ export function useT() {
   const { strings } = useContext(LanguageContext);
   return useCallback(
     (key, vars) => {
-      const raw = strings[key] ?? en[key] ?? key;
+      const raw = strings[key] ?? key;
       return format(raw, vars);
     },
     [strings]

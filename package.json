@@ -6,15 +6,19 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "test": "node --test",
-    "preview": "vite preview"
+    "test": "node --test tests/agent-discovery.test.js",
+    "preview": "vite preview",
+    "test:browser": "node --test tests/browser-quality.test.js",
+    "preview:dist": "vite preview --host 127.0.0.1 --port 4182"
   },
   "dependencies": {
     "react": "18.3.1",
     "react-dom": "18.3.1"
   },
   "devDependencies": {
+    "@axe-core/playwright": "4.10.2",
     "@vitejs/plugin-react": "4.3.4",
+    "playwright": "1.64.1",
     "vite": "6.0.7"
   }
 }

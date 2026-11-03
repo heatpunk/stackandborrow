@@ -34,7 +34,7 @@ export function DesktopSpreadFrame({
   const t = useT();
   const resolvedSpineLabel = spineLabel ?? t('common.spineLabel');
   return (
-    <PaperFrame maxWidth={1320} sidePad={60} innerPad="0 56px">
+    <PaperFrame maxWidth={1320} sidePad={60} innerPad="0 56px" main>
       <BrandHeader
         size="desktop"
         currentPage={currentPage}

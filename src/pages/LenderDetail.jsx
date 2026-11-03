@@ -79,7 +79,7 @@ export default function LenderDetailPage({ id, lenders, lastUpdated, live, curre
 
   if (!lenders || lenders.length === 0) {
     return (
-      <PaperFrame>
+      <PaperFrame main>
         <BrandHeader />
         <div style={{ padding: '40px 0', textAlign: 'center', fontFamily: SB.mono, color: SB.inkMute }}>
           Loading…
@@ -109,7 +109,7 @@ export default function LenderDetailPage({ id, lenders, lastUpdated, live, curre
 function MobileLayout({ lender, ranked, idx, peers, currency, live, lastUpdated, loanUsd }) {
   const quoteLabel = `QUOTE · ${fmtMoneyCompact(loanUsd, currency, live.meta, live.btcUsd)} · 12MO · 50% LTV`;
   return (
-    <PaperFrame>
+    <PaperFrame main>
       <BrandHeader
         rightSlot={<LivePriceBadge btcUsd={live.btcUsd} loading={live.loading} error={live.error} onRefresh={live.refresh} />}
       />
@@ -150,13 +150,13 @@ function MobileLayout({ lender, ranked, idx, peers, currency, live, lastUpdated,
 function DesktopLayout({ lender, ranked, idx, peers, currency, live, lastUpdated, loanUsd }) {
   const quoteLabel = `QUOTE · ${fmtMoneyCompact(loanUsd, currency, live.meta, live.btcUsd)} · 12MO · 50% LTV`;
   return (
-    <PaperFrame maxWidth={1320} sidePad={60} innerPad="0 56px">
+    <PaperFrame maxWidth={1320} sidePad={60} innerPad="0 56px" main>
       <BrandHeader
         size="desktop"
         rightSlot={<LivePriceBadge btcUsd={live.btcUsd} loading={live.loading} error={live.error} onRefresh={live.refresh} />}
       />
 
-      <main style={{ display: 'grid', gridTemplateColumns: '1fr 60px 1fr', marginTop: 8 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 60px 1fr', marginTop: 8 }}>
         {/* LEFT */}
         <div style={{ padding: '0 32px 0 0', minWidth: 0 }}>
           <Eyebrow lender={lender} idx={idx} total={ranked.length} desktop />
@@ -203,7 +203,7 @@ function DesktopLayout({ lender, ranked, idx, peers, currency, live, lastUpdated
 
           <Methodology loanUsd={loanUsd} currency={currency} live={live} desktop />
         </div>
-      </main>
+      </div>
 
       <FineFooter source={live.source || 'mempool.space'} updated={lastUpdated} />
       <PageNav active="lender" />

@@ -246,7 +246,7 @@ export default function LendersPage({ lenders, lastUpdated, live, currency, regi
   }
 
   return (
-    <PaperFrame>
+    <PaperFrame main>
       <BrandHeader
         currentPage="III"
         pageOf="IV"

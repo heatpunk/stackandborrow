@@ -63,7 +63,7 @@ export default function GlossaryPage({ slug, live, lastUpdated }) {
   const related = RELATED[key] || [];
 
   return (
-    <PaperFrame>
+    <PaperFrame main>
       <BrandHeader
         rightSlot={<LivePriceBadge btcUsd={live.btcUsd} loading={live.loading} error={live.error} onRefresh={live.refresh} />}
       />

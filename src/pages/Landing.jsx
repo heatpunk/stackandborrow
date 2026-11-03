@@ -198,7 +198,7 @@ export default function LandingPage({ live, lenders = [], region, initialCurrenc
   }
 
   return (
-    <PaperFrame>
+    <PaperFrame main>
       <style>{`
         @keyframes lp-caret { 0%, 49% { opacity: 1 } 50%, 100% { opacity: 0 } }
         .lp-amount-input {
@@ -908,6 +908,7 @@ function DesktopLandingLayout({
       </div>
 
       <div style={{
+        minHeight: 180,
         padding: '24px 22px 28px',
         background: SB.creamWarm,
         border: `1px solid ${SB.inkLine}`,
@@ -921,6 +922,7 @@ function DesktopLandingLayout({
         }}>{t('landing.quote.eyebrow')}</div>
         <p style={{
           margin: 0,
+          minHeight: 64,
           fontFamily: SB.serif, fontStyle: 'italic',
           fontSize: 24, lineHeight: 1.32,
           color: SB.ink, textWrap: 'pretty',
@@ -929,10 +931,11 @@ function DesktopLandingLayout({
           &ldquo;{fieldQuote.text}&rdquo;
         </p>
         <div style={{
+          minHeight: 30,
           marginTop: 18,
           fontFamily: SB.mono, fontSize: 10, fontWeight: 700,
           letterSpacing: '0.18em', color: SB.ink,
-        }}>
+        }} aria-hidden="true">
           — {fieldQuote.attribution}
         </div>
       </div>
