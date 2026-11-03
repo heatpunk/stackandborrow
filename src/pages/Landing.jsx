@@ -538,9 +538,9 @@ export default function LandingPage({ live, lenders = [], region, initialCurrenc
           background: SB.cream,
           padding: '0 8px',
           fontFamily: SB.mono,
-          fontSize: 9, fontWeight: 700,
+          fontSize: 10, fontWeight: 700,
           letterSpacing: '0.2em',
-          color: SB.inkMute,
+          color: SB.ink,
         }}>{t('landing.quote.eyebrow')}</div>
         <p style={{
           margin: 0,
@@ -917,7 +917,7 @@ function DesktopLandingLayout({
           position: 'absolute', top: -11, left: 18,
           background: SB.cream, padding: '0 10px',
           fontFamily: SB.mono, fontSize: 10, fontWeight: 700,
-          letterSpacing: '0.22em', color: SB.inkMute,
+          letterSpacing: '0.22em', color: SB.ink,
         }}>{t('landing.quote.eyebrow')}</div>
         <p style={{
           margin: 0,
@@ -931,7 +931,7 @@ function DesktopLandingLayout({
         <div style={{
           marginTop: 18,
           fontFamily: SB.mono, fontSize: 10, fontWeight: 700,
-          letterSpacing: '0.18em', color: SB.orange,
+          letterSpacing: '0.18em', color: SB.ink,
         }}>
           — {fieldQuote.attribution}
         </div>

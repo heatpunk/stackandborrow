@@ -93,7 +93,7 @@ function DesktopLayout({ live, lastUpdated }) {
         rightSlot={<LivePriceBadge btcUsd={live.btcUsd} loading={live.loading} error={live.error} onRefresh={live.refresh} />}
       />
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 60px 1fr', marginTop: 8 }}>
+      <main style={{ display: 'grid', gridTemplateColumns: '1fr 60px 1fr', marginTop: 8 }}>
         {/* LEFT */}
         <div style={{ padding: '0 32px 0 0', minWidth: 0 }}>
           <Eyebrow desktop />
@@ -147,7 +147,7 @@ function DesktopLayout({ live, lastUpdated }) {
 
           <Disclaimer desktop />
         </div>
-      </div>
+      </main>
 
       <FineFooter source={live.source || 'mempool.space'} updated={lastUpdated} />
       <PageNav active="about" />

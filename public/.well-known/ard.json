@@ -1,10 +1,9 @@
 {
-  "version": "0.91",
   "entries": [
     {
-      "identifier": "https://stackandborrow.com/",
+      "identifier": "urn:air:stackandborrow.com:site:overview",
       "displayName": "Stack & Borrow overview",
-      "type": "website",
+      "type": "text/html",
       "url": "https://stackandborrow.com/",
       "representativeQueries": [
         "What does Stack & Borrow do?",
@@ -12,9 +11,9 @@
       ]
     },
     {
-      "identifier": "https://stackandborrow.com/calculator",
+      "identifier": "urn:air:stackandborrow.com:site:calculator",
       "displayName": "Bitcoin-backed loan calculator",
-      "type": "calculator",
+      "type": "text/html",
       "url": "https://stackandborrow.com/calculator",
       "representativeQueries": [
         "Compare borrowing bitcoin with selling bitcoin",
@@ -22,9 +21,9 @@
       ]
     },
     {
-      "identifier": "https://stackandborrow.com/lenders",
+      "identifier": "urn:air:stackandborrow.com:site:lender-directory",
       "displayName": "Lender comparison",
-      "type": "directory",
+      "type": "text/html",
       "url": "https://stackandborrow.com/lenders",
       "representativeQueries": [
         "Which bitcoin-backed lenders are compared?",
@@ -32,9 +31,9 @@
       ]
     },
     {
-      "identifier": "https://stackandborrow.com/about",
+      "identifier": "urn:air:stackandborrow.com:site:methodology",
       "displayName": "Methodology and glossary",
-      "type": "documentation",
+      "type": "text/html",
       "url": "https://stackandborrow.com/about",
       "representativeQueries": [
         "How are lender rankings calculated?",
@@ -42,10 +41,10 @@
       ]
     },
     {
-      "identifier": "https://stackandborrow.com/lenders.json",
+      "identifier": "urn:air:stackandborrow.com:data:lenders",
       "displayName": "Lender data",
-      "type": "data",
-      "data": "https://stackandborrow.com/lenders.json",
+      "type": "application/json",
+      "url": "https://stackandborrow.com/lenders.json",
       "representativeQueries": [
         "Get the lender data used by Stack & Borrow",
         "Find bitcoin loan lender terms in machine-readable form"

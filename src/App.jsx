@@ -32,21 +32,6 @@ import { ThemeProvider } from './system/theme.jsx';
 import { MobileThemeToggleCorner } from './system/components.jsx';
 import { LanguageProvider, useT } from './i18n/index.jsx';
 
-// Loads our two webfonts once at the document level.
-function ensureFonts() {
-  if (typeof document === 'undefined') return;
-  if (document.getElementById('sb-fonts')) return;
-  const link = document.createElement('link');
-  link.id = 'sb-fonts';
-  link.rel = 'stylesheet';
-  link.href = 'https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500;1,9..144,600&family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500;600;700&display=swap';
-  document.head.appendChild(link);
-  // Background tracks the active theme via CSS var (set by ensureThemeCss).
-  document.body.style.margin = '0';
-  document.body.style.fontFamily = "'Geist', system-ui, sans-serif";
-  document.body.style.webkitFontSmoothing = 'antialiased';
-}
-
 // Separate function component so it can call useT() — the
 // class-based ErrorBoundary delegates rendering here.
 function ErrorFallback({ error }) {
@@ -102,7 +87,6 @@ class ErrorBoundary extends React.Component {
 }
 
 export default function App() {
-  ensureFonts();
   ensureThemeCss();
   const route = useRoute();
   const live = useLivePrices();
