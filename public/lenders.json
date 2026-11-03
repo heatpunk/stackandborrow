@@ -44,7 +44,6 @@
         { "maxLoanUsd": 5000000, "aprPct": 8.5 },
         { "maxLoanUsd": null, "aprPct": 7.49 }
       ],
-      "regionalRateAdjustment": { "us": 0, "default": 1.0 },
       "originationFeePct": 0,
       "feeWaivedFor": [],
       "custody": "Custodial. BTC-only collateral. Held by Strike or transferred to vetted third-party capital providers (no further rehypothecation).",
