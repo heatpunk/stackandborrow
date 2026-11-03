@@ -43,7 +43,7 @@ export function DesktopSpreadFrame({
       />
 
       {/* Open-book content: two columns + spine */}
-      <div style={{
+      <main style={{
         display: 'grid',
         gridTemplateColumns: '1fr 60px 1fr',
         gap: 0,
@@ -116,7 +116,7 @@ export function DesktopSpreadFrame({
             </div>
           )}
         </div>
-      </div>
+      </main>
 
       <FineFooter source={footerSource} updated={footerUpdated} />
       <PageNav active={active} />

@@ -1,0 +1,55 @@
+{
+  "version": "0.91",
+  "entries": [
+    {
+      "identifier": "https://stackandborrow.com/",
+      "displayName": "Stack & Borrow overview",
+      "type": "website",
+      "url": "https://stackandborrow.com/",
+      "representativeQueries": [
+        "What does Stack & Borrow do?",
+        "How can I compare bitcoin-backed loans?"
+      ]
+    },
+    {
+      "identifier": "https://stackandborrow.com/calculator",
+      "displayName": "Bitcoin-backed loan calculator",
+      "type": "calculator",
+      "url": "https://stackandborrow.com/calculator",
+      "representativeQueries": [
+        "Compare borrowing bitcoin with selling bitcoin",
+        "How much bitcoin would I keep by borrowing?"
+      ]
+    },
+    {
+      "identifier": "https://stackandborrow.com/lenders",
+      "displayName": "Lender comparison",
+      "type": "directory",
+      "url": "https://stackandborrow.com/lenders",
+      "representativeQueries": [
+        "Which bitcoin-backed lenders are compared?",
+        "Compare bitcoin loan lender terms and costs"
+      ]
+    },
+    {
+      "identifier": "https://stackandborrow.com/about",
+      "displayName": "Methodology and glossary",
+      "type": "documentation",
+      "url": "https://stackandborrow.com/about",
+      "representativeQueries": [
+        "How are lender rankings calculated?",
+        "What assumptions does the calculator use?"
+      ]
+    },
+    {
+      "identifier": "https://stackandborrow.com/lenders.json",
+      "displayName": "Lender data",
+      "type": "data",
+      "data": "https://stackandborrow.com/lenders.json",
+      "representativeQueries": [
+        "Get the lender data used by Stack & Borrow",
+        "Find bitcoin loan lender terms in machine-readable form"
+      ]
+    }
+  ]
+}

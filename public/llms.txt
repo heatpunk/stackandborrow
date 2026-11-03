@@ -1,0 +1,18 @@
+# Stack & Borrow
+
+Bitcoin-backed loan calculator and lender comparison. Compare borrowing against selling bitcoin with tax-aware scenarios, transparent lender terms, and independent cost rankings.
+
+## Core pages
+- [Overview](https://stackandborrow.com/): Product summary and calculator preview.
+- [Bitcoin loan calculator](https://stackandborrow.com/calculator): Compare borrowing and selling across price scenarios.
+- [Lender comparison](https://stackandborrow.com/lenders): Compare lender terms and costs.
+- [Methodology and glossary](https://stackandborrow.com/about): How rankings, assumptions, and key terms work.
+- [Swedish tax guide](https://stackandborrow.com/skatt-bitcoin-lan): Swedish tax considerations for loans secured by bitcoin.
+
+## Lender profiles and comparisons
+- [Lender directory](https://stackandborrow.com/lenders): Profiles for supported lenders.
+- [Bitcoin loan comparison pages](https://stackandborrow.com/compare/): Pairwise lender comparisons.
+
+## Machine-readable data
+- [Lender data](https://stackandborrow.com/lenders.json): Current lender information used by the site.
+- [Agent resource discovery manifest](https://stackandborrow.com/.well-known/ard.json): Machine-readable site resource map.

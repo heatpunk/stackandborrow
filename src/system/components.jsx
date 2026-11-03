@@ -50,7 +50,7 @@ export function PaperFrame({ children, maxWidth = 440, sidePad = 12, innerPad = 
       <div style={paperStyles.slot} />
       <div style={{ ...paperStyles.paper, maxWidth }}>
         <Perf side="top" />
-        <div style={{ padding: innerPad }}>{children}</div>
+        <main style={{ padding: innerPad }}>{children}</main>
         <Perf side="bottom" />
       </div>
       <div style={{ height: 10 }} />
