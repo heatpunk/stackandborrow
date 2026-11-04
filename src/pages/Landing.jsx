@@ -1028,11 +1028,13 @@ function DesktopLandingLayout({
 
       <DashedRule />
 
-      <Button href={bestLender?.referralUrl || '#lenders'}>
-        {bestLender
-          ? t('common.cta.openWith', { name: bestLender.name.toUpperCase() })
-          : t('common.cta.browseAll')}
-      </Button>
+      <div style={{ minHeight: 52 }}>
+        <Button href={bestLender?.referralUrl || '#lenders'}>
+          {bestLender
+            ? t('common.cta.openWith', { name: bestLender.name.toUpperCase() })
+            : t('common.cta.browseAll')}
+        </Button>
+      </div>
       <div style={{
         textAlign: 'center', marginTop: 10,
         fontFamily: SB.mono, fontSize: 10,

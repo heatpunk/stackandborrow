@@ -88,7 +88,8 @@ export function LanguageProvider({ children }) {
   );
 
   const [lang, setLangState] = useState(resolveInitialLanguage);
-  const [strings, setStrings] = useState({});
+  const [strings, setStrings] = useState({})
+  const [loadedLang, setLoadedLang] = useState(null)
 
   // Load only the active language strings.
   useEffect(() => {
@@ -96,7 +97,10 @@ export function LanguageProvider({ children }) {
     const loader = LOCALE_LOADERS[`./${lang}.js`] || loadEnglish;
     loader()
       .then((strings) => {
-        if (!cancelled) setStrings(strings);
+        if (!cancelled) {
+          setStrings(strings)
+          setLoadedLang(lang)
+        }
       })
       .catch(() => {
         if (!cancelled) setStrings({});
@@ -131,7 +135,7 @@ export function LanguageProvider({ children }) {
 
   return (
     <LanguageContext.Provider value={value}>
-      {children}
+      {loadedLang === lang ? children : null}
     </LanguageContext.Provider>
   );
 }

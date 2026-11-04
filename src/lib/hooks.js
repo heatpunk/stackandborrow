@@ -5,6 +5,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { CURRENCY_META } from '../system/tokens.js';
+import initialLenderData from '../../public/lenders.json';
 
 const FALLBACK_BTC_USD = 104287;
 
@@ -188,10 +189,11 @@ export function useLivePrices() {
   return { ...data, refresh: fetchPrices };
 }
 
-// Reads /lenders.json once at mount. To update rates: edit the JSON.
+// Static lender data is available on first render. The background fetch
+// refreshes it without removing or reserving the already rendered quotes.
 export function useLenders() {
-  const [lenders, setLenders] = useState([]);
-  const [lastUpdated, setLastUpdated] = useState(null);
+  const [lenders, setLenders] = useState(initialLenderData.lenders || []);
+  const [lastUpdated, setLastUpdated] = useState(initialLenderData.lastUpdated || null);
 
   useEffect(() => {
     fetch('/lenders.json')

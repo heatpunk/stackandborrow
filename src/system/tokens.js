@@ -98,11 +98,11 @@ export function ensureThemeCss() {
   const s = document.createElement('style');
   s.id = 'sb-theme-css';
   s.textContent = `
-@font-face { font-family: 'Fraunces'; font-style: normal; font-weight: 400; font-display: swap; src: url('/fonts/fraunces-normal-400.ttf') format('truetype'); }
-@font-face { font-family: 'Fraunces'; font-style: normal; font-weight: 500 700; font-display: swap; src: url('/fonts/fraunces-normal-600.ttf') format('truetype'); }
-@font-face { font-family: 'Fraunces'; font-style: italic; font-weight: 400 600; font-display: swap; src: url('/fonts/fraunces-italic-400.ttf') format('truetype'); }
-@font-face { font-family: 'Geist'; font-style: normal; font-weight: 300 700; font-display: swap; src: url('/fonts/geist-normal-400.ttf') format('truetype'); }
-@font-face { font-family: 'Geist Mono'; font-style: normal; font-weight: 400 700; font-display: swap; src: url('/fonts/geist-mono-normal-400.ttf') format('truetype'); }
+@font-face { font-family: 'Fraunces'; font-style: normal; font-weight: 400; font-display: swap; size-adjust: 100%; src: url('/fonts/fraunces-normal-400.woff2') format('woff2'); }
+@font-face { font-family: 'Fraunces'; font-style: normal; font-weight: 500 700; font-display: swap; size-adjust: 100%; src: url('/fonts/fraunces-normal-600.woff2') format('woff2'); }
+@font-face { font-family: 'Fraunces'; font-style: italic; font-weight: 400 600; font-display: swap; size-adjust: 100%; src: url('/fonts/fraunces-italic-400.woff2') format('woff2'); }
+@font-face { font-family: 'Geist'; font-style: normal; font-weight: 300 700; font-display: swap; size-adjust: 100%; src: url('/fonts/geist-normal-400.woff2') format('woff2'); }
+@font-face { font-family: 'Geist Mono'; font-style: normal; font-weight: 400 700; font-display: swap; size-adjust: 100%; src: url('/fonts/geist-mono-normal-400.woff2') format('woff2'); }
 :root {
 ${vars(THEMES.light)}
 }

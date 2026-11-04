@@ -3,16 +3,28 @@ import { readFile } from 'node:fs/promises'
 import test from 'node:test'
 import { resolve } from 'node:path'
 import { spawnSync } from 'node:child_process'
+import { existsSync } from 'node:fs'
 
 const root = resolve(import.meta.dirname, '..')
 const manifestPath = resolve(root, 'dist/.well-known/ard.json')
-const conformancePath = resolve(root, '.vendor/ard-spec/conformance/bin/conformance-test')
+const ardSpecRevision = 'f073b1ea9b01a5f068d0b0986426f2ea49fa30b2'
+const ardSpecPath = resolve(root, '.vendor/ard-spec')
+const conformancePath = resolve(ardSpecPath, 'conformance/bin/conformance-test')
+
+function ensureOfficialArdSuite() {
+  if (existsSync(conformancePath)) return
+  const clone = spawnSync('git', ['clone', '--filter=blob:none', 'https://github.com/ards-project/ard-spec.git', ardSpecPath], { cwd: root, encoding: 'utf8' })
+  assert.equal(clone.status, 0, `Could not fetch official ARD suite: ${clone.stdout}\n${clone.stderr}`)
+  const checkout = spawnSync('git', ['-C', ardSpecPath, 'checkout', '--detach', ardSpecRevision], { cwd: root, encoding: 'utf8' })
+  assert.equal(checkout.status, 0, `Could not pin official ARD suite: ${checkout.stdout}\n${checkout.stderr}`)
+}
 
 async function loadManifest() {
   return JSON.parse(await readFile(manifestPath, 'utf8'))
 }
 
 test('ARD manifest passes the pinned official conformance suite', async () => {
+  ensureOfficialArdSuite()
   const result = spawnSync(conformancePath, ['manifest', manifestPath], { cwd: root, encoding: 'utf8' })
   assert.equal(result.status, 0, `${result.stdout}\n${result.stderr}`)
   assert.match(result.stdout, /All 5 entries validate against ArdEntry/)
@@ -46,18 +58,23 @@ test('llms.txt has an H1 and absolute Markdown links to existing site resources'
   }
 })
 
-test('deployment headers are limited and keep CSP in report-only mode', async () => {
+test('deployment headers enforce the tested CSP and staged transport protections', async () => {
   const headers = await readFile(resolve(root, 'public/_headers'), 'utf8')
-  assert.match(headers, /Content-Security-Policy-Report-Only:/)
-  assert.doesNotMatch(headers, /\n\s*Content-Security-Policy:/)
+  assert.match(headers, /\n\s*Content-Security-Policy:/)
+  assert.doesNotMatch(headers, /Content-Security-Policy-Report-Only:/)
   assert.match(headers, /Strict-Transport-Security: max-age=86400/)
   assert.match(headers, /Cross-Origin-Opener-Policy: same-origin-allow-popups/)
 })
 
-test('Vite production output includes locally hosted font files', async () => {
-  for (const font of ['fraunces-italic-400.ttf', 'fraunces-normal-400.ttf', 'fraunces-normal-600.ttf', 'geist-normal-400.ttf', 'geist-mono-normal-400.ttf']) {
-    await readFile(resolve(root, 'dist/fonts', font))
+test('Vite production output includes optimized locally hosted font files', async () => {
+  const { stat } = await import('node:fs/promises')
+  let total = 0
+  for (const font of ['fraunces-italic-400.woff2', 'fraunces-normal-400.woff2', 'fraunces-normal-600.woff2', 'geist-normal-400.woff2', 'geist-mono-normal-400.woff2']) {
+    const info = await stat(resolve(root, 'dist/fonts', font))
+    assert.ok(info.size < 30_000, `${font} exceeds the 30 KB subset budget`)
+    total += info.size
   }
+  assert.ok(total < 100_000, `font payload ${total} exceeds the 100 KB budget`)
 })
 
 
