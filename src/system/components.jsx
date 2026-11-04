@@ -186,9 +186,10 @@ export function SunMoonStamp({ size = 76, rotate = 8, style = {} }) {
   const fg = isDark ? SB.orange : SB.ink;
   const ringId = `sb-sm-ring-${size}`;
 
-  const title = preference === 'auto'
+  const visibleLabel = (isDark ? t('common.theme.dark') : t('common.theme.light')).trim();
+  const title = `${visibleLabel}. ${preference === 'auto'
     ? t('common.theme.titleAuto', { theme })
-    : t('common.theme.title', { theme });
+    : t('common.theme.title', { theme })}`;
 
   return (
     <button

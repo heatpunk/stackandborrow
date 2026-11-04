@@ -21,8 +21,7 @@ test('rendered routes have one main, no axe contrast issues, and support keyboar
         await page.waitForTimeout(300)
         assert.equal(await page.locator('main').count(), 1, `${route} at ${viewport.width}px has exactly one main landmark`)
         const audit = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa']).analyze()
-        const contrast = audit.violations.find((violation) => violation.id === 'color-contrast')
-        assert.equal(contrast?.nodes.length || 0, 0, `${route} contrast violations: ${contrast?.nodes.map((node) => node.target.join(' ')).join(', ')}`)
+        assert.equal(audit.violations.length, 0, `${route} accessibility violations: ${audit.violations.map((violation) => `${violation.id} (${violation.nodes.map((node) => node.target.join(' ')).join(', ')})`).join('; ')}`)
         assert.deepEqual(pageErrors, [], `${route} browser errors`)
         if (viewport.width >= 1024 && route !== '/calculator') {
           assert.equal(await page.locator('h1').count(), 1, `${route} desktop primary heading`)
