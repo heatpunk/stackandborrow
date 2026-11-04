@@ -838,13 +838,13 @@ function DesktopLandingLayout({
       <DashedRule label={t('landing.section.subtotal')} />
 
       <div style={{ padding: '0 2px', minHeight: 175, overflowAnchor: 'none' }}>
-        <div style={{ minHeight: 29, display: 'flex', justifyContent: 'space-between', padding: '6px 0', fontSize: 13, overflowAnchor: 'none' }}>
+        <div style={{ height: 41, display: 'flex', justifyContent: 'space-between', padding: '6px 0', fontSize: 13, overflowAnchor: 'none' }}>
           <span style={{ color: SB.inkSoft }}>{t('landing.subtotal.total', { months: TERM_MONTHS })}</span>
           <span style={{ fontFamily: SB.mono, fontWeight: 700, color: SB.ink }}>
             {fmtMoney(interestUsd + origFeeUsd, currency, live.meta, btcSpotUsd)}
           </span>
         </div>
-        <div style={{ minHeight: 29, display: 'flex', justifyContent: 'space-between', padding: '6px 0', fontSize: 13, overflowAnchor: 'none' }}>
+        <div style={{ height: 41, display: 'flex', justifyContent: 'space-between', padding: '6px 0', fontSize: 13, overflowAnchor: 'none' }}>
           <span style={{ color: SB.inkSoft }}>{t('landing.subtotal.satsSold')}</span>
           <span style={{ fontFamily: SB.mono, fontWeight: 700, color: SB.orange }}>
             −{fmtNum(satsToSell)}
