@@ -696,13 +696,13 @@ function DesktopLandingLayout({
       <h1 style={{
         margin: 0,
         fontFamily: SB.serif,
-        fontSize: 80, fontWeight: 600,
+        fontSize: 72, fontWeight: 600,
         lineHeight: 0.95,
         letterSpacing: '-0.03em',
         color: SB.ink,
       }}>
         {t('landing.hero.titleLine1')}<br />
-        <span style={{ color: SB.orange, fontStyle: 'italic', fontWeight: 500 }}>
+        <span style={{ color: SB.orange, fontStyle: 'italic', fontWeight: 500, whiteSpace: 'nowrap', fontSize: 72 }}>
           {t('landing.hero.titleLine2')}
         </span>
       </h1>
@@ -837,14 +837,14 @@ function DesktopLandingLayout({
 
       <DashedRule label={t('landing.section.subtotal')} />
 
-      <div style={{ padding: '0 2px' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', fontSize: 13 }}>
+      <div style={{ padding: '0 2px', minHeight: 151, overflowAnchor: 'none' }}>
+        <div style={{ minHeight: 29, display: 'flex', justifyContent: 'space-between', padding: '6px 0', fontSize: 13, overflowAnchor: 'none' }}>
           <span style={{ color: SB.inkSoft }}>{t('landing.subtotal.total', { months: TERM_MONTHS })}</span>
           <span style={{ fontFamily: SB.mono, fontWeight: 700, color: SB.ink }}>
             {fmtMoney(interestUsd + origFeeUsd, currency, live.meta, btcSpotUsd)}
           </span>
         </div>
-        <div style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', fontSize: 13 }}>
+        <div style={{ minHeight: 29, display: 'flex', justifyContent: 'space-between', padding: '6px 0', fontSize: 13, overflowAnchor: 'none' }}>
           <span style={{ color: SB.inkSoft }}>{t('landing.subtotal.satsSold')}</span>
           <span style={{ fontFamily: SB.mono, fontWeight: 700, color: SB.orange }}>
             −{fmtNum(satsToSell)}
@@ -870,7 +870,9 @@ function DesktopLandingLayout({
 
       <DashedRule />
 
-      <Button href="/calculator">{t('landing.cta.fullBreakdown')}</Button>
+      <div style={{ minHeight: 52 }}>
+        <Button href="/calculator">{t('landing.cta.fullBreakdown')}</Button>
+      </div>
 
       <div style={{
         position: 'relative',
