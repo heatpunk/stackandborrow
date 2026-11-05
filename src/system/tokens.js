@@ -98,6 +98,7 @@ export function ensureThemeCss() {
   const s = document.createElement('style');
   s.id = 'sb-theme-css';
   s.textContent = `
+@font-face { font-family: 'Fraunces Brand'; font-style: normal; font-weight: 600; font-display: swap; src: url('/fonts/fraunces-brand-600.woff2') format('woff2'); }
 @font-face { font-family: 'Fraunces'; font-style: normal; font-weight: 400; font-display: swap; src: url('/fonts/fraunces-normal-400.ttf') format('truetype'); }
 @font-face { font-family: 'Fraunces'; font-style: normal; font-weight: 500 700; font-display: swap; src: url('/fonts/fraunces-normal-600.ttf') format('truetype'); }
 @font-face { font-family: 'Fraunces'; font-style: italic; font-weight: 400 600; font-display: swap; src: url('/fonts/fraunces-italic-400.ttf') format('truetype'); }

@@ -126,8 +126,9 @@ export function BrandHeader({ rightSlot = null, currentPage = null, pageOf = nul
           <BitcoinLogo size={big ? 42 : 32} />
           <div style={{ minWidth: 0 }}>
             <div style={{
-              fontFamily: SB.serif,
+              fontFamily: "'Fraunces Brand', Fraunces, Georgia, serif",
               fontSize: big ? 30 : 22, fontWeight: 600,
+              fontOpticalSizing: 'none',
               letterSpacing: '-0.005em',
               lineHeight: 1, color: SB.ink,
             }}>
