@@ -13,6 +13,7 @@ test('Terms opens from the overview without rendering the previous page with new
       await page.locator('a[href="/about"]').first().click()
       await page.waitForURL('**/about')
       await page.waitForLoadState('networkidle')
+      await page.locator('main').waitFor()
       assert.equal(await page.getByText('Something went wrong loading the page.', { exact: true }).count(), 0)
       assert.equal(await page.locator('main').count(), 1)
       await page.close()
