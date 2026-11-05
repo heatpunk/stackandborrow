@@ -89,7 +89,7 @@ export default function ComparePage({ slug, lenders, lastUpdated, live, currency
   // Loading state — lenders.json hasn't resolved yet.
   if (!lenders || lenders.length === 0) {
     return (
-      <PaperFrame>
+      <PaperFrame main>
         <BrandHeader />
         <div style={{ padding: '40px 0', textAlign: 'center', fontFamily: SB.mono, color: SB.inkMute }}>
           Loading…
@@ -138,7 +138,7 @@ export default function ComparePage({ slug, lenders, lastUpdated, live, currency
 // ============================================================
 function MobileCompareLayout({ winner, runner, costDelta, aprDelta, currency, live, lastUpdated, loanUsd }) {
   return (
-    <PaperFrame>
+    <PaperFrame main>
       <BrandHeader
         rightSlot={<LivePriceBadge btcUsd={live.btcUsd} loading={live.loading} error={live.error} onRefresh={live.refresh} />}
       />
@@ -228,7 +228,7 @@ function DesktopCompareLayout({ winner, runner, costDelta, aprDelta, currency, l
   // since the compare page is not part of the four-section booklet
   // nav and shouldn't render with currentPage/pageOf.
   return (
-    <PaperFrame maxWidth={1320} sidePad={60} innerPad="0 56px">
+    <PaperFrame maxWidth={1320} sidePad={60} innerPad="0 56px" main>
       <BrandHeader
         size="desktop"
         rightSlot={<LivePriceBadge btcUsd={live.btcUsd} loading={live.loading} error={live.error} onRefresh={live.refresh} />}

@@ -40,7 +40,7 @@ export default function SwedenTaxPage({ live, lastUpdated }) {
 // ============================================================
 function MobileLayout({ live, lastUpdated }) {
   return (
-    <PaperFrame>
+    <PaperFrame main>
       <BrandHeader
         rightSlot={<LivePriceBadge btcUsd={live.btcUsd} loading={live.loading} error={live.error} onRefresh={live.refresh} />}
       />
@@ -87,7 +87,7 @@ function MobileLayout({ live, lastUpdated }) {
 // ============================================================
 function DesktopLayout({ live, lastUpdated }) {
   return (
-    <PaperFrame maxWidth={1320} sidePad={60} innerPad="0 56px">
+    <PaperFrame maxWidth={1320} sidePad={60} innerPad="0 56px" main>
       <BrandHeader
         size="desktop"
         rightSlot={<LivePriceBadge btcUsd={live.btcUsd} loading={live.loading} error={live.error} onRefresh={live.refresh} />}

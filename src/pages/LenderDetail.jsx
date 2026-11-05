@@ -79,7 +79,7 @@ export default function LenderDetailPage({ id, lenders, lastUpdated, live, curre
 
   if (!lenders || lenders.length === 0) {
     return (
-      <PaperFrame>
+      <PaperFrame main>
         <BrandHeader />
         <div style={{ padding: '40px 0', textAlign: 'center', fontFamily: SB.mono, color: SB.inkMute }}>
           Loading…
@@ -109,7 +109,7 @@ export default function LenderDetailPage({ id, lenders, lastUpdated, live, curre
 function MobileLayout({ lender, ranked, idx, peers, currency, live, lastUpdated, loanUsd }) {
   const quoteLabel = `QUOTE · ${fmtMoneyCompact(loanUsd, currency, live.meta, live.btcUsd)} · 12MO · 50% LTV`;
   return (
-    <PaperFrame>
+    <PaperFrame main>
       <BrandHeader
         rightSlot={<LivePriceBadge btcUsd={live.btcUsd} loading={live.loading} error={live.error} onRefresh={live.refresh} />}
       />
@@ -150,7 +150,7 @@ function MobileLayout({ lender, ranked, idx, peers, currency, live, lastUpdated,
 function DesktopLayout({ lender, ranked, idx, peers, currency, live, lastUpdated, loanUsd }) {
   const quoteLabel = `QUOTE · ${fmtMoneyCompact(loanUsd, currency, live.meta, live.btcUsd)} · 12MO · 50% LTV`;
   return (
-    <PaperFrame maxWidth={1320} sidePad={60} innerPad="0 56px">
+    <PaperFrame maxWidth={1320} sidePad={60} innerPad="0 56px" main>
       <BrandHeader
         size="desktop"
         rightSlot={<LivePriceBadge btcUsd={live.btcUsd} loading={live.loading} error={live.error} onRefresh={live.refresh} />}

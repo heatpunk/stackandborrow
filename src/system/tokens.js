@@ -22,16 +22,16 @@ export const THEMES = {
     creamWarm:  '#efe8da',
     ink:        '#1a1612',
     inkFill:    'rgba(26, 22, 18, 0.85)',
-    inkSoft:    'rgba(26,22,18,0.78)',
-    inkMute:    'rgba(26,22,18,0.55)',
-    inkFaint:   'rgba(26,22,18,0.32)',
+    inkSoft:    '#51483f',
+    inkMute:    '#625a51',
+    inkFaint:   '#625a51',
     inkLine:    'rgba(26,22,18,0.18)',
-    orange:     '#c1690e',
+    orange:     '#754000',
     orangeSoft: 'rgba(193,105,14,0.55)',
     orangeWash: 'rgba(193,105,14,0.08)',
     rust:       '#9c3416',
     rustWash:   'rgba(156,52,22,0.08)',
-    forest:     '#2f5d3a',
+    forest:     '#244b2d',
     forestWash: 'rgba(47,93,58,0.08)',
     stage:      '#0a0a0b',
     grain:      'rgba(0,0,0,0.012)',
@@ -45,7 +45,7 @@ export const THEMES = {
     inkFill:    'rgba(240,233,216,0.95)',
     inkSoft:    'rgba(240,233,216,0.82)',
     inkMute:    'rgba(240,233,216,0.58)',
-    inkFaint:   'rgba(240,233,216,0.32)',
+    inkFaint:   'rgba(240,233,216,0.8)',
     inkLine:    'rgba(240,233,216,0.20)',
     orange:     '#e89244',
     orangeSoft: 'rgba(232,146,68,0.60)',
@@ -66,7 +66,7 @@ export const THEMES = {
     inkFill:    'rgba(236,229,210,0.95)',
     inkSoft:    'rgba(236,229,210,0.82)',
     inkMute:    'rgba(236,229,210,0.58)',
-    inkFaint:   'rgba(236,229,210,0.32)',
+    inkFaint:   'rgba(236,229,210,0.8)',
     inkLine:    'rgba(236,229,210,0.18)',
     orange:     '#eb9445',
     orangeSoft: 'rgba(235,148,69,0.60)',
@@ -98,6 +98,12 @@ export function ensureThemeCss() {
   const s = document.createElement('style');
   s.id = 'sb-theme-css';
   s.textContent = `
+@font-face { font-family: 'Fraunces Brand'; font-style: normal; font-weight: 600; font-display: swap; src: url('/fonts/fraunces-brand-600.woff2') format('woff2'); }
+@font-face { font-family: 'Fraunces'; font-style: normal; font-weight: 400; font-display: swap; src: url('/fonts/fraunces-normal-400.ttf') format('truetype'); }
+@font-face { font-family: 'Fraunces'; font-style: normal; font-weight: 500 700; font-display: swap; src: url('/fonts/fraunces-normal-600.ttf') format('truetype'); }
+@font-face { font-family: 'Fraunces'; font-style: italic; font-weight: 400 600; font-display: swap; src: url('/fonts/fraunces-italic-400.ttf') format('truetype'); }
+@font-face { font-family: 'Geist'; font-style: normal; font-weight: 300 700; font-display: swap; src: url('/fonts/geist-normal-400.ttf') format('truetype'); }
+@font-face { font-family: 'Geist Mono'; font-style: normal; font-weight: 400 700; font-display: swap; src: url('/fonts/geist-mono-normal-400.ttf') format('truetype'); }
 :root {
 ${vars(THEMES.light)}
 }

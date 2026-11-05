@@ -53,7 +53,7 @@ export default function AboutPage() {
   const { isDark } = useTheme();
 
   return (
-    <PaperFrame>
+    <PaperFrame main>
       <BrandHeader
         currentPage="IV"
         pageOf="IV"

@@ -16,36 +16,11 @@ import {
   detectRegionFromCurrency,
 } from './lib/hooks.js';
 import { applyRouteSeo } from './lib/seo.js';
-
-import CalculatorPage    from './pages/Calculator.jsx';
-import LendersPage       from './pages/Lenders.jsx';
-import AboutPage         from './pages/About.jsx';
-import LandingPage       from './pages/Landing.jsx';
-import ComparePage       from './pages/Compare.jsx';
-import LenderDetailPage  from './pages/LenderDetail.jsx';
-import GlossaryPage      from './pages/Glossary.jsx';
-import SwedenTaxPage     from './pages/SwedenTax.jsx';
-import { VoidState404 }  from './pages/Void.jsx';
-import { GLOSSARY }      from './lib/glossary.js';
+import { GLOSSARY } from './lib/glossary.js';
 import { SB, ensureThemeCss } from './system/tokens.js';
 import { ThemeProvider } from './system/theme.jsx';
 import { MobileThemeToggleCorner } from './system/components.jsx';
 import { LanguageProvider, useT } from './i18n/index.jsx';
-
-// Loads our two webfonts once at the document level.
-function ensureFonts() {
-  if (typeof document === 'undefined') return;
-  if (document.getElementById('sb-fonts')) return;
-  const link = document.createElement('link');
-  link.id = 'sb-fonts';
-  link.rel = 'stylesheet';
-  link.href = 'https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500;1,9..144,600&family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500;600;700&display=swap';
-  document.head.appendChild(link);
-  // Background tracks the active theme via CSS var (set by ensureThemeCss).
-  document.body.style.margin = '0';
-  document.body.style.fontFamily = "'Geist', system-ui, sans-serif";
-  document.body.style.webkitFontSmoothing = 'antialiased';
-}
 
 // Separate function component so it can call useT() — the
 // class-based ErrorBoundary delegates rendering here.
@@ -102,11 +77,30 @@ class ErrorBoundary extends React.Component {
 }
 
 export default function App() {
-  ensureFonts();
   ensureThemeCss();
   const route = useRoute();
   const live = useLivePrices();
   const { lenders, lastUpdated } = useLenders();
+  const [activePage, setActivePage] = React.useState(null);
+
+  React.useEffect(() => {
+    let cancelled = false;
+    const load = async () => {
+      let Page;
+      if (route === '') Page = (await import('./pages/Landing.jsx')).default;
+      else if (route === 'calculator') Page = (await import('./pages/Calculator.jsx')).default;
+      else if (route === 'lenders') Page = (await import('./pages/Lenders.jsx')).default;
+      else if (route === 'about') Page = (await import('./pages/About.jsx')).default;
+      else if (route === 'sweden-tax') Page = (await import('./pages/SwedenTax.jsx')).default;
+      else if (typeof route === 'string' && route.startsWith('compare:')) Page = (await import('./pages/Compare.jsx')).default;
+      else if (typeof route === 'string' && route.startsWith('lender:')) Page = (await import('./pages/LenderDetail.jsx')).default;
+      else if (typeof route === 'string' && route.startsWith('glossary:')) Page = (await import('./pages/Glossary.jsx')).default;
+      else Page = (await import('./pages/Void.jsx')).VoidState404;
+      if (!cancelled) setActivePage({ route, Page });
+    };
+    load();
+    return () => { cancelled = true; };
+  }, [route]);
 
   // Keep <title>, meta description, canonical, OG, and JSON-LD in
   // sync with the active route. Static HTML files set the initial
@@ -141,70 +135,27 @@ export default function App() {
   //   'sweden-tax' → Swedish tax guide (/skatt-bitcoin-lan)
   //   'compare:X-vs-Y' → Head-to-head (/compare/X-vs-Y)
   //   anything else → 404
-  let page;
-  if (route === '') {
-    page = (
-      <LandingPage
-        live={live}
-        lenders={lenders}
-        region={region}
-        initialCurrency={initialCurrency}
-      />
-    );
-  } else if (route === 'calculator') {
-    page = (
-      <CalculatorPage
-        live={live}
-        lenders={lenders}
-        lastUpdated={lastUpdated}
-        region={region}
-        initialCurrency={initialCurrency}
-      />
-    );
-  } else if (route === 'lenders') {
-    page = (
-      <LendersPage
-        lenders={lenders}
-        lastUpdated={lastUpdated}
-        live={live}
-        currency={readStoredCurrency(initialCurrency)}
-        region={region}
-      />
-    );
-  } else if (route === 'about') {
-    page = <AboutPage />;
-  } else if (route === 'sweden-tax') {
-    page = <SwedenTaxPage live={live} lastUpdated={lastUpdated} />;
-  } else if (typeof route === 'string' && route.startsWith('compare:')) {
-    const slug = route.slice('compare:'.length);
-    page = (
-      <ComparePage
-        slug={slug}
-        lenders={lenders}
-        lastUpdated={lastUpdated}
-        live={live}
-        currency={readStoredCurrency(initialCurrency)}
-        region={region}
-      />
-    );
-  } else if (typeof route === 'string' && route.startsWith('lender:')) {
-    const id = route.slice('lender:'.length);
-    page = (
-      <LenderDetailPage
-        id={id}
-        lenders={lenders}
-        lastUpdated={lastUpdated}
-        live={live}
-        currency={readStoredCurrency(initialCurrency)}
-        region={region}
-      />
-    );
-  } else if (typeof route === 'string' && route.startsWith('glossary:')) {
-    const slug = route.slice('glossary:'.length);
-    page = <GlossaryPage slug={slug} live={live} lastUpdated={lastUpdated} />;
-  } else {
-    page = <VoidState404 attemptedPath={route} />;
-  }
+  const pageProps = route === ''
+    ? { live, lenders, region, initialCurrency }
+    : route === 'calculator'
+      ? { live, lenders, lastUpdated, region, initialCurrency }
+      : route === 'lenders'
+        ? { lenders, lastUpdated, live, currency: readStoredCurrency(initialCurrency), region }
+        : route === 'about'
+          ? {}
+          : route === 'sweden-tax'
+            ? { live, lastUpdated }
+            : typeof route === 'string' && route.startsWith('compare:')
+              ? { slug: route.slice('compare:'.length), lenders, lastUpdated, live, currency: readStoredCurrency(initialCurrency), region }
+              : typeof route === 'string' && route.startsWith('lender:')
+                ? { id: route.slice('lender:'.length), lenders, lastUpdated, live, currency: readStoredCurrency(initialCurrency), region }
+                : typeof route === 'string' && route.startsWith('glossary:')
+                  ? { slug: route.slice('glossary:'.length), live, lastUpdated }
+                  : { attemptedPath: route };
+  // Never pass the next route's props to the previously loaded component.
+  const page = activePage?.route === route
+    ? React.createElement(activePage.Page, pageProps)
+    : <div aria-busy="true" />;
 
   return (
     <LanguageProvider>

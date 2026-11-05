@@ -44,13 +44,14 @@ export function BitcoinLogo({ size = 32, color = SB.orange }) {
 // Wraps every routable page. All visual values resolve to CSS
 // variables so dark themes (carbon / midnight) flip automatically.
 // ------------------------------------------------------------
-export function PaperFrame({ children, maxWidth = 440, sidePad = 12, innerPad = '0 22px' }) {
+export function PaperFrame({ children, maxWidth = 440, sidePad = 12, innerPad = '0 22px', main = false }) {
+  const Content = main ? 'main' : 'div';
   return (
     <div style={{ ...paperStyles.stage, padding: `0 ${sidePad}px` }}>
       <div style={paperStyles.slot} />
       <div style={{ ...paperStyles.paper, maxWidth }}>
         <Perf side="top" />
-        <div style={{ padding: innerPad }}>{children}</div>
+        <Content style={{ padding: innerPad }}>{children}</Content>
         <Perf side="bottom" />
       </div>
       <div style={{ height: 10 }} />
@@ -125,8 +126,9 @@ export function BrandHeader({ rightSlot = null, currentPage = null, pageOf = nul
           <BitcoinLogo size={big ? 42 : 32} />
           <div style={{ minWidth: 0 }}>
             <div style={{
-              fontFamily: SB.serif,
+              fontFamily: "'Fraunces Brand', Fraunces, Georgia, serif",
               fontSize: big ? 30 : 22, fontWeight: 600,
+              fontOpticalSizing: 'none',
               letterSpacing: '-0.005em',
               lineHeight: 1, color: SB.ink,
             }}>
@@ -185,9 +187,10 @@ export function SunMoonStamp({ size = 76, rotate = 8, style = {} }) {
   const fg = isDark ? SB.orange : SB.ink;
   const ringId = `sb-sm-ring-${size}`;
 
-  const title = preference === 'auto'
+  const visibleLabel = (isDark ? t('common.theme.dark') : t('common.theme.light')).trim();
+  const title = `${visibleLabel}. ${preference === 'auto'
     ? t('common.theme.titleAuto', { theme })
-    : t('common.theme.title', { theme });
+    : t('common.theme.title', { theme })}`;
 
   return (
     <button

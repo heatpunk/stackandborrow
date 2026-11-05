@@ -198,7 +198,7 @@ export default function LandingPage({ live, lenders = [], region, initialCurrenc
   }
 
   return (
-    <PaperFrame>
+    <PaperFrame main>
       <style>{`
         @keyframes lp-caret { 0%, 49% { opacity: 1 } 50%, 100% { opacity: 0 } }
         .lp-amount-input {
@@ -538,9 +538,9 @@ export default function LandingPage({ live, lenders = [], region, initialCurrenc
           background: SB.cream,
           padding: '0 8px',
           fontFamily: SB.mono,
-          fontSize: 9, fontWeight: 700,
+          fontSize: 10, fontWeight: 700,
           letterSpacing: '0.2em',
-          color: SB.inkMute,
+          color: SB.ink,
         }}>{t('landing.quote.eyebrow')}</div>
         <p style={{
           margin: 0,
@@ -696,13 +696,13 @@ function DesktopLandingLayout({
       <h1 style={{
         margin: 0,
         fontFamily: SB.serif,
-        fontSize: 80, fontWeight: 600,
+        fontSize: 72, fontWeight: 600,
         lineHeight: 0.95,
         letterSpacing: '-0.03em',
         color: SB.ink,
       }}>
         {t('landing.hero.titleLine1')}<br />
-        <span style={{ color: SB.orange, fontStyle: 'italic', fontWeight: 500 }}>
+        <span style={{ color: SB.orange, fontStyle: 'italic', fontWeight: 500, whiteSpace: 'nowrap', fontSize: 72 }}>
           {t('landing.hero.titleLine2')}
         </span>
       </h1>
@@ -837,14 +837,14 @@ function DesktopLandingLayout({
 
       <DashedRule label={t('landing.section.subtotal')} />
 
-      <div style={{ padding: '0 2px' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', fontSize: 13 }}>
+      <div style={{ padding: '0 2px', minHeight: 175, overflowAnchor: 'none' }}>
+        <div style={{ height: 41, display: 'flex', justifyContent: 'space-between', padding: '6px 0', fontSize: 13, overflowAnchor: 'none' }}>
           <span style={{ color: SB.inkSoft }}>{t('landing.subtotal.total', { months: TERM_MONTHS })}</span>
           <span style={{ fontFamily: SB.mono, fontWeight: 700, color: SB.ink }}>
             {fmtMoney(interestUsd + origFeeUsd, currency, live.meta, btcSpotUsd)}
           </span>
         </div>
-        <div style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', fontSize: 13 }}>
+        <div style={{ height: 41, display: 'flex', justifyContent: 'space-between', padding: '6px 0', fontSize: 13, overflowAnchor: 'none' }}>
           <span style={{ color: SB.inkSoft }}>{t('landing.subtotal.satsSold')}</span>
           <span style={{ fontFamily: SB.mono, fontWeight: 700, color: SB.orange }}>
             −{fmtNum(satsToSell)}
@@ -870,7 +870,9 @@ function DesktopLandingLayout({
 
       <DashedRule />
 
-      <Button href="/calculator">{t('landing.cta.fullBreakdown')}</Button>
+      <div style={{ minHeight: 52 }}>
+        <Button href="/calculator">{t('landing.cta.fullBreakdown')}</Button>
+      </div>
 
       <div style={{
         position: 'relative',
@@ -908,6 +910,7 @@ function DesktopLandingLayout({
       </div>
 
       <div style={{
+        minHeight: 180,
         padding: '24px 22px 28px',
         background: SB.creamWarm,
         border: `1px solid ${SB.inkLine}`,
@@ -917,10 +920,11 @@ function DesktopLandingLayout({
           position: 'absolute', top: -11, left: 18,
           background: SB.cream, padding: '0 10px',
           fontFamily: SB.mono, fontSize: 10, fontWeight: 700,
-          letterSpacing: '0.22em', color: SB.inkMute,
+          letterSpacing: '0.22em', color: SB.ink,
         }}>{t('landing.quote.eyebrow')}</div>
         <p style={{
           margin: 0,
+          minHeight: 64,
           fontFamily: SB.serif, fontStyle: 'italic',
           fontSize: 24, lineHeight: 1.32,
           color: SB.ink, textWrap: 'pretty',
@@ -929,10 +933,11 @@ function DesktopLandingLayout({
           &ldquo;{fieldQuote.text}&rdquo;
         </p>
         <div style={{
+          minHeight: 30,
           marginTop: 18,
           fontFamily: SB.mono, fontSize: 10, fontWeight: 700,
-          letterSpacing: '0.18em', color: SB.orange,
-        }}>
+          letterSpacing: '0.18em', color: SB.ink,
+        }} aria-hidden="true">
           — {fieldQuote.attribution}
         </div>
       </div>
@@ -1025,11 +1030,13 @@ function DesktopLandingLayout({
 
       <DashedRule />
 
-      <Button href={bestLender?.referralUrl || '#lenders'}>
-        {bestLender
-          ? t('common.cta.openWith', { name: bestLender.name.toUpperCase() })
-          : t('common.cta.browseAll')}
-      </Button>
+      <div style={{ minHeight: 52 }}>
+        <Button href={bestLender?.referralUrl || '#lenders'}>
+          {bestLender
+            ? t('common.cta.openWith', { name: bestLender.name.toUpperCase() })
+            : t('common.cta.browseAll')}
+        </Button>
+      </div>
       <div style={{
         textAlign: 'center', marginTop: 10,
         fontFamily: SB.mono, fontSize: 10,
