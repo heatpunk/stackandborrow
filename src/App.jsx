@@ -96,7 +96,7 @@ export default function App() {
       else if (typeof route === 'string' && route.startsWith('lender:')) Page = (await import('./pages/LenderDetail.jsx')).default;
       else if (typeof route === 'string' && route.startsWith('glossary:')) Page = (await import('./pages/Glossary.jsx')).default;
       else Page = (await import('./pages/Void.jsx')).VoidState404;
-      if (!cancelled) setActivePage(() => Page);
+      if (!cancelled) setActivePage({ route, Page });
     };
     load();
     return () => { cancelled = true; };
@@ -152,7 +152,10 @@ export default function App() {
                 : typeof route === 'string' && route.startsWith('glossary:')
                   ? { slug: route.slice('glossary:'.length), live, lastUpdated }
                   : { attemptedPath: route };
-  const page = activePage ? React.createElement(activePage, pageProps) : <div aria-busy="true" />;
+  // Never pass the next route's props to the previously loaded component.
+  const page = activePage?.route === route
+    ? React.createElement(activePage.Page, pageProps)
+    : <div aria-busy="true" />;
 
   return (
     <LanguageProvider>
