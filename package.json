@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "test": "node --test tests/agent-discovery.test.js",
+    "test": "node --test tests/agent-discovery.test.js tests/exchange-rate.test.js",
     "preview": "vite preview",
     "test:browser": "node --test tests/browser-quality.test.js tests/route-navigation.test.js",
     "preview:dist": "vite preview --host 127.0.0.1 --port 4182"
