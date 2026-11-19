@@ -96,8 +96,9 @@ export default function CalculatorPage({
       region: region || 'global',
       ltvPct: LTV_PCT,
       termMonths: TERM_MONTHS,
+      currencyMeta: live.meta,
     }),
-    [lenders, loanUsd, region]
+    [lenders, loanUsd, region, live.meta]
   );
   const top4 = ranked.slice(0, 4);
   const activeLender = top4.find(l => l.id === selectedLenderId) || ranked[0];

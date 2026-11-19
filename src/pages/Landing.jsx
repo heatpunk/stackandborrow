@@ -127,8 +127,9 @@ export default function LandingPage({ live, lenders = [], region, initialCurrenc
       region: region || 'global',
       ltvPct: LTV_PCT,
       termMonths: TERM_MONTHS,
+      currencyMeta: live.meta,
     }),
-    [lenders, loanUsd, region]
+    [lenders, loanUsd, region, live.meta]
   );
   const bestLender = ranked[0];
   // aprPct is the all-in APR (rate + fee) shown to users; interest itself

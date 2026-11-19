@@ -83,8 +83,9 @@ export default function ComparePage({ slug, lenders, lastUpdated, live, currency
       ltvPct: LTV_PCT,
       termMonths: TERM_MONTHS,
       eligibleOnly: false,
+      currencyMeta: live.meta,
     });
-  }, [lenders, aId, bId, region, loanUsd]);
+  }, [lenders, aId, bId, region, loanUsd, live.meta]);
 
   // Loading state — lenders.json hasn't resolved yet.
   if (!lenders || lenders.length === 0) {
@@ -444,8 +445,8 @@ function CompareTable({ winner, runner, currency, live, desktop = false }) {
       />
       <TR
         label="Minimum loan"
-        a={`$${fmtNum(winner.minLoanUsd ?? 0)}`}
-        b={`$${fmtNum(runner.minLoanUsd ?? 0)}`}
+        a={`$${fmtNum(winner.minLoanUsdEffective ?? winner.minLoanUsd ?? 0)}`}
+        b={`$${fmtNum(runner.minLoanUsdEffective ?? runner.minLoanUsd ?? 0)}`}
       />
       <TR
         label="Term"

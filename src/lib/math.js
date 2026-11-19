@@ -77,11 +77,24 @@ export function custodyRiskPremiumPct(lender) {
 
 // Rank lenders for a given loan + region. Total cost = interest + origination,
 // plus a custody-risk premium that captures counterparty risk not priced into APR.
+// Resolve a lender's minimum loan in USD for the borrower's region.
+// `minLoanByRegion` stores the threshold in the lender's native currency
+// (e.g. Strike: EUR 5,000 in the EEA) so it tracks live FX instead of a
+// frozen USD guess. Falls back to the global `minLoanUsd`.
+export function minLoanUsdFor(lender, region, currencyMeta) {
+  const byRegion = lender.minLoanByRegion?.[region];
+  if (byRegion && byRegion.amount > 0) {
+    const fx = currencyMeta?.[byRegion.currency]?.fxToUsd;
+    if (fx > 0) return byRegion.amount * fx;
+  }
+  return lender.minLoanUsd ?? 0;
+}
+
 // Optionally apply a per-region rate adjustment (some lenders charge more
 // outside their home market).
 // When `eligibleOnly` is false (directory mode), every lender is scored and
 // sorted; eligibility filters are skipped so the list is not region/LTV/min-loan gated.
-export function rankLenders(allLenders, { loanUsd, region, ltvPct, termMonths, eligibleOnly = true }) {
+export function rankLenders(allLenders, { loanUsd, region, ltvPct, termMonths, eligibleOnly = true, currencyMeta }) {
   let list = allLenders;
   if (eligibleOnly) {
     list = allLenders
@@ -99,11 +112,14 @@ export function rankLenders(allLenders, { loanUsd, region, ltvPct, termMonths, e
         if (region === 'jp' && l.country.includes('jp')) return true;
         return false;
       })
-      .filter((l) => loanUsd >= (l.minLoanUsd ?? 0) && ltvPct <= (l.maxLtv ?? 100));
+      .filter((l) => loanUsd >= minLoanUsdFor(l, region, currencyMeta) && ltvPct <= (l.maxLtv ?? 100));
   }
   return list
     .map((l) => {
       const { aprPct, originationFeePct } = resolveTier(l, loanUsd);
+      // Region-aware minimum in USD, so display pages show the same
+      // threshold the eligibility filter uses (e.g. Strike EUR 5,000 in EU).
+      const minLoanUsdEffective = minLoanUsdFor(l, region, currencyMeta);
       const regional = l.regionalRateAdjustment
         ? (l.regionalRateAdjustment[region] ?? l.regionalRateAdjustment.default ?? 0)
         : 0;
@@ -125,6 +141,7 @@ export function rankLenders(allLenders, { loanUsd, region, ltvPct, termMonths, e
       const adjustedApr = effectiveApr + custodyPremiumPct;
       return {
         ...l,
+        minLoanUsdEffective,
         apr: aprPct + regional,
         baseApr: aprPct,
         regionalAdjustment: regional,

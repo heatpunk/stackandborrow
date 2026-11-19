@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-10-25",
+  "lastUpdated": "2026-11-19",
   "lenders": [
     {
       "id": "ledn",
@@ -37,6 +37,10 @@
       "excluded": [],
       "payoutType": "fiat",
       "minLoanUsd": 10000,
+      "minLoanByRegion": {
+        "eu": { "amount": 5000, "currency": "EUR" },
+        "uk": { "amount": 5000, "currency": "GBP" }
+      },
       "maxLtv": 50,
       "rateTiers": [
         { "maxLoanUsd": 250000, "aprPct": 10.5 },
@@ -54,7 +58,7 @@
       "rollover": "Yes — multiple loans (up to 5) and refinance supported",
       "rolloverEase": "approval",
       "repayment": "Two options: (1) Payment at Maturity — principal + interest in single balloon payment, or (2) Monthly Payments — interest paid monthly, principal at maturity. No origination fee, no early repayment fee, no liquidation fee. Daily interest accrual. Loans payable in USD or USDC. EUR/GBP supported in many countries.",
-      "notes": "Aggressive tier discounts at $250K, $1M, and $5M. US rates start 1% lower than other regions. Per Strike's own FAQ the consumer product is currently live in 22 US states + DC + PR plus 8 LatAm/Asia countries; EU and AU access is via a Cayman-based affiliate and not consumer-regulated credit in your jurisdiction.",
+      "notes": "Aggressive tier discounts at $250K, $1M, and $5M. Minimum loan: EUR 5,000 in the EEA, GBP 5,000 for UK business accounts; US minimums vary by state (typically $10,000 for individuals). Per Strike's own FAQ the consumer product is currently live in 22 US states + DC + PR plus 8 LatAm/Asia countries; EU and AU access is via a Cayman-based affiliate and not consumer-regulated credit in your jurisdiction.",
       "badge": "Best rates at scale",
       "referralUrl": "https://invite.strike.me/JTV9X9"
     },
@@ -80,11 +84,11 @@
       "custodyType": "custodial",
       "rehypothecation": "no",
       "btcOnly": false,
-      "term": "Up to 12 months, rollover available",
-      "rollover": "Yes, refinance available",
+      "term": "1–12 months. One-click rollover within the last 3 months extends the term up to 12 months, repeatable.",
+      "rollover": "Yes — one-click rollover within 3 months of maturity: new term up to 12 months, no principal repayment, rate updates to the prevailing tier, origination fee folded into the new balance. Requires LTV below 65% (BTC) and no pending payments.",
       "rolloverEase": "approval",
       "repayment": "Two options: (1) Monthly Payment (interest paid monthly, principal balloon at maturity) at the published rate, or (2) Deferred Interest (no monthly payments, all interest accrues to maturity) at ~0.5% higher APR. Payments in USD or USDC. No early repayment penalty. 2.5% liquidation fee if collateral has to be sold.",
-      "notes": "NMLS #2637200, licensed in 39 US states (excluded: CA, DE, HI, MS, MT, NV, ND, RI, SC, TX, VT). Tiered origination fee drops to 0% at $5M+. Multi-collateral support is unique among regulated US lenders.",
+      "notes": "NMLS #2637200, licensed in 39 US states (excluded: CA, DE, HI, MS, MT, NV, ND, RI, SC, TX, VT). Tiered origination fee drops to 0% at $5M+. Multi-collateral support is unique among regulated US lenders. Rollover is self-service in the app (no re-application): eligible under 65% LTV on BTC (60% ETH, 50% SOL/XRP) with no pending payments; support can enable early rollover on request.",
       "badge": "Best for big loans",
       "referralUrl": "https://app.archlending.com/affiliate/stackandborrow"
     },

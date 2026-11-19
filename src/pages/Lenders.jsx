@@ -212,8 +212,9 @@ export default function LendersPage({ lenders, lastUpdated, live, currency, regi
       ltvPct: LTV_PCT,
       termMonths: TERM_MONTHS,
       eligibleOnly: false,
+      currencyMeta: live.meta,
     }),
-    [filtered, region, loanUsd]
+    [filtered, region, loanUsd, live.meta]
   );
 
   // Per-filter count for chip labels (compute over the full list).
@@ -386,7 +387,7 @@ export default function LendersPage({ lenders, lastUpdated, live, currency, regi
                     marginTop: 10, paddingTop: 10,
                     borderTop: `1px dotted ${SB.inkLine}`,
                   }}>
-                    <Term k={t('lenders.term.min')} v={'$' + fmtNum(l.minLoanUsd || 0)} />
+                    <Term k={t('lenders.term.min')} v={'$' + fmtNum(l.minLoanUsdEffective ?? l.minLoanUsd ?? 0)} />
                     <Term k={t('lenders.term.term')} v={fmtTerm(l.term)} />
                     <Term k={t('lenders.term.custody')} v={custodyShort(l, t)} />
                   </div>
@@ -685,7 +686,7 @@ function DesktopLendersLayout({
                     marginTop: 12, paddingTop: 12,
                     borderTop: `1px dotted ${SB.inkLine}`,
                   }}>
-                    <Term k={t('lenders.term.min')} v={'$' + fmtNum(l.minLoanUsd || 0)} />
+                    <Term k={t('lenders.term.min')} v={'$' + fmtNum(l.minLoanUsdEffective ?? l.minLoanUsd ?? 0)} />
                     <Term k={t('lenders.term.term')} v={fmtTerm(l.term)} />
                     <Term k={t('lenders.term.custody')} v={custodyShort(l, t)} />
                   </div>

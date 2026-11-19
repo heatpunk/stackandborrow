@@ -71,8 +71,9 @@ export default function LenderDetailPage({ id, lenders, lastUpdated, live, curre
       ltvPct: LTV_PCT,
       termMonths: TERM_MONTHS,
       eligibleOnly: false,
+      currencyMeta: live.meta,
     });
-  }, [lenders, region, loanUsd]);
+  }, [lenders, region, loanUsd, live.meta]);
 
   const idx = ranked.findIndex((l) => l.id === id);
   const lender = idx >= 0 ? ranked[idx] : null;
@@ -316,7 +317,7 @@ function SpecsTable({ lender, currency, live, desktop = false }) {
       <TH label="Spec" />
       <TH label="Value" />
       <TR label="Maximum LTV" v={`${lender.maxLtv ?? '—'}%`} />
-      <TR label="Minimum loan" v={`$${fmtNum(lender.minLoanUsd ?? 0)}`} />
+      <TR label="Minimum loan" v={`$${fmtNum(lender.minLoanUsdEffective ?? lender.minLoanUsd ?? 0)}`} />
       <TR label="Term" v={lender.term || '—'} mono={false} />
       <TR label="Rollover" v={lender.rollover || '—'} mono={false} />
       <TR label="BTC-only collateral" v={lender.btcOnly ? 'Yes' : 'No (multi)'} tone={lender.btcOnly ? SB.forest : SB.rust} />
